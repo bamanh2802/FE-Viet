@@ -15,7 +15,8 @@ import {
   ArrowTopRightOnSquareIcon,
   TrashIcon,
   StarIcon,
-  PencilSquareIcon
+  PencilSquareIcon,
+  PhotoIcon
 } from '@heroicons/react/24/outline';
 import { ListboxWrapper } from '../ListboxWrapper';
 import { Select, SelectItem, Listbox, ListboxItem } from '@nextui-org/react';
@@ -99,7 +100,7 @@ const Sidebar = () => {
         <div>
           <MenuItem
             Icon={FolderIcon}
-            label="Documents"
+            label="Tài liệu"
             expanded={expandedSections.includes('documents')}
             onClick={() => toggleExpand('documents')}
             items={documents}
@@ -113,6 +114,17 @@ const Sidebar = () => {
             items={[
               { name: 'Table Item 1', Icon: DocumentTextIcon },
               { name: 'Table Item 2', Icon: DocumentTextIcon },
+            ]}
+            onContextMenu={handleContextMenu}
+          />
+          <MenuItem
+            Icon={PhotoIcon}
+            label="Hình ảnh"
+            expanded={expandedSections.includes('images')}
+            onClick={() => toggleExpand('images')}
+            items={[
+              { name: 'Photo 1', Icon: DocumentTextIcon },
+              { name: 'Photo 2', Icon: DocumentTextIcon },
             ]}
             onContextMenu={handleContextMenu}
           />
