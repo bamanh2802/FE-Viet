@@ -132,8 +132,7 @@ const WorkSpace: React.FC = () => {
                             modules={[Navigation, Pagination, Scrollbar, A11y, Mousewheel]}
                             spaceBetween={20}
                             slidesPerView='auto'
-                            navigation
-                            scrollbar
+                                scrollbar
                             mousewheel
                             onSwiper={(swiper) => console.log(swiper)}
                             onSlideChange={() => console.log('slide change')}
@@ -199,6 +198,15 @@ const WorkSpace: React.FC = () => {
                         ))}
                     </Swiper>
                 </div>
+
+        {/* Images */}
+                    
+        <div className="w-full flex-col max-w-screen-xl mt-8">
+        <span className="text-start opacity-85 py-4 block">Images</span>
+
+
+        </div>
+                
             </div>
 
         </div>
