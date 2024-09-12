@@ -1,33 +1,61 @@
-import React from "react";
-import {Tabs, Tab, Card, CardBody, Switch} from "@nextui-org/react";
+import React, {useEffect, useState} from "react";
+import { Tabs, Tab, Card, CardBody } from "@nextui-org/react";
+import { ChevronLeftIcon,
+        ChevronRightIcon
+ } from "@heroicons/react/24/outline";
 
 export default function SidebarDocument() {
+  const [isOpenDetail, setIsOpenDetail] = useState<boolean>(true)
+
+  const ToggleDetail = () => {
+    setIsOpenDetail(!isOpenDetail)
+  }
+
+  const OpenDetail = () => {
+    if (!isOpenDetail) {
+      setIsOpenDetail(true)
+    }
+  }
+
+
   return (
     <div className="flex flex-col">
-      <div className="flex w-full flex-col h-screen ">
-        <Tabs aria-label="Options" isVertical={true} className="bg-zinc-800 h-screen">
-          <Tab key="chunks" title="Chunks" className="bg-zinc-800 ">
-            <Card  className="w-60 bg-zinc-800">
+      <div onMouseDown={OpenDetail} className="flex w-full flex-col h-screen relative group"> {/* Thêm lớp group */}
+        <Tabs aria-label="Options" isVertical={true} className="bg-zinc-800 h-screen py-6">
+          <Tab onMouseDown={OpenDetail} key="chunks" title="Chunks" className={`${isOpenDetail ? 'py-6' : ''} bg-zinc-800 py-6 transition ease-in-out`}>
+            <Card className={`${isOpenDetail ? 'w-60' : 'w-0'} bg-zinc-800 transition ease-in-out`}>
+              {isOpenDetail && (
+              <CardBody>
+                piscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+              </CardBody>
+
+              )}
+            </Card>
+          </Tab>
+          <Tab onMouseDown={OpenDetail} key="tables" title="Tables" className={`${isOpenDetail ? 'py-6' : ''} bg-zinc-800 py-6 transition ease-in-out`}>
+            <Card className={`${isOpenDetail ? 'w-60' : 'w-0'} bg-zinc-800 transition ease-in-out`}>
+            {isOpenDetail && (
               <CardBody>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
               </CardBody>
-            </Card>  
+
+              )}
+            </Card>
           </Tab>
-          <Tab key="tables" title="Tables"  className="bg-zinc-800">
-            <Card  className="w-60 bg-zinc-800">
+          <Tab onMouseDown={OpenDetail} key="images" title="Images" className={`${isOpenDetail ? 'py-6' : ''} bg-zinc-800 py-6 transition ease-in-out`}>
+            <Card className={`${isOpenDetail ? 'w-60' : 'w-0'} bg-zinc-800 transition ease-in-out`}>
+            {isOpenDetail && (
               <CardBody>
-                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                Lorem ipsum dolor si sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
               </CardBody>
-            </Card>  
-          </Tab>
-          <Tab key="images" title="Images"  className="bg-zinc-800">
-            <Card  className="w-60 bg-zinc-800">
-              <CardBody>
-                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-              </CardBody>
-            </Card>  
+
+              )}
+            </Card>
           </Tab>
         </Tabs>
+        <div className="absolute top-1/2 right-[-10px] transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer">
+          <ChevronLeftIcon className={`${isOpenDetail ? '' : 'rotate-180'} h-5 w-5 bg-zinc-700 rounded-full transition ease-in-out opacity-85`} onMouseDown={ToggleDetail}/>
+        </div>
       </div>
     </div>
   );
