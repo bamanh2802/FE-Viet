@@ -73,23 +73,23 @@ const Chatbot: React.FC = () => {
   };
 
   return (
-    <div className='bg-neutral-800 flex-1 flex flex-col' style={{ height: 'calc(100vh - 70px)' }}>
-      <div className='h-full overflow-y-auto'>
-      {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`p-2 ${msg.sender === 'You' ? 'text-right' : 'text-left'}`}
-          >
-            <p
-              className={`inline-block px-4 py-2 rounded-lg ${msg.sender === 'You' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'}`}
+    <div className='bg-neutral-800 flex-1 flex flex-col relative' style={{ height: 'calc(100vh - 140px)' }}>
+      <div className='h-full overflow-y-auto scrollbar-hide'>
+        {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`p-2 ${msg.sender === 'You' ? 'text-right' : 'text-left'}`}
             >
-               {msg.content}
-            </p>
-          </div>
-        ))}
+              <p
+                className={`inline-block px-4 py-2 rounded-lg ${msg.sender === 'You' ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'}`}
+              >
+                {msg.content}
+              </p>
+            </div>
+          ))}
       </div>
       <form onSubmit={sendMessage}>
-        <div className='flex w-full bg-zinc-800 rounded-2xl'>
+        <div className='flex w-full bg-zinc-800 rounded-2xl px-2'>
           <Input
             type="text"
             value={input}
@@ -98,7 +98,7 @@ const Chatbot: React.FC = () => {
             placeholder="Type a message..."
             disabled={loading} // Vô hiệu hóa input khi loading
           />
-          <Button variant="faded" isIconOnly type="submit" disabled={loading}>
+          <Button variant="light" isIconOnly type="submit" disabled={loading}>
             <PaperAirplaneIcon className='h-4 w-4 p-0' />
           </Button>
         </div>

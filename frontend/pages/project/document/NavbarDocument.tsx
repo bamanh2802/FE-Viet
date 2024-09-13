@@ -5,7 +5,7 @@ import '../../../components/project/config.css'
 
 export default function NavbarDocument() {
   return (
-    <Navbar isBordered className="bg-zinc-800 navbar-custom mx-1 rounded-b-md" style={{width: 'calc(100% - 8px)'}}>
+    <Navbar isBordered className="bg-zinc-800 navbar-custom mx-1 rounded-b-md h-12" style={{width: 'calc(100% - 8px)'}}>
       <NavbarBrand>
         <p className="font-bold text-inherit">Document Name</p>
       </NavbarBrand>

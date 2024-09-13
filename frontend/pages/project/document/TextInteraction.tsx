@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { ListboxWrapper } from '@/components/ListboxWrapper';
 import { Listbox, ListboxItem } from "@nextui-org/react";
+import { Square2StackIcon, QuestionMarkCircleIcon, ClipboardDocumentCheckIcon, ListBulletIcon } from '@heroicons/react/24/outline';
 
 const TextInteraction = () => {
   const [selection, setSelection] = useState<string | null>(null);
@@ -10,35 +11,31 @@ const TextInteraction = () => {
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const handleMouseUp = () => {
+    const handleContextMenu = (event: MouseEvent) => {
       const selectedText = window.getSelection()?.toString();
       const range = window.getSelection()?.rangeCount ? window.getSelection()?.getRangeAt(0) : null;
       const selectionContainer = range?.commonAncestorContainer as Node;
 
-      // Kiểm tra xem phần tử chứa văn bản bôi đen có nằm trong textRef hay không
       const isInTextRef = textRef.current?.contains(selectionContainer);
 
-      if (selectedText && range && selectedText.trim().length > 0 && isInTextRef) {
+      if (selectedText && range && selectedText.trim().length > 0 && isInTextRef && event.button === 2) {
+        event.preventDefault();
         setSelection(selectedText);
         setShowDropdown(true);
-        console.log(selectedText);
 
-        // Lấy vị trí của đoạn bôi đen và tính toán vị trí của dropdown
-        const rect = range.getBoundingClientRect();
-        setDropdownPosition({ x: rect.left, y: rect.bottom });
+        const x = event.clientX;
+        const y = event.clientY;
+        setDropdownPosition({ x, y });
       } else {
-        // Không có văn bản nào được bôi đen hoặc bôi đen không nằm trong textRef, ẩn dropdown ngay lập tức
         setSelection(null);
         setShowDropdown(false);
-        // Xóa lựa chọn văn bản
-        // window.getSelection()?.removeAllRanges();
       }
     };
 
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('contextmenu', handleContextMenu);
 
     return () => {
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('contextmenu', handleContextMenu);
     };
   }, []);
 
@@ -46,12 +43,11 @@ const TextInteraction = () => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        !textRef.current?.contains(event.target as Node)
+        !dropdownRef.current.contains(event.target as Node) 
       ) {
         setShowDropdown(false);
         setSelection(null);
-        window.getSelection()?.removeAllRanges(); // Xóa lựa chọn văn bản khi nhấp bên ngoài
+        window.getSelection()?.removeAllRanges();
       }
     };
 
@@ -62,21 +58,11 @@ const TextInteraction = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (!showDropdown) {
-      setSelection(null);
-    }
-    if (selection === null) {
-      setShowDropdown(false);
-    }
-    console.log(showDropdown, selection);
-  }, [showDropdown, selection]);
-
   const handleOptionClick = (option: string) => {
     console.log(`Selected option: ${option} for text: ${selection}`);
     setShowDropdown(false);
     setSelection(null);
-    window.getSelection()?.removeAllRanges(); // Xóa lựa chọn văn bản khi chọn một tùy chọn
+    window.getSelection()?.removeAllRanges();
   };
 
   return (
@@ -91,7 +77,7 @@ const TextInteraction = () => {
       {showDropdown && (
         <div
           ref={dropdownRef}
-          className="absolute z-50 opacity-100 transition-opacity duration-300 ease-out bg-zinc-800"
+          className="absolute z-50 opacity-100 transition-opacity duration-300 ease-out rounded-md bg-zinc-800"
           style={{ top: dropdownPosition.y, left: dropdownPosition.x }}
         >
           {selection ? (
@@ -100,10 +86,26 @@ const TextInteraction = () => {
                 aria-label="Actions"
                 onAction={(key) => handleOptionClick(key)}
               >
-                <ListboxItem key="copy">Sao chép</ListboxItem>
-                <ListboxItem key="explain">Giải thích</ListboxItem>
-                <ListboxItem key="addNote">Thêm vào ghi chú</ListboxItem>
-                <ListboxItem key="summarize">Tóm tắt</ListboxItem>
+                <ListboxItem key="copy">
+                  <div className='flex items-center'>
+                    <Square2StackIcon className='pr-1 w-4 h-4'/> Sao chép
+                  </div>
+                </ListboxItem>
+                <ListboxItem key="explain">
+                  <div className='flex items-center'>
+                    <QuestionMarkCircleIcon className='pr-1 w-4 h-4'/> Giải thích
+                  </div>
+                </ListboxItem>
+                <ListboxItem key="addNote">
+                  <div className='flex items-center'>
+                    <ClipboardDocumentCheckIcon className='pr-1 w-4 h-4'/>Thêm vào ghi chú
+                  </div>
+                </ListboxItem>
+                <ListboxItem key="summarize">
+                  <div className='flex items-center'>
+                    <ListBulletIcon className='pr-1 w-4 h-4'/> Tóm tắt
+                  </div>
+                </ListboxItem>
               </Listbox>
             </ListboxWrapper>
           ) : (
