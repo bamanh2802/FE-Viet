@@ -4,7 +4,7 @@ import WorkSpace from "@/components/project/WorkSpace"
 
 const Project = () => {
     return (
-        <div className="flex w-screen box-border">
+        <div className="flex box-border">
             <div className="">
                 <Sidebar />
             </div>

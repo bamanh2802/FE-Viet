@@ -9,9 +9,8 @@ import 'swiper/css/navigation';
 import 'swiper/css/effect-fade';
 import 'swiper/css/mousewheel'
 import 'swiper/css/scrollbar'
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { markdownTable } from 'markdown-table';
+
+import 'remixicon/fonts/remixicon.css';
 import '../project/config.css'
 const WorkSpace: React.FC = () => {
     const dataDocuments = [
@@ -83,6 +82,83 @@ const WorkSpace: React.FC = () => {
         // Thêm các bảng khác tại đây
     ];
 
+    const dataImages = [
+        {
+            name: 'Figure 1',
+            document: 'Không biết',
+            link: 'https://nextui.org/images/hero-card-complete.jpeg'
+        },
+        {
+            name: 'Figure 1',
+            document: 'Không biết',
+            link: 'https://nextui.org/images/hero-card-complete.jpeg'
+        },
+        {
+            name: 'Figure 1',
+            document: 'Không biết',
+            link: 'https://nextui.org/images/hero-card-complete.jpeg'
+        },
+        {
+            name: 'Figure 1',
+            document: 'Không biết',
+            link: 'https://nextui.org/images/hero-card-complete.jpeg'
+        },
+        {
+            name: 'Figure 1',
+            document: 'Không biết',
+            link: 'https://nextui.org/images/hero-card-complete.jpeg'
+        },
+        {
+            name: 'Figure 1',
+            document: 'Không biết',
+            link: 'https://nextui.org/images/hero-card-complete.jpeg'
+        },
+        {
+            name: 'Figure 1',
+            document: 'Không biết',
+            link: 'https://nextui.org/images/hero-card-complete.jpeg'
+        },
+        {
+            name: 'Figure 1',
+            document: 'Không biết',
+            link: 'https://nextui.org/images/hero-card-complete.jpeg'
+        },
+        {
+            name: 'Figure 1',
+            document: 'Không biết',
+            link: 'https://nextui.org/images/hero-card-complete.jpeg'
+        },
+    ]
+
+    const dataNotes = [
+        {
+            name: 'Untitled Note',
+            createBy: 'Nguyễn Bá Mạnh',
+            createAt: '22/1/1221'
+        },
+        {
+            name: 'Untitled Note',
+            createBy: 'Nguyễn Bá Mạnh',
+            createAt: '22/1/1221'
+        },
+        {
+            name: 'Untitled Note',
+            createBy: 'Nguyễn Bá Mạnh',
+            createAt: '22/1/1221'
+        },
+        {
+            name: 'Untitled Note',
+            createBy: 'Nguyễn Bá Mạnh',
+            createAt: '22/1/1221'
+        },
+        {
+            name: 'Untitled Note',
+            createBy: 'Nguyễn Bá Mạnh',
+            createAt: '22/1/1221'
+        },
+
+    ]
+
     function parseMarkdownTable(markdown: string): string[][] {
         // Xóa khoảng trắng ở đầu và cuối và bỏ các ký tự không cần thiết
         markdown = markdown.trim().replace(/^\|/, '').replace(/\|$/, '');
@@ -119,12 +195,12 @@ const WorkSpace: React.FC = () => {
     const headers = tableData[0];
     const rows = tableData.slice(1);
     return (
-        <div className="flex justify-center bg-zinc-800 rounded-t-md mt-1 ml-1"
-        style={{ width: 'calc(100% - 8px)', height: 'calc(100% - 4px)'}}
+        <div className="overflow-auto flex justify-center bg-zinc-900 rounded-t-md mt-1 ml-1"
+        style={{ width: 'calc(100% - 8px)', height: 'calc(100vh - 60px)'}}
         >
             <div className="w-full flex flex-col items-center px-12">
                 {/* Documents */}
-                <div className="w-full flex-col max-w-screen-xl mt-8">
+                <div className="w-full flex-col max-w-screen-lg mt-8">
                     <span className="text-start opacity-85 py-4 block">Documents</span>
 
                     <div className="flex overflow-auto w-full ">
@@ -132,7 +208,11 @@ const WorkSpace: React.FC = () => {
                             modules={[Navigation, Pagination, Scrollbar, A11y, Mousewheel]}
                             spaceBetween={20}
                             slidesPerView='auto'
+<<<<<<< HEAD
                                 scrollbar
+=======
+                            navigation
+>>>>>>> refs/remotes/origin/index
                             mousewheel
                             onSwiper={(swiper) => console.log(swiper)}
                             onSlideChange={() => console.log('slide change')}
@@ -163,8 +243,83 @@ const WorkSpace: React.FC = () => {
                     </div>
                 </div>
 
+                {/* Notes */}
+                <div className="w-full flex-col max-w-screen-lg mt-8">
+                    <span className="text-start opacity-85 py-4 block">Notes</span>
+                    <div className="flex overflow-auto w-full ">
+                    <Swiper
+                            modules={[Navigation, Pagination, Scrollbar, A11y, Mousewheel]}
+                            spaceBetween={20}
+                            slidesPerView='auto'
+                            navigation
+                            mousewheel
+                            onSwiper={(swiper) => console.log(swiper)}
+                            onSlideChange={() => console.log('slide change')}
+                            >
+                        
+                        {
+                            dataNotes && dataNotes.map((note, index) => (
+                                <SwiperSlide key={index} className="w-44" style={{ width: '11rem !important'}}>
+                                <div className="bg-zinc-800 rounded-lg shadow-lg flex-shrink-0">
+                                    <div className="flex items-center justify-center h-12 bg-[#404144] rounded-t-lg relative opacity-80">
+                                        <i className="ri-booklet-line absolute left-4 top-8 text-3xl"></i>
+                                    </div>
+                                    <div className="mt-2 p-4">
+                                        <h2 className="text-sm font-semibold opacity-80">{note.name}</h2>
+                                        <div className="flex items-center mt-1">
+                                        <img src="https://scontent.fhan14-3.fna.fbcdn.net/v/t1.15752-9/458197052_1236440294376177_6824711196797531216_n.png?_nc_cat=111&ccb=1-7&_nc_sid=9f807c&_nc_ohc=iiV5NdYpcQoQ7kNvgHfMbLi&_nc_ht=scontent.fhan14-3.fna&oh=03_Q7cD1QFQOyEG2hWyk7qxQLsWicGk13o2kUO7XyQIJVZQzSbZAw&oe=67026137" alt="Avatar" className="w-5 h-5 rounded-full"/>
+                                        <span className="ml-2 text-xs text-gray-400">{note.createAt}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                </SwiperSlide>
+                            ))
+                        }
+                    </Swiper>
+                    </div>
+                </div>
+                
+
+                {/* Images */}
+
+                <div className="w-full flex-col max-w-screen-lg mt-8">
+                <span className="text-start opacity-85 py-4 block">Images</span>
+                    <div className="flex overflow-auto w-full ">
+                        <Swiper
+                            modules={[Navigation, Pagination, Scrollbar, A11y, Mousewheel]}
+                            spaceBetween={20}
+                            slidesPerView='auto'
+                            navigation
+                            mousewheel
+                            onSwiper={(swiper) => console.log(swiper)}
+                            onSlideChange={() => console.log('slide change')}
+                            >
+                            
+
+                            {dataImages.map((image, index) => (
+                                <SwiperSlide key={index} className="w-44" style={{ width: '11rem !important'}}>
+                                    <Card className="flex-shrink-0 w-44 bg-zinc-700 gap-2 mx-2">
+                                        <CardBody className="overflow-visible flex justify-center items-center p-0">
+                                            <Image
+                                                alt="Card background"
+                                                className="object-cover rounded-xl"
+                                                src={image.link}
+                                                height={140}
+                                            />
+                                        </CardBody>
+                                        <CardHeader className="pb-0 pt-2 px-4 flex-col items-start py-2">
+                                            <p className="text-tiny uppercase font-bold">{image.name}</p>
+                                            <small className="text-default-500">{image.document}</small>
+                                            <p className="text-default-500 text-xs">14/4/2023</p>
+                                        </CardHeader>
+                                    </Card>
+                                </SwiperSlide>
+                            ))}
+                        </Swiper>
+                    </div>
+                </div>
                 {/* Tables */}
-                <div className="w-full flex-col max-w-screen-xl mt-8">
+                <div className="w-full flex-col max-w-screen-lg mt-8">
                 <span className="text-start opacity-85 py-4 block">Tables</span>
 
                 <Swiper
@@ -199,6 +354,7 @@ const WorkSpace: React.FC = () => {
                     </Swiper>
                 </div>
 
+<<<<<<< HEAD
         {/* Images */}
                     
         <div className="w-full flex-col max-w-screen-xl mt-8">
@@ -207,6 +363,8 @@ const WorkSpace: React.FC = () => {
 
         </div>
                 
+=======
+>>>>>>> refs/remotes/origin/index
             </div>
 
         </div>
