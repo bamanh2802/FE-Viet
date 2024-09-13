@@ -208,11 +208,8 @@ const WorkSpace: React.FC = () => {
                             modules={[Navigation, Pagination, Scrollbar, A11y, Mousewheel]}
                             spaceBetween={20}
                             slidesPerView='auto'
-<<<<<<< HEAD
-                                scrollbar
-=======
+                            scrollbar
                             navigation
->>>>>>> refs/remotes/origin/index
                             mousewheel
                             onSwiper={(swiper) => console.log(swiper)}
                             onSlideChange={() => console.log('slide change')}
@@ -354,7 +351,6 @@ const WorkSpace: React.FC = () => {
                     </Swiper>
                 </div>
 
-<<<<<<< HEAD
         {/* Images */}
                     
         <div className="w-full flex-col max-w-screen-xl mt-8">
@@ -363,8 +359,6 @@ const WorkSpace: React.FC = () => {
 
         </div>
                 
-=======
->>>>>>> refs/remotes/origin/index
             </div>
 
         </div>
