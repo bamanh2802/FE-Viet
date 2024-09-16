@@ -1,7 +1,23 @@
+import { FC } from 'react';
 import React from "react";
-import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, DropdownItem, DropdownTrigger, Dropdown, DropdownMenu, Avatar} from "@nextui-org/react";
+import {Navbar, 
+  NavbarBrand,
+   NavbarContent, 
+   NavbarItem, 
+   Link, 
+   DropdownItem, 
+   DropdownTrigger, 
+   Dropdown, 
+   DropdownMenu, 
+   Avatar,
+   Button
+  } from "@nextui-org/react";
+  import { PlusIcon, UsersIcon } from "lucide-react";
 import '../project/config.css'
-export default function NavbarProject() {
+interface NavbarProjectProps {
+  onOpenDialog: () => void;
+}
+const NavbarProject: FC<NavbarProjectProps> = ({ onOpenDialog }) => {
   return (
     <Navbar className="navbar-custom h-14 rounded-b-md bg-zinc-800 max-w-none mx-1 box-border"
     style={{ width: 'calc(100% - 8px)' }}>
@@ -14,17 +30,19 @@ export default function NavbarProject() {
       <NavbarContent as="div" justify="end" className="max-w-none">
       <NavbarItem>
           <Link color="foreground" href="#">
-            Features
-          </Link>
-        </NavbarItem>
-        <NavbarItem >
-          <Link href="#" aria-current="page" color="secondary">
-            Customers
+          <Button
+          onClick={onOpenDialog}
+          color="primary" variant="bordered" startContent={<PlusIcon className="w-5 h-5"/>}>
+            New
+          </Button>  
           </Link>
         </NavbarItem>
         <NavbarItem>
           <Link color="foreground" href="#">
+          <Button
+          color="primary" variant="bordered" startContent={<UsersIcon className="w-5 h-5"/>}>
             Share
+          </Button>  
           </Link>
         </NavbarItem>
         <Dropdown placement="bottom-end">
@@ -59,4 +77,6 @@ export default function NavbarProject() {
     </Navbar>
   );
 }
+
+export default NavbarProject
 

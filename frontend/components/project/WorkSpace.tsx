@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {Card, CardHeader, CardBody, Image, ScrollShadow,
-    Table, TableHeader, TableColumn, TableBody, TableRow, TableCell
+    Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
+     CardFooter, Divider, Button
 } from "@nextui-org/react";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -9,6 +10,13 @@ import 'swiper/css/navigation';
 import 'swiper/css/effect-fade';
 import 'swiper/css/mousewheel'
 import 'swiper/css/scrollbar'
+
+import { DocumentTextIcon, 
+    ChatBubbleLeftRightIcon,
+    TrashIcon,
+    PencilSquareIcon,
+    ArrowUpOnSquareIcon
+} from "@heroicons/react/24/outline";
 
 import 'remixicon/fonts/remixicon.css';
 import '../project/config.css'
@@ -199,44 +207,73 @@ const WorkSpace: React.FC = () => {
         style={{ width: 'calc(100% - 8px)', height: 'calc(100vh - 60px)'}}
         >
             <div className="w-full flex flex-col items-center px-12">
+
+                {/* WorkSpace */}
+                <div className="w-full flex-col max-w-screen-lg mt-8">
+                <span className="text-start opacity-85 py-4 block">WorkSpace</span>
+                <div className="flex overflow-auto w-full ">
+                    <Card className="max-w-[400px]">
+                        <CardHeader className="flex gap-3">
+                            <Image
+                            alt="nextui logo"
+                            height={40}
+                            radius="sm"
+                            src="https://icons.veryicon.com/png/o/education-technology/ballicons/workspace-1.png"
+                            width={40}
+                            />
+                            <div className="flex flex-col">
+                            <p className="text-md">Workspace name</p>
+                            <p className="text-small text-default-500">20/11/2024</p>
+                            </div>
+                        </CardHeader>
+                        <Divider/>
+                        <CardBody>
+                            Đang chưa biết nên để cái gì
+                        </CardBody>
+                        <Divider/>
+                        <CardFooter className="flex flex-col items-start">
+                            <div className="flex opacity-85 items-center">
+                                <DocumentTextIcon className="w-3 h-3 mr-1"/>
+                                <p className="text-xs"> 5 Documents</p>
+                            </div>
+                            <div className="flex opacity-85 items-center">
+                                <ChatBubbleLeftRightIcon className="w-3 h-3 mr-1" />
+                                <p className="text-xs"> 12 Conversations</p>
+                            </div>
+                            
+                        </CardFooter>
+                    </Card>
+                    </div>
+
+                </div>  
+
+
                 {/* Documents */}
                 <div className="w-full flex-col max-w-screen-lg mt-8">
                     <span className="text-start opacity-85 py-4 block">Documents</span>
 
-                    <div className="flex overflow-auto w-full ">
-                        <Swiper
-                            modules={[Navigation, Pagination, Scrollbar, A11y, Mousewheel]}
-                            spaceBetween={20}
-                            slidesPerView='auto'
-                            scrollbar
-                            navigation
-                            mousewheel
-                            onSwiper={(swiper) => console.log(swiper)}
-                            onSlideChange={() => console.log('slide change')}
-                            >
-                            
-
-                            {dataDocuments.map((document, index) => (
-                                <SwiperSlide key={index} className="w-44" style={{ width: '11rem !important'}}>
-                                    <Card className="flex-shrink-0 w-44 py-4 bg-zinc-700 gap-2 mx-2">
-                                        <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
-                                            <p className="text-tiny uppercase font-bold">{document.name}</p>
-                                            <small className="text-default-500">{document.uploadBy}</small>
-                                            <p className="text-default-500 text-xs">14/4/2023</p>
-                                        </CardHeader>
-                                        <CardBody className="overflow-visible py-2 flex justify-center items-center">
-                                            <Image
-                                                alt="Card background"
-                                                className="object-cover rounded-xl"
-                                                src="https://static.vecteezy.com/system/resources/previews/023/234/824/original/pdf-icon-red-and-white-color-for-free-png.png"
-                                                width={70}
-                                                height={70}
-                                            />
-                                        </CardBody>
-                                    </Card>
-                                </SwiperSlide>
+                    <div className="flex flex-col overflow-auto w-full max-h-72">
+                        {dataDocuments.map((document, index) => (
+                                <div
+                                key={index}
+                                className="group cursor-pointer relative flex items-center bg-zinc-700 my-1 mx-0 rounded-lg hover:bg-zinc-600"
+                                >
+                                <img
+                                    src="https://static.vecteezy.com/system/resources/previews/023/234/824/original/pdf-icon-red-and-white-color-for-free-png.png"
+                                    alt="Document icon"
+                                    className="w-12 h-12 object-cover rounded-lg"
+                                />
+                                <div className="ml-4 flex-grow">
+                                    <p className="text-tiny uppercase font-bold">{document.name}</p>
+                                    <p className="text-default-500 text-xs">{document.type}</p>
+                                </div>
+                                <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <Button isIconOnly className="text-red-500 hover:text-red-700"><TrashIcon className="w-4 h-4"/></Button>
+                                    <Button isIconOnly className="text-blue-500 hover:text-blue-700"><PencilSquareIcon className="w-4 h-4"/></Button>
+                                    <Button isIconOnly className="text-green-500 hover:text-green-700"><ArrowUpOnSquareIcon className="w-4 h-4"/></Button>
+                                </div>
+                                </div>
                             ))}
-                        </Swiper>
                     </div>
                 </div>
 
@@ -275,11 +312,13 @@ const WorkSpace: React.FC = () => {
                     </Swiper>
                     </div>
                 </div>
+
+
                 
 
                 {/* Images */}
 
-                <div className="w-full flex-col max-w-screen-lg mt-8">
+                {/* <div className="w-full flex-col max-w-screen-lg mt-8">
                 <span className="text-start opacity-85 py-4 block">Images</span>
                     <div className="flex overflow-auto w-full ">
                         <Swiper
@@ -314,9 +353,9 @@ const WorkSpace: React.FC = () => {
                             ))}
                         </Swiper>
                     </div>
-                </div>
+                </div> */}
                 {/* Tables */}
-                <div className="w-full flex-col max-w-screen-lg mt-8">
+                {/* <div className="w-full flex-col max-w-screen-lg mt-8">
                 <span className="text-start opacity-85 py-4 block">Tables</span>
 
                 <Swiper
@@ -349,17 +388,13 @@ const WorkSpace: React.FC = () => {
                             )
                         ))}
                     </Swiper>
-                </div>
+                </div> */}
 
         {/* Images */}
                     
-        <div className="w-full flex-col max-w-screen-xl mt-8">
-        <span className="text-start opacity-85 py-4 block">Images</span>
-
-
-        </div>
+       
                 
-            </div>
+        </div>
 
         </div>
     )
