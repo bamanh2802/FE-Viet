@@ -89,6 +89,7 @@ const SidebarWorkspace: FC<SidebarWorkspaceProps> = ({ conversations, onSelectCo
             <div className="ml-4 mt-1 space-y-1 border-l-2 border-gray-600 pl-4 transition-all duration-200 ease-in-out">
               {items.map((item, index) => (
                 <div
+                  onMouseDown={() => (onSelectConversation(item.name))}
                   key={index}
                   className="overflow-auto group relative flex items-center space-x-2 text-xs text-gray-400 hover:text-white cursor-pointer p-2 rounded-lg hover:bg-gray-700"
                   onContextMenu={(e) => onContextMenu && onContextMenu(e, item.name)}
@@ -112,7 +113,7 @@ const SidebarWorkspace: FC<SidebarWorkspaceProps> = ({ conversations, onSelectCo
   
   
     return (
-    <div className={`${isCompactSidebar ? 'w-14 p-1' : ' w-60 p-4'} h-screen bg-zinc-800 text-white flex flex-col`}>
+    <div className={`${isCompactSidebar ? 'w-14 p-1' : ' w-60 p-4'} h-screen bg-zinc-900 text-white flex flex-col`}>
     <div className={`${!isCompactSidebar ? 'justify-between' : 'justify-center'} w-full flex`}>
         <div>
             <Button 

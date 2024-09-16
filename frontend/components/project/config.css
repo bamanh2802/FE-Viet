@@ -35,3 +35,7 @@
 .custom-width > div{
     max-width: none;
 }
+
+.border-custom-none > div {
+    border: none;
+}
