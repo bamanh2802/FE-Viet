@@ -1,4 +1,6 @@
 import React, { useState, useEffect, FC } from 'react';
+import { useRouter } from 'next/router';
+import {ExclamationCircleIcon} from '@heroicons/react/24/outline';
 import {
   FolderIcon,
   TableCellsIcon,
@@ -18,8 +20,19 @@ import {
   PencilSquareIcon,
   PhotoIcon
 } from '@heroicons/react/24/outline';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { ListboxWrapper } from '../ListboxWrapper';
-import { Select, SelectItem, Listbox, ListboxItem } from '@nextui-org/react';
+import { Listbox, ListboxItem, Button } from '@nextui-org/react';
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 
 
 const projects = [
@@ -37,13 +50,39 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ projectId }) => {
-  const [selectedProject, setSelectedProject] = useState<string>(projectId);
+  const router = useRouter();
+  const [selectedProjectId, setSelectedProjectId] = useState(projectId);
+  const [isDeleteDocument, setIsDeleteDocument] = useState<boolean>(false)
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; show: boolean; id?: string }>({
     x: 0,
     y: 0,
     show: false,
   });
+  const dataProject = [
+    {
+      "project_id": "proj-3ca65cfd-92d0-4384-99c1-995f612e388d",
+      "name": "admin-project",
+      "created_at": "2024-09-15T07:35:30",
+      "updated_at": "2024-09-15T07:35:30"
+    },
+    {
+      "project_id": "proj-abc123",
+      "name": "user-project",
+      "created_at": "2024-09-15T07:35:30",
+      "updated_at": "2024-09-15T07:35:30"
+    }
+  ];
+
+  const handleOpenDeleteDocument = (project) => {
+    setIsDeleteDocument(!isDeleteDocument)
+  }
+
+
+  const getProjectNameById = (projectId: string) => {
+    const project = dataProject.find(proj => proj.project_id === projectId);
+    return project ? project.name : "Unknown Project";
+  };
   
 
   const toggleExpand = (section: string) => {
@@ -70,9 +109,9 @@ const Sidebar: React.FC<SidebarProps> = ({ projectId }) => {
         setContextMenu({ ...contextMenu, show: false });
     }
 };
-const handleChange = (value: string) => {
-  setSelectedProject(value);
-};
+useEffect(() => {
+  setSelectedProjectId(projectId);
+}, [projectId]);
 
 
   useEffect(() => {
@@ -82,18 +121,28 @@ const handleChange = (value: string) => {
     };
   }, [contextMenu]);
 
+  const handleProjectClick = (projectId: string) => {
+    router.push(`/project/${projectId}`);
+    console.log('hello')
+  };
+
   return (
     <div className="overflow-auto select-none h-screen w-64 bg-zinc-800 text-white flex flex-col justify-between p-2">
       <div>
         <div className="rounded-lg mb-4">
-          <Select 
-          items={projects} 
-          label="Project" 
-          placeholder="Select a project" 
-          value={selectedProject}
-          onChange={handleChange}
-          className="max-w-xs">
-            {(project) => <SelectItem key={project.id}>{project.name}</SelectItem>}
+          <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
+            <SelectTrigger className="">
+              <SelectValue>{getProjectNameById(selectedProjectId)}</SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {dataProject.map(project => (
+                <SelectItem 
+                onClick={() => handleProjectClick(project.project_id)}
+                key={project.project_id} value={project.project_id}>
+                  {project.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
           </Select>
         </div>
 
@@ -197,39 +246,58 @@ const handleChange = (value: string) => {
           aria-label="Actions"
           onAction={(key) => alert(key)}
         >
-          <ListboxItem key="new">
-            <div className='flex'>
-              <PlusIcon className="h-5 w-5 mr-2"/>
-              New file
-            </div>
-          </ListboxItem>
-          <ListboxItem key="popup">
-            <div className='flex'>
-              <ArrowTopRightOnSquareIcon className="h-5 w-5 mr-2"/>
-              Pop Up
-            </div>
-          </ListboxItem>
-          <ListboxItem key="copy">
-            <div className='flex'>
-              <StarIcon className="h-5 w-5 mr-2"/>
-              Add to Favorite
-            </div>
-          </ListboxItem>
-          <ListboxItem key="edit">
-            <div className='flex'>
-              <PencilSquareIcon className="h-5 w-5 mr-2"/>
-              Rename
-            </div>
-          </ListboxItem>
-          <ListboxItem key="delete" className="text-danger" color="danger">
-           <div className='flex'>
-            <TrashIcon className="h-5 w-5 mr-2"/> 
+         <ListboxItem key="new" textValue="New file">
+          <div className='flex'>
+            <PlusIcon className="h-5 w-5 mr-2" />
+            New file
+          </div>
+        </ListboxItem>
+        <ListboxItem key="popup" textValue="Pop Up">
+          <div className='flex'>
+            <ArrowTopRightOnSquareIcon className="h-5 w-5 mr-2" />
+            Pop Up
+          </div>
+        </ListboxItem>
+        <ListboxItem key="copy" textValue="Add to Favorite">
+          <div className='flex'>
+            <StarIcon className="h-5 w-5 mr-2" />
+            Add to Favorite
+          </div>
+        </ListboxItem>
+        <ListboxItem key="edit" textValue="Rename">
+          <div className='flex'>
+            <PencilSquareIcon className="h-5 w-5 mr-2" />
+            Rename
+          </div>
+        </ListboxItem>
+        <ListboxItem key="delete" textValue="Delete file" className="text-danger" color="danger">
+          <div className='flex'>
+            <TrashIcon className="h-5 w-5 mr-2" />
             Delete file
-           </div>
-          </ListboxItem>
+          </div>
+        </ListboxItem>
+
         </Listbox>
       </ListboxWrapper>
         </div>
+
+        <AlertDialog open={isDeleteDocument} onOpenChange={handleOpenDeleteDocument}>
+                <AlertDialogContent className="bg-zinc-800 border-none">
+                    <AlertDialogHeader>
+                    <AlertDialogTitle className="flex items-center">
+                        <ExclamationCircleIcon className="w-6 h-6 mr-2"/>
+                        Do you really want to delete</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        This action cannot be undone. Project cannot be restored.
+                    </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                    <Button>Cancel</Button>
+                    <Button color="danger">Delete</Button>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
     </div>
   );
 };

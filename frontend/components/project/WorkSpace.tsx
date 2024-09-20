@@ -6,6 +6,16 @@ import {Card, CardHeader, CardBody, Image, ScrollShadow,
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import { Navigation, Pagination, Scrollbar, A11y, Mousewheel } from 'swiper/modules';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+  } from "@/components/ui/alert-dialog"
 import 'swiper/css/navigation';
 import 'swiper/css/effect-fade';
 import 'swiper/css/mousewheel'

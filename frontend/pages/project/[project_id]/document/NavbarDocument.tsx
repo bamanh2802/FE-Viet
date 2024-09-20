@@ -1,6 +1,6 @@
 import React from "react";
 import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button} from "@nextui-org/react";
-import '../../../components/project/config.css'
+import '@/components/project/config.css'
 
 
 export default function NavbarDocument() {
