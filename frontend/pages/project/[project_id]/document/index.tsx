@@ -7,6 +7,11 @@ import TextInteraction from "./TextInteraction";
 import Chatbot from "./Chatbot";
 import { PlusIcon, TrashIcon, ChatBubbleBottomCenterIcon } from "@heroicons/react/24/outline";
 import { ListboxWrapper } from "@/components/ListboxWrapper";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable"
 
 const chatData = [
   { id: "chat1", title: "Chat 1", messages: ["Hello", "How are you?"] },
@@ -108,15 +113,25 @@ const Document: React.FC = () => {
   };
 
   return (
+    <ResizablePanelGroup
+      direction="horizontal"
+      className="w-screen h-screen"
+    >
+
     <div className="flex h-full relative " ref={containerRef}>
       <div>
-        <SidebarDocument />
+        <SidebarDocument direction="start"/>
       </div>
       <div className="flex flex-col w-full">
         <NavbarDocument />
         <div className="flex border-box pt-1" style={{ height: "calc(100% - 48px)", width: "calc(100% - 4px)" }}>
+        <ResizablePanelGroup direction="horizontal">
+        <ResizablePanel defaultSize={50}>
           <TextInteraction />
-          <div className="flex-1 bg-neutral-800 rounded-t-md">
+          </ResizablePanel >
+          <ResizableHandle withHandle className="bg-opacity-0"/>
+          <ResizablePanel defaultSize={50}>
+          <div className="flex-1 bg-neutral-800 rounded-t-md h-full">
             {chats.length > 7 ? (
               <Dropdown>
                 <DropdownTrigger>
@@ -189,9 +204,15 @@ const Document: React.FC = () => {
               </ListboxWrapper>
             </div>
           </div>
+          </ResizablePanel>
+
+          </ResizablePanelGroup>
+          
         </div>
       </div>
     </div>
+    </ResizablePanelGroup>
+
   );
 };
 

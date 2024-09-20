@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {Button, 
     ButtonGroup, 
     Navbar, 
@@ -6,12 +6,30 @@ import {Button,
 import { MagnifyingGlassCircleIcon, PlusIcon,
     
  } from "@heroicons/react/24/outline";
+ import {
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import '../project/config.css'
 import UserAvatar from '../../public/avatar.jpg'
 
 export default function NavbarHome() {
+  const [isNewProject, setIsNewProject] = useState<boolean>(false)
+  const handleToggleNewProject = () => {
+    setIsNewProject(!isNewProject)
+    console.log('hello')
+  }
+
   return (
-    <Navbar isBordered className="navbar-custom">
+    <Navbar isBordered className="navbar-custom bg-zinc-900 h-14">
       <NavbarContent justify="start">
         <NavbarBrand className="mr-4">
           <p className="hidden sm:block font-bold text-inherit">VIET</p>
@@ -20,7 +38,9 @@ export default function NavbarHome() {
 
       <NavbarContent as="div" className="items-center" justify="end">
       <NavbarItem>
-            <Button color="primary" variant="ghost">
+            <Button
+            onClick={() => (handleToggleNewProject())}
+            color="primary" variant="ghost">
                 New Project
                 <PlusIcon />
             </Button> 
@@ -66,6 +86,29 @@ export default function NavbarHome() {
           </DropdownMenu>
         </Dropdown>
       </NavbarContent>
+      <Dialog open={isNewProject} onOpenChange={handleToggleNewProject}>
+        <DialogContent className=" bg-zinc-800 border-none">
+              <CardHeader>
+                <CardTitle>Create project</CardTitle>
+                <CardDescription>Create your new project in one-click.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form>
+                  <div className="grid w-full items-center gap-4">
+                    <div className="flex flex-col space-y-1.5">
+                      <label htmlFor="">Name</label>
+                      <Input className="rounded-md border-1 border-gray-400" required id="name" placeholder="Name of your project" />
+                    </div>
+                    
+                  </div>
+                </form>
+              </CardContent>
+              <CardFooter className="flex justify-between">
+                <Button variant="bordered">Cancel</Button>
+                <Button>Create</Button>
+              </CardFooter>
+        </DialogContent>
+      </Dialog>
     </Navbar>
   );
 }

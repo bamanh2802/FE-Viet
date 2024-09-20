@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, FC } from 'react';
 import {
   FolderIcon,
   TableCellsIcon,
@@ -32,7 +32,12 @@ const documents = [
   { name: 'create.pdf', id: '2', Icon: DocumentIcon },
 ];
 
-const Sidebar = () => {
+interface SidebarProps {
+  projectId: string; // projectId là kiểu string
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ projectId }) => {
+  const [selectedProject, setSelectedProject] = useState<string>(projectId);
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; show: boolean; id?: string }>({
     x: 0,
@@ -60,10 +65,15 @@ const Sidebar = () => {
   };
 
   const handleClickOutside = (event: MouseEvent) => {
-    if (!event.target.closest('.context-menu')) {
-      setContextMenu({ ...contextMenu, show: false });
+    const target = event.target as HTMLElement | null;
+    if (target && !target.closest('.context-menu')) {
+        setContextMenu({ ...contextMenu, show: false });
     }
-  };
+};
+const handleChange = (value: string) => {
+  setSelectedProject(value);
+};
+
 
   useEffect(() => {
     document.addEventListener('click', handleClickOutside);
@@ -76,7 +86,13 @@ const Sidebar = () => {
     <div className="overflow-auto select-none h-screen w-64 bg-zinc-800 text-white flex flex-col justify-between p-2">
       <div>
         <div className="rounded-lg mb-4">
-          <Select items={projects} label="Project" placeholder="Select a project" className="max-w-xs">
+          <Select 
+          items={projects} 
+          label="Project" 
+          placeholder="Select a project" 
+          value={selectedProject}
+          onChange={handleChange}
+          className="max-w-xs">
             {(project) => <SelectItem key={project.id}>{project.name}</SelectItem>}
           </Select>
         </div>
@@ -139,7 +155,7 @@ const Sidebar = () => {
             ]}
             onContextMenu={handleContextMenu}
           />
-          <MenuItem
+          {/* <MenuItem
             Icon={HashtagIcon}
             label="Meta data"
             expanded={expandedSections.includes('metadata')}
@@ -149,7 +165,7 @@ const Sidebar = () => {
               { name: 'Meta 2', Icon: DocumentTextIcon },
             ]}
             onContextMenu={handleContextMenu}
-          />
+          /> */}
           <MenuItem
             Icon={InboxIcon}
             label="Chat"

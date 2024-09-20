@@ -73,7 +73,7 @@ const Chatbot: React.FC = () => {
   };
 
   return (
-    <div className='bg-neutral-800 flex-1 flex flex-col relative' style={{ height: 'calc(100vh - 120px)' }}>
+    <div className='bg-neutral-800 flex-1 flex flex-col relative h-full' style={{ height: 'calc(100vh - 120px)' }}>
       <div className='h-full overflow-y-auto scrollbar-hide'>
         {messages.map((msg, index) => (
             <div

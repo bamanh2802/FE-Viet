@@ -38,7 +38,11 @@ interface TableData {
   markdownContent: string;
 }
 
-const SidebarDocument: React.FC = () => {
+interface SidebarDocumentProps {
+  direction?: 'start' | 'end' | 'top' | 'bottom';
+}
+
+const SidebarDocument: React.FC<SidebarDocumentProps> = ({ direction }) => {
   const [isOpenDetail, setIsOpenDetail] = useState<boolean>(true);
   const [selectedTable, setSelectedTable] = useState<string[][] | null>(null);
   const [itemSelected, setItemSelected] = useState<TableData | null>(null);
@@ -145,9 +149,9 @@ const SidebarDocument: React.FC = () => {
         <div className="flex w-full flex-col h-screen relative group">
           <Tabs
             aria-label="Options"
-            isVertical
             className="bg-zinc-800 h-screen py-6"
             onSelectionChange={handleTabChange}
+            placement={direction}
           >
             <Tab
               key="chunks"
@@ -199,7 +203,8 @@ const SidebarDocument: React.FC = () => {
             </Tab>
           </Tabs>
 
-          <div className="absolute top-1/2 right-[-10px] transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer">
+          <div className=
+          {`${direction === 'start' ? ' right-[-10px]' : ' left-[-10px]'} absolute top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer`}>
             <ChevronLeftIcon
               className={`${isOpenDetail ? "" : "rotate-180"} h-5 w-5 bg-zinc-700 rounded-full transition ease-in-out opacity-85`}
               onClick={toggleDetail}

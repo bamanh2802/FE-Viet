@@ -71,7 +71,7 @@ const TextInteraction: React.FC = () => {
   };
 
   return (
-    <div className="p-5 flex-1 bg-neutral-800 rounded-t-md mx-1">
+    <div className="h-full p-5 flex-1 bg-neutral-800 rounded-t-md mx-1">
       <div
         ref={textRef}
         className=" p-4 rounded relative leading-relaxed"
@@ -82,7 +82,11 @@ const TextInteraction: React.FC = () => {
       {showDropdown && (
         <div
           ref={dropdownRef}
-          className="absolute z-50 opacity-100 transition-opacity duration-300 ease-out rounded-md bg-zinc-800"
+          className=
+          {`
+          ${showDropdown ? '' : ''}
+          absolute z-50 opacity-100 transition-opacity duration-300 ease-out rounded-md bg-zinc-800
+          `}
           style={{ top: dropdownPosition.y, left: dropdownPosition.x }}
         >
           {selection ? (
