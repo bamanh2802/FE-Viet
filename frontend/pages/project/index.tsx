@@ -13,14 +13,14 @@ const Project: FC = () => {
 
     return (
         <div className="flex box-border">
-            <div className="">
+            {/* <div className="">
                 <Sidebar />
             </div>
             <div className="flex flex-col w-full">
                 <NavbarProject onOpenDialog={openDialog} />
                 <WorkSpace />
                 <NewWorkspace isOpen={isDialogOpen} onClose={closeDialog} />
-            </div>
+            </div> */}
         </div>
     );
 };

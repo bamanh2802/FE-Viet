@@ -18,13 +18,30 @@ import {
   PencilSquareIcon,
   PhotoIcon
 } from '@heroicons/react/24/outline';
+import { Input } from "@/components/ui/input"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { ListboxWrapper } from '../ListboxWrapper';
+import { useRouter } from 'next/router'
+
 import { Select, SelectItem, Listbox, ListboxItem } from '@nextui-org/react';
 
 
 const projects = [
-  { name: 'Viet Project', id: '1' },
-  { name: 'Notebook VPI', id: '2' },
+  {
+      "project_id": "proj-3ca65cfd-92d0-4384-99c1-995f612e388d",
+      "name": "admin-project",
+      "created_at": "2024-09-15T07:35:30",
+      "updated_at": "2024-09-15T07:35:30"
+  }
 ];
 
 const documents = [
@@ -37,13 +54,20 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ projectId }) => {
-  const [selectedProject, setSelectedProject] = useState<string>(projectId);
+  const router = useRouter()
+  const [selectedProject, setSelectedProject] = useState<string>('');
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; show: boolean; id?: string }>({
     x: 0,
     y: 0,
     show: false,
   });
+  const [isUploadDocs, setIsUploadDocs] = useState<boolean>(false)
+
+  const handleBackHome = () => {
+    router.push('/home')
+    console.log('hello')
+  }
   
 
   const toggleExpand = (section: string) => {
@@ -82,6 +106,14 @@ const handleChange = (value: string) => {
     };
   }, [contextMenu]);
 
+  useEffect(() => {
+    const project = projects.find(p => p.project_id === projectId);
+    if (project) {
+      setSelectedProject(project.name); 
+      console.log(project.name)
+    }
+  }, [projectId]);
+
   return (
     <div className="overflow-auto select-none h-screen w-64 bg-zinc-800 text-white flex flex-col justify-between p-2">
       <div>
@@ -93,12 +125,13 @@ const handleChange = (value: string) => {
           value={selectedProject}
           onChange={handleChange}
           className="max-w-xs">
-            {(project) => <SelectItem key={project.id}>{project.name}</SelectItem>}
+            {(projects) => <SelectItem key={projects.project_id}>{projects.name}</SelectItem>}
           </Select>
         </div>
 
         <div>
           <div
+            onClick={() => handleBackHome()} 
             className="flex items-center justify-between p-3 rounded-lg cursor-pointer my-2 hover:bg-gray-700"
             onContextMenu={(e) => handleContextMenu(e, 'home')}
           >
@@ -187,7 +220,7 @@ const handleChange = (value: string) => {
       </div>
 
         <div className={`
-        transition-opacity 
+        transition-opacity z-50
         ${contextMenu.show ? 'visible opacity-100' : 'invisible opacity-0'}
           context-menu absolute bg-zinc-800 rounded-lg shadow-lg
            shadow-zinc-900 w-48`} 
@@ -197,39 +230,51 @@ const handleChange = (value: string) => {
           aria-label="Actions"
           onAction={(key) => alert(key)}
         >
-          <ListboxItem key="new">
-            <div className='flex'>
-              <PlusIcon className="h-5 w-5 mr-2"/>
-              New file
-            </div>
-          </ListboxItem>
-          <ListboxItem key="popup">
-            <div className='flex'>
-              <ArrowTopRightOnSquareIcon className="h-5 w-5 mr-2"/>
-              Pop Up
-            </div>
-          </ListboxItem>
-          <ListboxItem key="copy">
-            <div className='flex'>
-              <StarIcon className="h-5 w-5 mr-2"/>
-              Add to Favorite
-            </div>
-          </ListboxItem>
-          <ListboxItem key="edit">
-            <div className='flex'>
-              <PencilSquareIcon className="h-5 w-5 mr-2"/>
-              Rename
-            </div>
-          </ListboxItem>
-          <ListboxItem key="delete" className="text-danger" color="danger">
-           <div className='flex'>
-            <TrashIcon className="h-5 w-5 mr-2"/> 
+         <ListboxItem key="new" textValue="New file">
+          <div className='flex'>
+            <PlusIcon className="h-5 w-5 mr-2" />
+            New file
+          </div>
+        </ListboxItem>
+        <ListboxItem key="popup" textValue="Pop Up">
+          <div className='flex'>
+            <ArrowTopRightOnSquareIcon className="h-5 w-5 mr-2" />
+            Pop Up
+          </div>
+        </ListboxItem>
+        <ListboxItem key="copy" textValue="Add to Favorite">
+          <div className='flex'>
+            <StarIcon className="h-5 w-5 mr-2" />
+            Add to Favorite
+          </div>
+        </ListboxItem>
+        <ListboxItem key="edit" textValue="Rename">
+          <div className='flex'>
+            <PencilSquareIcon className="h-5 w-5 mr-2" />
+            Rename
+          </div>
+        </ListboxItem>
+        <ListboxItem key="delete" textValue="Delete file" className="text-danger" color="danger">
+          <div className='flex'>
+            <TrashIcon className="h-5 w-5 mr-2" />
             Delete file
-           </div>
-          </ListboxItem>
+          </div>
+        </ListboxItem>
+
         </Listbox>
       </ListboxWrapper>
         </div>
+
+      <Dialog open={isUploadDocs} onOpenChange={() => setIsUploadDocs(false)}>
+        <DialogContent >
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <label htmlFor="picture">Upload Your Documents</label>
+          <Input id="picture" type="file" />  
+        </div>
+
+        </DialogContent>
+      </Dialog>
+        
     </div>
   );
 };
@@ -262,15 +307,16 @@ const MenuItem = ({
       </div>
       {items && (
         <ChevronDownIcon
-          className={`h-4 w-4 text-gray-300 transform transition-transform duration-200 ${
-            expanded ? 'rotate-180' : 'rotate-0'
-          }`}
+          className={`h-4 w-4 text-gray-300 transform transition-transform duration-200 ${expanded ? 'rotate-180' : 'rotate-0'}`}
         />
       )}
     </div>
     {expanded && items && (
       <div className="ml-4 mt-1 space-y-1 border-l-2 border-gray-600 pl-4 transition-all duration-200 ease-in-out">
-        {items.map((item, index) => (
+        {[
+          ...(['Tài liệu', 'Ghi chú', 'Chat'].includes(label) ? [{ name: 'Thêm', Icon: PlusIcon }] : []),
+          ...items,
+        ].map((item, index) => (
           <div
             key={index}
             className="flex items-center space-x-2 text-xs text-gray-400 hover:text-white cursor-pointer p-2 rounded-lg hover:bg-gray-700"
@@ -283,6 +329,7 @@ const MenuItem = ({
       </div>
     )}
   </div>
+
 );
 
 export default Sidebar;

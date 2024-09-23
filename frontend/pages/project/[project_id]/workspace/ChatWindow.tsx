@@ -5,7 +5,7 @@ import PlusIcon from '@heroicons/react/24/outline';
 import { ClipboardIcon, HeartIcon, HandThumbDownIcon, PencilSquareIcon,
   Square2StackIcon, QuestionMarkCircleIcon, ClipboardDocumentCheckIcon
  } from '@heroicons/react/24/outline';
-import '../../../components/project/config.css';
+import '@/components/project/config.css';
 import { ListboxWrapper } from '@/components/ListboxWrapper';
 
 interface ChatWindowProps {

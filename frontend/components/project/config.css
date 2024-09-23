@@ -39,3 +39,31 @@
 .border-custom-none > div {
     border: none;
 }
+
+.ql-custom > div {
+    border: none !important;
+}
+
+/* Thay đổi màu của các icon */
+.ql-toolbar .ql-stroke {
+    stroke: #00bcd4 !important; /* Màu viền của icon */
+  }
+  
+  .ql-toolbar .ql-fill {
+    fill: #00bcd4 !important; /* Màu nền của icon */
+  }
+  
+  /* Thay đổi màu khi hover */
+  .ql-toolbar button:hover .ql-stroke,
+  .ql-toolbar button:hover .ql-fill {
+    stroke: #ff5722 !important; /* Màu viền khi hover */
+    fill: #ff5722 !important; /* Màu nền khi hover */
+  }
+  
+  /* Chỉnh màu cho trạng thái active */
+  .ql-toolbar button.ql-active .ql-stroke,
+  .ql-toolbar button.ql-active .ql-fill {
+    stroke: #4caf50 !important; /* Màu viền khi active */
+    fill: #4caf50 !important; /* Màu nền khi active */
+  }
+  

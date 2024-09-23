@@ -60,7 +60,7 @@ const NewWorkspace: FC<NewWorkspaceProps> = ({ isOpen, onClose }) => {
                         disallowEmptySelection
                         selectionMode="multiple"
                         selectedKeys={selectedKeys}
-                        // onSelectionChange={handleSelectionChange}
+                        onSelectionChange={handleSelectionChange}
                     >
                         {fileData.map((file) => (
                             <ListboxItem key={file.id} value={file.id}>

@@ -16,8 +16,9 @@ import {Navbar,
 import '../project/config.css'
 interface NavbarProjectProps {
   onOpenDialog: () => void;
+  onOpenShare: () => void;
 }
-const NavbarProject: FC<NavbarProjectProps> = ({ onOpenDialog }) => {
+const NavbarProject: FC<NavbarProjectProps> = ({ onOpenDialog, onOpenShare }) => {
   return (
     <Navbar className="navbar-custom h-14 rounded-b-md bg-zinc-800 max-w-none mx-1 box-border"
     style={{ width: 'calc(100% - 8px)' }}>
@@ -31,6 +32,7 @@ const NavbarProject: FC<NavbarProjectProps> = ({ onOpenDialog }) => {
       <NavbarItem>
           <Link color="foreground" href="#">
           <Button
+           size="sm"
           onClick={onOpenDialog}
           color="primary" variant="bordered" startContent={<PlusIcon className="w-5 h-5"/>}>
             New
@@ -40,6 +42,8 @@ const NavbarProject: FC<NavbarProjectProps> = ({ onOpenDialog }) => {
         <NavbarItem>
           <Link color="foreground" href="#">
           <Button
+           size="sm"
+          onClick={onOpenShare}
           color="primary" variant="bordered" startContent={<UsersIcon className="w-5 h-5"/>}>
             Share
           </Button>  

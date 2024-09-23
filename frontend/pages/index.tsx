@@ -73,24 +73,24 @@ export default function VietLandingPage() {
             >
             <div className="container px-4 md:px-6">
                 <div className="flex flex-col items-center space-y-4 text-center">
-                <motion.div variants={fadeInUp} className="space-y-2">
-                    <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
-                    Viet – Trợ lý AI hỗ trợ quản lý và nghiên cứu tri thức hiệu quả
-                    </h1>
-                    <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
-                    Giúp bạn quản lý tri thức, tương tác với các mô hình ngôn ngữ lớn (LLMs), tìm kiếm và chia sẻ kiến thức một cách thông minh và tiện lợi.
-                    </p>
-                </motion.div>
-                <motion.div variants={fadeInUp} className="space-x-4">
-                    <Button
-                        onClick={() => (handleToggleSignIn())}
-                    >Khám phá ngay</Button>
-                    <Button variant="bordered" className="text-slate-800">
-                    <Link className="flex items-center justify-center" href="#features">
-                    Tìm hiểu thêm
-                    </Link>
-                    </Button>
-                </motion.div>
+                  <motion.div variants={fadeInUp} className="space-y-2">
+                      <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
+                      Viet – Trợ lý AI hỗ trợ quản lý và nghiên cứu tri thức hiệu quả
+                      </h1>
+                      <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
+                      Giúp bạn quản lý tri thức, tương tác với các mô hình ngôn ngữ lớn (LLMs), tìm kiếm và chia sẻ kiến thức một cách thông minh và tiện lợi.
+                      </p>
+                  </motion.div>
+                  <motion.div variants={fadeInUp} className="space-x-4">
+                      <Button
+                          onClick={() => (handleToggleSignIn())}
+                      >Khám phá ngay</Button>
+                      <Button variant="bordered" className="text-slate-800">
+                      <Link className="flex items-center justify-center" href="#features">
+                      Tìm hiểu thêm
+                      </Link>
+                      </Button>
+                  </motion.div>
                 </div>
             </div>
             </motion.section>
