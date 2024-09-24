@@ -32,6 +32,8 @@ import {
     AlertDialogTitle,
   } from "@/components/ui/alert-dialog"
 
+  import SidebarHome from "@/components/global/SidebarHome";
+  import HomeMain from "@/components/global/MainHome";
 type Project = {
     project_id: string;
     name: string;
@@ -123,84 +125,12 @@ const Home = () => {
       };
 
     return (
-        <div>
+        <div className="flex">
+            <SidebarHome />
+            <div className="flex flex-col w-full">
             <NavbarHome />
-            <section className="flex w-full justify-center bg-zinc-800" style={{ height: 'calc(100vh - 56px)' }}>
-                <div className="flex w-full flex-col mt-4 max-w-5xl">
-                    <Tabs aria-label="Options">
-                        <Tab key="all" title="Tất cả">
-                            <Card className="bg-opacity-0 border-none shadow-none">
-                                <div className="w-full h-full grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    {projects.map((project, index) => (
-                                        <div
-                                            key={index}
-                                            onClick={() => handleProjectClick(project.project_id)}
-                                            className=" cursor-pointer relative bg-zinc-700 text-white rounded-lg shadow-md p-4"
-                                            onContextMenu={(e) => handleContextMenu(e, index, project)} // Capture right-click event
-                                        >
-                                            <div className="flex justify-between items-center mb-2">
-                                                <div className="flex items-center">
-                                                    <div className="w-8 h-8 bg-yellow-500 rounded-full flex justify-center items-center">
-                                                        <svg
-                                                            className="w-5 h-5 text-white"
-                                                            fill="currentColor"
-                                                            viewBox="0 0 20 20"
-                                                        >
-                                                            <path d="M4 2a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V8l-6-6H4z" />
-                                                        </svg>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="mb-2">
-                                                <h2 className="text-lg font-semibold">{project.name}</h2>
-                                            </div>
-                                            <div className="text-xs text-gray-400">
-                                                <p>{formatDate(project.updated_at)} · 4 tài liệu</p>
-                                            </div>
-
-                                            {/* Dropdown menu */}
-                                           
-                                        </div>
-                                    ))}
-                                </div>
-                            </Card>
-                        </Tab>
-
-                        {/* Các tab khác */}
-                    </Tabs>
-                </div>
-                {dropdownPosition && (
-                    <div
-                        ref={dropdownRef} // Đặt ref cho dropdown
-                        className="fixed z-50 rounded-lg shadow-lg bg-zinc-800 text-white"
-                        style={{
-                            top: dropdownPosition.y,
-                            left: dropdownPosition.x,
-                        }}
-                    >
-                        <ListboxWrapper>
-                            <Listbox variant="faded" aria-label="Listbox menu with icons">
-                                <ListboxItem
-                                    key="edit"
-                                    onClick={() => handleToggleRename()}
-                                    startContent={<EditDocumentIcon className={iconClasses} />}
-                                >
-                                    Edit Project
-                                </ListboxItem>
-                                <ListboxItem
-                                    key="delete"
-                                    className="text-danger"
-                                    color="danger"
-                                    onClick={() => handleToggleDelete()}
-                                    startContent={<DeleteDocumentIcon className={cn(iconClasses, "text-danger")} />}
-                                >
-                                    Delete Project
-                                </ListboxItem>
-                            </Listbox>
-                        </ListboxWrapper>
-                    </div>
-                )}
-            </section>
+            <HomeMain />
+            </div>
 
             <Dialog open={isOpenRename} onOpenChange={handleToggleRename}>
                 <DialogContent className="bg-zinc-800 border-none">

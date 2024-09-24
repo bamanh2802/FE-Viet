@@ -1,9 +1,10 @@
 import React, {useState} from "react";
+import {Select, SelectItem} from "@nextui-org/react";
 import {Button, 
     ButtonGroup, 
     Navbar, 
     NavbarBrand, NavbarContent, NavbarItem, Link, Input, DropdownItem, DropdownTrigger, Dropdown, DropdownMenu, Avatar} from "@nextui-org/react";
-import { MagnifyingGlassCircleIcon, PlusIcon,
+import { MagnifyingGlassCircleIcon, PlusIcon, HomeIcon
     
  } from "@heroicons/react/24/outline";
  import {
@@ -21,6 +22,11 @@ import {
 import '../project/config.css'
 import UserAvatar from '../../public/avatar.jpg'
 
+const languages = [
+  {key: "Vietnamese", label: "Tiếng Việt"},
+  {key: "English", label: "English"},
+]
+
 export default function NavbarHome() {
   const [isNewProject, setIsNewProject] = useState<boolean>(false)
   const handleToggleNewProject = () => {
@@ -32,7 +38,7 @@ export default function NavbarHome() {
     <Navbar isBordered className="navbar-custom bg-zinc-900 h-14">
       <NavbarContent justify="start">
         <NavbarBrand className="mr-4">
-          <p className="hidden sm:block font-bold text-inherit">VIET</p>
+          <HomeIcon  className="w-5 h-5"/>
         </NavbarBrand>
       </NavbarContent>
 
@@ -76,6 +82,19 @@ export default function NavbarHome() {
             </DropdownItem>
             <DropdownItem key="settings">My Settings</DropdownItem>
             <DropdownItem key="team_settings">Team Settings</DropdownItem>
+            <DropdownItem key="">
+            <Select
+              isRequired
+              defaultSelectedKeys={["Vietnamese"]}
+              className="max-w-xs"
+            >
+              {languages.map((language) => (
+                <SelectItem key={language.key}>
+                  {language.label}
+                </SelectItem>
+              ))}
+            </Select>
+            </DropdownItem>
             <DropdownItem key="analytics">Analytics</DropdownItem>
             <DropdownItem key="system">System</DropdownItem>
             <DropdownItem key="configurations">Configurations</DropdownItem>

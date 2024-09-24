@@ -12,6 +12,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
+import NavbarHome from "@/components/global/NavbarHome";
 
 const chatData = [
   { id: "chat1", title: "Chat 1", messages: ["Hello", "How are you?"] },
@@ -123,7 +124,7 @@ const Document: React.FC = () => {
         <SidebarDocument direction="start"/>
       </div>
       <div className="flex flex-col w-full">
-        <NavbarDocument />
+        <NavbarHome />
         <div className="flex border-box pt-1" style={{ height: "calc(100% - 48px)", width: "calc(100% - 4px)" }}>
         <ResizablePanelGroup direction="horizontal">
         <ResizablePanel defaultSize={50}>

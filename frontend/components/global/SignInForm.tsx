@@ -3,6 +3,8 @@ import Image from 'next/image';
 import logo from '@/public/img/logo.png'
 import 'remixicon/fonts/remixicon.css';
 import { Checkbox, Button } from "@nextui-org/react";
+import { SignIn } from "@/service/apis";
+
 
 interface SignInFormProps {
     isOpen: boolean;
@@ -14,7 +16,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ isOpen, closeForm }) => {
     const [userNameSignIn, setUserNameSignIn] = useState<string>('');
     const [passwordSignIn, setPasswordSignIn] = useState<string>('');
     const [errorSignIn, setErrorSignIn] = useState<string>('')
-
+    const [isLoadingSignin, setIsLoadingSignIn] = useState<boolean>(false);
     
 
     const toggleSignIn = () => {
@@ -22,9 +24,20 @@ const SignInForm: React.FC<SignInFormProps> = ({ isOpen, closeForm }) => {
     }
 
     const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
+        setIsLoadingSignIn(true)
         e.preventDefault();
-        console.log(userNameSignIn, passwordSignIn)
-        setErrorSignIn('Wrong password')
+        try {
+            const data = await SignIn(userNameSignIn, passwordSignIn)
+            localStorage.setItem('access_token', data.access_token)
+            localStorage.setItem('refresh_token', data.refresh_token)
+            console.log(data)
+            setIsLoadingSignIn(false)
+
+        } catch (e) {
+            setIsLoadingSignIn(false)
+            console.log(e)
+            setErrorSignIn('Wrong password')
+        }
     }
 
     return (
@@ -64,7 +77,6 @@ const SignInForm: React.FC<SignInFormProps> = ({ isOpen, closeForm }) => {
                                         <input
                                         className="bg-white border-b appearance-none rounded w-full py-4 px-6 text-gray-700 leading-tight focus:outline-none focus:shadow-outline outline-none"
                                         id="email"
-                                        type="email"
                                         placeholder="Enter your email"
                                         onChange={(e) => {
                                             setUserNameSignIn(e.target.value)
@@ -96,6 +108,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ isOpen, closeForm }) => {
                                         <Button
                                         className="bg-gray-900 hover:bg-gray-800 text-white font-bold py-7 px-12 rounded-md focus:outline-none focus:shadow-outline w-full transition-colors duration-300 ease-in-out"
                                         type="submit"
+                                        isLoading={isLoadingSignin}
                                         >
                                         Log in now
                                         </Button>

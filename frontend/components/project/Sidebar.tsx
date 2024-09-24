@@ -20,6 +20,7 @@ import {
   PencilSquareIcon,
   PhotoIcon
 } from '@heroicons/react/24/outline';
+<<<<<<< HEAD
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,11 +34,32 @@ import {
 import { ListboxWrapper } from '../ListboxWrapper';
 import { Listbox, ListboxItem, Button } from '@nextui-org/react';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+=======
+import { Input } from "@/components/ui/input"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { ListboxWrapper } from '../ListboxWrapper';
+import { useRouter } from 'next/router'
+
+import { Select, SelectItem, Listbox, ListboxItem } from '@nextui-org/react';
+>>>>>>> 4719c2c9c0bce0672807650f513cb01493c1ab16
 
 
 const projects = [
-  { name: 'Viet Project', id: '1' },
-  { name: 'Notebook VPI', id: '2' },
+  {
+      "project_id": "proj-3ca65cfd-92d0-4384-99c1-995f612e388d",
+      "name": "admin-project",
+      "created_at": "2024-09-15T07:35:30",
+      "updated_at": "2024-09-15T07:35:30"
+  }
 ];
 
 const documents = [
@@ -50,15 +72,21 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ projectId }) => {
+<<<<<<< HEAD
   const router = useRouter();
   const [selectedProjectId, setSelectedProjectId] = useState(projectId);
   const [isDeleteDocument, setIsDeleteDocument] = useState<boolean>(false)
+=======
+  const router = useRouter()
+  const [selectedProject, setSelectedProject] = useState<string>('');
+>>>>>>> 4719c2c9c0bce0672807650f513cb01493c1ab16
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; show: boolean; id?: string }>({
     x: 0,
     y: 0,
     show: false,
   });
+<<<<<<< HEAD
   const dataProject = [
     {
       "project_id": "proj-3ca65cfd-92d0-4384-99c1-995f612e388d",
@@ -83,6 +111,14 @@ const Sidebar: React.FC<SidebarProps> = ({ projectId }) => {
     const project = dataProject.find(proj => proj.project_id === projectId);
     return project ? project.name : "Unknown Project";
   };
+=======
+  const [isUploadDocs, setIsUploadDocs] = useState<boolean>(false)
+
+  const handleBackHome = () => {
+    router.push('/home')
+    console.log('hello')
+  }
+>>>>>>> 4719c2c9c0bce0672807650f513cb01493c1ab16
   
 
   const toggleExpand = (section: string) => {
@@ -121,15 +157,26 @@ useEffect(() => {
     };
   }, [contextMenu]);
 
+<<<<<<< HEAD
   const handleProjectClick = (projectId: string) => {
     router.push(`/project/${projectId}`);
     console.log('hello')
   };
+=======
+  useEffect(() => {
+    const project = projects.find(p => p.project_id === projectId);
+    if (project) {
+      setSelectedProject(project.name); 
+      console.log(project.name)
+    }
+  }, [projectId]);
+>>>>>>> 4719c2c9c0bce0672807650f513cb01493c1ab16
 
   return (
     <div className="overflow-auto select-none h-screen w-64 bg-zinc-800 text-white flex flex-col justify-between p-2">
       <div>
         <div className="rounded-lg mb-4">
+<<<<<<< HEAD
           <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
             <SelectTrigger className="">
               <SelectValue>{getProjectNameById(selectedProjectId)}</SelectValue>
@@ -143,11 +190,22 @@ useEffect(() => {
                 </SelectItem>
               ))}
             </SelectContent>
+=======
+          <Select 
+          items={projects} 
+          label="Project" 
+          placeholder="Select a project" 
+          value={selectedProject}
+          onChange={handleChange}
+          className="max-w-xs">
+            {(projects) => <SelectItem key={projects.project_id}>{projects.name}</SelectItem>}
+>>>>>>> 4719c2c9c0bce0672807650f513cb01493c1ab16
           </Select>
         </div>
 
         <div>
           <div
+            onClick={() => handleBackHome()} 
             className="flex items-center justify-between p-3 rounded-lg cursor-pointer my-2 hover:bg-gray-700"
             onContextMenu={(e) => handleContextMenu(e, 'home')}
           >
@@ -236,7 +294,7 @@ useEffect(() => {
       </div>
 
         <div className={`
-        transition-opacity 
+        transition-opacity z-50
         ${contextMenu.show ? 'visible opacity-100' : 'invisible opacity-0'}
           context-menu absolute bg-zinc-800 rounded-lg shadow-lg
            shadow-zinc-900 w-48`} 
@@ -281,6 +339,7 @@ useEffect(() => {
       </ListboxWrapper>
         </div>
 
+<<<<<<< HEAD
         <AlertDialog open={isDeleteDocument} onOpenChange={handleOpenDeleteDocument}>
                 <AlertDialogContent className="bg-zinc-800 border-none">
                     <AlertDialogHeader>
@@ -298,6 +357,18 @@ useEffect(() => {
                 </AlertDialogContent>
             </AlertDialog>
 
+=======
+      <Dialog open={isUploadDocs} onOpenChange={() => setIsUploadDocs(false)}>
+        <DialogContent >
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <label htmlFor="picture">Upload Your Documents</label>
+          <Input id="picture" type="file" />  
+        </div>
+
+        </DialogContent>
+      </Dialog>
+        
+>>>>>>> 4719c2c9c0bce0672807650f513cb01493c1ab16
     </div>
   );
 };
@@ -330,15 +401,16 @@ const MenuItem = ({
       </div>
       {items && (
         <ChevronDownIcon
-          className={`h-4 w-4 text-gray-300 transform transition-transform duration-200 ${
-            expanded ? 'rotate-180' : 'rotate-0'
-          }`}
+          className={`h-4 w-4 text-gray-300 transform transition-transform duration-200 ${expanded ? 'rotate-180' : 'rotate-0'}`}
         />
       )}
     </div>
     {expanded && items && (
       <div className="ml-4 mt-1 space-y-1 border-l-2 border-gray-600 pl-4 transition-all duration-200 ease-in-out">
-        {items.map((item, index) => (
+        {[
+          ...(['Tài liệu', 'Ghi chú', 'Chat'].includes(label) ? [{ name: 'Thêm', Icon: PlusIcon }] : []),
+          ...items,
+        ].map((item, index) => (
           <div
             key={index}
             className="flex items-center space-x-2 text-xs text-gray-400 hover:text-white cursor-pointer p-2 rounded-lg hover:bg-gray-700"
@@ -351,6 +423,7 @@ const MenuItem = ({
       </div>
     )}
   </div>
+
 );
 
 export default Sidebar;

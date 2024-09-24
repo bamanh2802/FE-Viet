@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { ListboxWrapper } from '@/components/ListboxWrapper';
 import { Listbox, ListboxItem } from "@nextui-org/react";
 import { Square2StackIcon, QuestionMarkCircleIcon, ClipboardDocumentCheckIcon, ListBulletIcon } from '@heroicons/react/24/outline';
+import {Tabs, Tab, Card, CardBody} from "@nextui-org/react";
+
 
 interface DropdownPosition {
   x: number;
@@ -72,12 +74,25 @@ const TextInteraction: React.FC = () => {
 
   return (
     <div className="h-full p-5 flex-1 bg-neutral-800 rounded-t-md mx-1">
-      <div
-        ref={textRef}
-        className=" p-4 rounded relative leading-relaxed"
-      >
-        Đây là một đoạn văn bản từ tài liệu PDF nào đó. Bạn có thể bôi đen đoạn văn bản để xem các tùy chọn. Khi bạn bôi đen một đoạn văn bản, các tùy chọn sẽ xuất hiện ở dưới cùng của đoạn văn bản được bôi đen.
-      </div>
+     
+      <Tabs variant='underlined' aria-label="Raw">
+        <Tab key="raw" title="Raw">
+          <div
+            ref={textRef}
+            className=" p-4 rounded relative leading-relaxed"
+          >
+            Đây là một đoạn văn bản từ tài liệu PDF nào đó. Bạn có thể bôi đen đoạn văn bản để xem các tùy chọn. Khi bạn bôi đen một đoạn văn bản, các tùy chọn sẽ xuất hiện ở dưới cùng của đoạn văn bản được bôi đen.
+          </div>
+
+        </Tab>
+        <Tab key="analysis" title="Analysis">
+          <Card>
+            <CardBody>
+              Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+            </CardBody>
+          </Card>  
+        </Tab>
+      </Tabs>
 
       {showDropdown && (
         <div
