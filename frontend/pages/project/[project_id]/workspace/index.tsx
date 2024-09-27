@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import SidebarWorkspace from "./SidebarWorkSpace";
 import ChatWindow from "./ChatWindow";
-import SidebarDocument from "../document/SidebarDocument";
+import SidebarDocument from "../document/[document_id]/SidebarDocument";
 const WorkSpace : React.FC = () => {
     const [conversations, setConversations] = useState<string[]>(['Conversation 1', 'Conversation 2']);
     const [currentConversation, setCurrentConversation] = useState<string | null>(null);

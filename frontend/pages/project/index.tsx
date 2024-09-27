@@ -17,13 +17,11 @@ const Project: FC = () => {
 
     return (
         <div className="flex box-border">
-<<<<<<< HEAD
-            <div className="">
-                <Sidebar projectId={validProjectId}/>
-=======
             {/* <div className="">
+                <Sidebar projectId={validProjectId}/>
+                </div>
+            <div className="">
                 <Sidebar />
->>>>>>> 4719c2c9c0bce0672807650f513cb01493c1ab16
             </div>
             <div className="flex flex-col w-full">
                 <NavbarProject onOpenDialog={openDialog} />

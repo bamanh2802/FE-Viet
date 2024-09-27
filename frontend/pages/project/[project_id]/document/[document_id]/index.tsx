@@ -13,6 +13,11 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
 import NavbarHome from "@/components/global/NavbarHome";
+import ChatWindow from "../../workspace/ChatWindow";
+import { useSelector, useDispatch } from "react-redux";
+import { useRouter } from 'next/router';
+import { getDocumentById } from "@/service/projectApi";
+
 
 const chatData = [
   { id: "chat1", title: "Chat 1", messages: ["Hello", "How are you?"] },
@@ -24,6 +29,8 @@ const chatData = [
 ];
 
 const Document: React.FC = () => {
+  const router = useRouter();
+  const projects = useSelector((state: RootState) => state.projects.projects);
   const [chats, setChats] = useState(chatData);
   const [selectedChat, setSelectedChat] = useState<string>(chats[0]?.id || "");
   const [contextMenu, setContextMenu] = useState<{ visible: boolean; x: number; y: number; tabId: string | null }>({
@@ -32,6 +39,7 @@ const Document: React.FC = () => {
     y: 0,
     tabId: null,
   });
+  const { project_id, document_id } = router.query;
   
   const containerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -48,6 +56,10 @@ const Document: React.FC = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const handleGetDocument = async () => {
+    
+  }
 
   const hideContextMenu = () => {
     setContextMenu({ visible: false, x: 0, y: 0, tabId: null });
@@ -121,7 +133,7 @@ const Document: React.FC = () => {
 
     <div className="flex h-full relative " ref={containerRef}>
       <div>
-        <SidebarDocument direction="start"/>
+        <SidebarDocument />
       </div>
       <div className="flex flex-col w-full">
         <NavbarHome />
@@ -166,7 +178,7 @@ const Document: React.FC = () => {
                     title={chat.title}
                     onContextMenu={(e) => handleContextMenu(e, chat.id)}
                   >
-                    <Chatbot />
+                    <ChatWindow conversationId='test'/>
                   </Tab>
                 ))}
                 <Tab key="add" title={<PlusIcon className="h-5 w-5 text-gray-500" />} />

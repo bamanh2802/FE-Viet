@@ -7,6 +7,7 @@ import {Button,
 import { MagnifyingGlassCircleIcon, PlusIcon, HomeIcon
     
  } from "@heroicons/react/24/outline";
+ import { createProject, Logout } from "@/service/apis";
  import {
   Dialog,
   DialogContent,
@@ -21,6 +22,8 @@ import {
 } from "@/components/ui/card"
 import '../project/config.css'
 import UserAvatar from '../../public/avatar.jpg'
+import { useRouter } from 'next/router';
+
 
 const languages = [
   {key: "Vietnamese", label: "Tiếng Việt"},
@@ -28,10 +31,38 @@ const languages = [
 ]
 
 export default function NavbarHome() {
+  const router = useRouter()
   const [isNewProject, setIsNewProject] = useState<boolean>(false)
+  const [projectName, setProjectName] = useState<string>('')
+  const [isLoadingCreate, setIsLoadingCreate] = useState<boolean>(false)
   const handleToggleNewProject = () => {
     setIsNewProject(!isNewProject)
-    console.log('hello')
+  }
+
+  const handleCreateProject = async () => {
+    setIsLoadingCreate(true)
+    try {
+      const data = await createProject(isNewProject)
+      setIsLoadingCreate(false)
+      router.push(`/project/${data.data.project_id}`)
+      console.log(data)
+
+    } catch (e) {
+      setIsLoadingCreate(false)
+      console.log(e)
+    }
+  }
+
+  const handleLogout = async () => {
+    try {
+      const data = await Logout()
+      console.log(data)
+      localStorage.removeItem('access_token')
+      localStorage.removeItem('refresh_token')
+      router.push('/')
+    } catch (e) {
+    console.log(e)
+    }
   }
 
   return (
@@ -99,7 +130,9 @@ export default function NavbarHome() {
             <DropdownItem key="system">System</DropdownItem>
             <DropdownItem key="configurations">Configurations</DropdownItem>
             <DropdownItem key="help_and_feedback">Help & Feedback</DropdownItem>
-            <DropdownItem key="logout" color="danger">
+            <DropdownItem 
+            onClick={() => handleLogout()}
+            key="logout" color="danger">
               Log Out
             </DropdownItem>
           </DropdownMenu>
@@ -116,7 +149,11 @@ export default function NavbarHome() {
                   <div className="grid w-full items-center gap-4">
                     <div className="flex flex-col space-y-1.5">
                       <label htmlFor="">Name</label>
-                      <Input className="rounded-md border-1 border-gray-400" required id="name" placeholder="Name of your project" />
+                      <Input 
+                      className="rounded-md border-1 border-gray-400" 
+                      onChange={(e) => (setIsNewProject(e.target.value))}
+                      required id="name" 
+                      placeholder="Name of your project" />
                     </div>
                     
                   </div>
@@ -124,7 +161,7 @@ export default function NavbarHome() {
               </CardContent>
               <CardFooter className="flex justify-between">
                 <Button variant="bordered">Cancel</Button>
-                <Button>Create</Button>
+                <Button isLoading={isLoadingCreate} onClick={() => handleCreateProject()}>Create</Button>
               </CardFooter>
         </DialogContent>
       </Dialog>

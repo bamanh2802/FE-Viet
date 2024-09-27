@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { useRouter } from 'next/router';
 import React from "react";
 import {Navbar, 
   NavbarBrand,
@@ -10,20 +11,41 @@ import {Navbar,
    Dropdown, 
    DropdownMenu, 
    Avatar,
-   Button
+   Button,
+   Breadcrumbs, 
+   BreadcrumbItem
   } from "@nextui-org/react";
   import { PlusIcon, UsersIcon } from "lucide-react";
+  import { HomeIcon } from '@heroicons/react/24/outline';
 import '../project/config.css'
+import { useSelector, useDispatch } from "react-redux";
+
+
 interface NavbarProjectProps {
   onOpenDialog: () => void;
   onOpenShare: () => void;
 }
 const NavbarProject: FC<NavbarProjectProps> = ({ onOpenDialog, onOpenShare }) => {
+  const router = useRouter();
+  const projects = useSelector((state: RootState) => state.projects.projects);
+  const { project_id } = router.query;
+  
+  const getProjectNameById = (projectId: string | null) => {
+    const project = projects.find(proj => proj.project_id === projectId);
+
+    return project ? project.name : "Loading...";
+  };
+  
+  
+  
   return (
     <Navbar className="navbar-custom h-14 rounded-b-md bg-zinc-800 max-w-none mx-1 box-border"
     style={{ width: 'calc(100% - 8px)' }}>
       <NavbarBrand>
-        <p className="font-bold text-inherit">Project Name</p>
+        <Breadcrumbs>
+        <BreadcrumbItem><HomeIcon className='w-4 h-4'/></BreadcrumbItem>
+        <BreadcrumbItem>{getProjectNameById(project_id)}</BreadcrumbItem>
+      </Breadcrumbs>
       </NavbarBrand>
 
 

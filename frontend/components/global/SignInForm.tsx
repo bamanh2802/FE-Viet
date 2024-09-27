@@ -4,6 +4,8 @@ import logo from '@/public/img/logo.png'
 import 'remixicon/fonts/remixicon.css';
 import { Checkbox, Button } from "@nextui-org/react";
 import { SignIn } from "@/service/apis";
+import { useRouter } from 'next/router';
+
 
 
 interface SignInFormProps {
@@ -12,6 +14,7 @@ interface SignInFormProps {
 }
 
 const SignInForm: React.FC<SignInFormProps> = ({ isOpen, closeForm }) => {
+    const router = useRouter()
     const [isSignIn, setIsSignIn] = useState<boolean>(true)
     const [userNameSignIn, setUserNameSignIn] = useState<string>('');
     const [passwordSignIn, setPasswordSignIn] = useState<string>('');
@@ -32,6 +35,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ isOpen, closeForm }) => {
             localStorage.setItem('refresh_token', data.refresh_token)
             console.log(data)
             setIsLoadingSignIn(false)
+            router.push('/home')
 
         } catch (e) {
             setIsLoadingSignIn(false)

@@ -1,6 +1,6 @@
 'use client'
 import Sidebar from "@/components/project/Sidebar"
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import React, {useState} from "react";
 import NavbarProject from "@/components/project/NavbarProject"
 import WorkSpace from "@/components/project/WorkSpace"
@@ -9,6 +9,9 @@ import { useRouter } from 'next/router'
 import NoteInput from "@/components/project/NoteInput";
 import Note from "./Note";
 import ShareWorkspace from "./ShareWorkspace";
+import { getDocumentInProject, getConversationInProject, getImagesInProject } from '@/service/projectApi';
+import { Document, Image, Conversation } from "@/src/types/types";
+
 
 
 const Project: FC = () => {
@@ -19,13 +22,59 @@ const Project: FC = () => {
     const openShare = () => setIsOpenShare(true);
     const closeDialog = () => setIsDialogOpen(false);
     const closeShare = () => setIsOpenShare(false);
-    const { projectId } = router.query;
-    const validProjectId = Array.isArray(projectId) ? projectId[0] : projectId || '';
+    const { project_id } = router.query;
+    const [documents, setDocuments] = useState<Document[]> ([])
+    const [images, setImages] = useState<Image[]> ([])
+    const [conversations, setConversations] = useState<Conversation[]> ([])
+    const handleGetDocuments = async () => {
+        try {
+            const data = await getDocumentInProject(project_id)
+            setDocuments(data.data)
+            console.log(data)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+    
+    const handleGetTables = async () => {
+    
+    }
+    
+    const handleGetImages = async () => {
+        try {
+            const data = await getImagesInProject(project_id)
+            setImages(data.data)
+            console.log(data)
+        } catch (e) {
+            console.log(e)
+        }
+    
+    }
+    const handleGetNotes = async () => {
+    
+    }
+    const handleGetConversations = async () => {
+        try {
+            const data = await getConversationInProject(project_id)
+            setConversations(data.data)
+            console.log(data)
+        } catch (e) {
+            console.log(e)
+        }
+    }
 
+    useEffect(() => {
+        if (project_id !== undefined) {
+          handleGetDocuments()
+          handleGetImages()
+          handleGetConversations()
+        }
+      
+      }, [project_id])
     return (
         <div className="flex box-border">
             <div className="">
-                <Sidebar projectId = {validProjectId}/>
+                <Sidebar documents={documents} images={images} conversations={conversations}/>
             </div>
             <div className="flex flex-col w-full">
                 <NavbarProject onOpenShare={openShare} onOpenDialog={openDialog} />
@@ -33,7 +82,7 @@ const Project: FC = () => {
                 <WorkSpace />
                 {/* <Note /> */}
                 </div>
-                <NewWorkspace isOpen={isDialogOpen} onClose={closeDialog} />
+                <NewWorkspace documents={documents} isOpen={isDialogOpen} onClose={closeDialog} />
                 <ShareWorkspace isOpen={isOpenShare} onClose={closeShare}/>
             </div>
         </div>

@@ -6,6 +6,7 @@ import { ListboxWrapper } from '@/components/ListboxWrapper';
 import { Listbox, ListboxItem, Button } from '@nextui-org/react';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import '../../components/project/config.css'
+import { Document } from '@/src/types/types';
 
 interface File {
     id: string;
@@ -16,20 +17,11 @@ interface File {
 interface NewWorkspaceProps {
     isOpen: boolean;
     onClose: () => void;
+    documents: Document[]
 }
 
-const fileData: File[] = [
-    { id: '1', name: 'Document1.pdf', type: 'PDF' },
-    { id: '2', name: 'Spreadsheet1.xlsx', type: 'Excel' },
-    { id: '3', name: 'Presentation1.pptx', type: 'PowerPoint' },
-    { id: '4', name: 'Image1.jpg', type: 'Image' },
-    { id: '5', name: 'TextFile1.txt', type: 'Text' },
-    { id: '6', name: 'Archive1.zip', type: 'Archive' },
-    { id: '7', name: 'CodeFile1.js', type: 'JavaScript' },
-    { id: '8', name: 'StyleSheet1.css', type: 'CSS' },
-];
 
-const NewWorkspace: FC<NewWorkspaceProps> = ({ isOpen, onClose }) => {
+const NewWorkspace: FC<NewWorkspaceProps> = ({ isOpen, onClose, documents }) => {
     const [selectedKeys, setSelectedKeys] = React.useState<Set<string>>(new Set());
 
     const handleSelectionChange = (keys: Set<string>) => {
@@ -38,8 +30,8 @@ const NewWorkspace: FC<NewWorkspaceProps> = ({ isOpen, onClose }) => {
 
     const selectedValue = React.useMemo(
         () => Array.from(selectedKeys).map(key => {
-            const file = fileData.find(file => file.id === key);
-            return file ? file.name : '';
+            const doc = documents.find(doc => doc.document_id === key);
+            return doc ? doc.document_name : '';
         }).join(", "),
         [selectedKeys]
     );
@@ -62,9 +54,9 @@ const NewWorkspace: FC<NewWorkspaceProps> = ({ isOpen, onClose }) => {
                         selectedKeys={selectedKeys}
                         onSelectionChange={handleSelectionChange}
                     >
-                        {fileData.map((file) => (
-                            <ListboxItem textValue="Add" key={file.id} value={file.id}>
-                                {file.name} ({file.type})
+                        {documents?.map((doc) => (
+                            <ListboxItem textValue="Add" key={doc.document_id} value={doc.document_id}>
+                                {doc.document_name} ({doc.type})
                             </ListboxItem>
                         ))}
                     </Listbox>
