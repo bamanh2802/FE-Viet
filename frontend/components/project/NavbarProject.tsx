@@ -39,8 +39,7 @@ const NavbarProject: FC<NavbarProjectProps> = ({ onOpenDialog, onOpenShare }) =>
   
   
   return (
-    <Navbar className="navbar-custom h-14 rounded-b-md bg-zinc-800 max-w-none mx-1 box-border"
-    style={{ width: 'calc(100% - 8px)' }}>
+    <Navbar className="navbar-custom h-14 bg-zinc-900 max-w-none w-full">
       <NavbarBrand>
         <Breadcrumbs>
         <BreadcrumbItem><HomeIcon className='w-4 h-4'/></BreadcrumbItem>

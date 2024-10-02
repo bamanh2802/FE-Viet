@@ -75,7 +75,7 @@ export default function NavbarHome() {
     <Navbar isBordered className="navbar-custom dark:bg-zinc-900 bg-slate-200 h-14">
       <NavbarContent justify="start">
         <NavbarBrand className="mr-4">
-          <HomeIcon  className="w-5 h-5"/>
+          <HomeIcon  className="w-5 h-5 dark:text-slate-600 text-gray-900"/>
         </NavbarBrand>
       </NavbarContent>
 
@@ -93,7 +93,7 @@ export default function NavbarHome() {
             base: "max-w-full sm:max-w-[10rem] h-10",
             mainWrapper: "h-full",
             input: "text-small",
-            inputWrapper: "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
+            inputWrapper: "h-full font-normal text-default-500 bg-default-200/20 dark:bg-default-500/20",
           }}
           placeholder="Type to search..."
           size="sm"
@@ -101,7 +101,7 @@ export default function NavbarHome() {
           type="search"
         />
         <Switch
-          isSelected={isDarkMode}
+          isSelected={!isDarkMode}
           size="sm"
           color="success"
           startContent={<SunIcon />}
@@ -185,3 +185,4 @@ export default function NavbarHome() {
     </Navbar>
   );
 }
+
