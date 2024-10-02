@@ -1,10 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, use } from "react";
 import { Tabs, Tab, Listbox, ListboxItem, 
   Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button, DropdownSection } from "@nextui-org/react";
 import SidebarDocument from "./SidebarDocument";
 import NavbarDocument from "./NavbarDocument";
 import TextInteraction from "./TextInteraction";
-import Chatbot from "./Chatbot";
 import { PlusIcon, TrashIcon, ChatBubbleBottomCenterIcon } from "@heroicons/react/24/outline";
 import { ListboxWrapper } from "@/components/ListboxWrapper";
 import {
@@ -12,26 +11,26 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
-import NavbarHome from "@/components/global/NavbarHome";
-import ChatWindow from "../../workspace/ChatWindow";
+import ChatWindow from "../../workspace/[conversation_id]/ChatWindow";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from 'next/router';
-import { getDocumentById } from "@/service/projectApi";
+import { getDocumentById, getDocumentInProject } from "@/service/projectApi";
+import { getAllProjects } from "@/service/apis";
+import { Document, Project } from "@/src/types/types";
 
 
 const chatData = [
   { id: "chat1", title: "Chat 1", messages: ["Hello", "How are you?"] },
   { id: "chat2", title: "Chat 2", messages: ["Hi", "What's up?"] },
-  // Add more chats to test the dropdown
-  // { id: "chat3", title: "Chat 3", messages: [] },
-  // ...
-  // { id: "chat10", title: "Chat 10", messages: [] },
 ];
 
 const Document: React.FC = () => {
   const router = useRouter();
-  const projects = useSelector((state: RootState) => state.projects.projects);
+  const [documents, setDocuments] = useState<Document[]>([])
+  const [projects, setProjects] = useState<Project[]>([])
   const [chats, setChats] = useState(chatData);
+  const [projectName, setProjectName] = useState<string>('Loading...')
+  const [documentName, setDocumentName] = useState<string>('Loading...')
   const [selectedChat, setSelectedChat] = useState<string>(chats[0]?.id || "");
   const [contextMenu, setContextMenu] = useState<{ visible: boolean; x: number; y: number; tabId: string | null }>({
     visible: false,
@@ -39,8 +38,7 @@ const Document: React.FC = () => {
     y: 0,
     tabId: null,
   });
-  const { project_id, document_id } = router.query;
-  
+  const { project_id, document_id } = router.query;  
   const containerRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -57,9 +55,60 @@ const Document: React.FC = () => {
     };
   }, []);
 
+  const handleGetProjects = async () => {
+    try {
+        const data = await getAllProjects()
+        console.log(data)
+        setProjects(data.data)
+        setProjectName(getProjectNameById(project_id, data.data))
+
+      } catch (e) {
+        console.log(e)
+      }
+  };
+  useEffect(() => {
+    handleGetProjects()
+  }, [])
+  const getProjectNameById = (projectId: string | null, projects: Project[]) => {
+    const project = projects.find(proj => proj.project_id === projectId);
+
+    return project ? project.name : "Loading...";
+  };
+
+  const getDocumentNameById = (documentId: string | null, documents: Document[]) => {
+    const document = documents.find(doc => doc.document_id === documentId);
+
+    return document ? document.document_name : "Loading...";
+  };
+
   const handleGetDocument = async () => {
-    
+    try {
+      const data = await getDocumentById(document_id)
+      console.log(data)
+    } catch (e) {
+      console.log(e)
+    }
   }
+
+  const handleGetAllDocument = async () => {
+    try {
+      const data = await getDocumentInProject(project_id)
+      console.log(data)
+      setDocuments(data.data)
+      setDocumentName(getDocumentNameById(document_id, data.data))
+
+      
+    } catch(e){
+      console.log(e)
+    }
+  }
+
+  useEffect(() => {
+    if(project_id && document_id) {
+      handleGetDocument()
+      handleGetAllDocument()
+    }
+  },[project_id, document_id])
 
   const hideContextMenu = () => {
     setContextMenu({ visible: false, x: 0, y: 0, tabId: null });
@@ -136,13 +185,10 @@ const Document: React.FC = () => {
         <SidebarDocument />
       </div>
       <div className="flex flex-col w-full">
-        <NavbarHome />
+        <NavbarDocument projectName={projectName} documentName={documentName}/>
         <div className="flex border-box pt-1" style={{ height: "calc(100% - 48px)", width: "calc(100% - 4px)" }}>
         <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel defaultSize={50}>
-          <TextInteraction />
-          </ResizablePanel >
-          <ResizableHandle withHandle className="bg-opacity-0"/>
+          
           <ResizablePanel defaultSize={50}>
           <div className="flex-1 bg-neutral-800 rounded-t-md h-full">
             {chats.length > 7 ? (
@@ -155,12 +201,12 @@ const Document: React.FC = () => {
                 <DropdownMenu aria-label="Chat Menu">
                 <DropdownSection> 
                   {chats.map((chat) => (
-                    <DropdownItem key={chat.id} onClick={() => handleTabChange(chat.id)}>
+                    <DropdownItem textValue="temp" key={chat.id} onClick={() => handleTabChange(chat.id)}>
                       {chat.title}
                     </DropdownItem>
                   ))}
                   </DropdownSection>
-                  <DropdownItem key="add" onClick={createNewChat}>
+                  <DropdownItem textValue="temp" key="add" onClick={createNewChat}>
                     <PlusIcon className="h-4 w-4 pr-1" /> Add New Chat
                   </DropdownItem>
                 </DropdownMenu>
@@ -198,17 +244,17 @@ const Document: React.FC = () => {
             >
               <ListboxWrapper>
                 <Listbox aria-label="Actions">
-                  <ListboxItem onClick={createNewChat} key="new">
+                  <ListboxItem textValue="temp" onClick={createNewChat} key="new">
                     <div className="flex items-center">
                       <PlusIcon className="h-4 w-4 pr-1"/> New Chat
                     </div>
                   </ListboxItem>
-                  <ListboxItem onClick={() => handleMenuClick("open")} key="edit">
+                  <ListboxItem textValue="temp" onClick={() => handleMenuClick("open")} key="edit">
                     <div className="flex items-center">
                       <ChatBubbleBottomCenterIcon className="h-4 w-4 pr-1" /> Open Chat
                     </div>
                   </ListboxItem>
-                  <ListboxItem className="text-danger" onClick={() => handleMenuClick("delete")} key="delete" color="danger">
+                  <ListboxItem textValue="temp" className="text-danger" onClick={() => handleMenuClick("delete")} key="delete" color="danger">
                     <div className="flex items-center">
                       <TrashIcon className="h-4 w-4 pr-1" /> Delete Chat
                     </div>
@@ -218,6 +264,10 @@ const Document: React.FC = () => {
             </div>
           </div>
           </ResizablePanel>
+          <ResizableHandle withHandle className="bg-opacity-0"/>
+          <ResizablePanel defaultSize={50}>
+            <TextInteraction />
+          </ResizablePanel >
 
           </ResizablePanelGroup>
           

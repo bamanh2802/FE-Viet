@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import SidebarWorkspace from "./SidebarWorkSpace";
 import ChatWindow from "./ChatWindow";
-import SidebarDocument from "../document/[document_id]/SidebarDocument";
+import SidebarDocument from "../../document/[document_id]/SidebarDocument";
 const WorkSpace : React.FC = () => {
     const [conversations, setConversations] = useState<string[]>(['Conversation 1', 'Conversation 2']);
     const [currentConversation, setCurrentConversation] = useState<string | null>(null);
@@ -34,7 +34,6 @@ const WorkSpace : React.FC = () => {
             <div className="flex-1 flex items-center justify-center">Select a conversation to start chatting!</div>
           )}
         </div>
-        <SidebarDocument direction={"end"}/>
       </div>
     );
 }

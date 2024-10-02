@@ -1,5 +1,6 @@
 import API_URL from "./ApiUrl";
 import axios from 'axios';
+import qs from 'qs';
 
 
 export async function getDocumentInProject (projectId: string) {
@@ -59,6 +60,26 @@ export async function getDocumentById (documentId: string) {
             }
         }
     )
+    return response
+}
+
+export async function createNewConversation (name: string, projectId: string, documentIds: string[]){
+    const accessToken = localStorage.getItem('access_token')
+    const data = qs.stringify({
+        project_id: projectId,
+        document_ids: documentIds.join(','), // Chuyển mảng thành chuỗi với dấu phẩy ngăn cách
+    });
+    const response = await axios.post(
+        `${API_URL}/api/projects/new-conversation?name=${encodeURIComponent(name)}`, 
+        data, 
+        {
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded', // Sử dụng đúng content type
+                'Authorization': `Bearer ${accessToken}`
+            }
+        }
+    );
     return response
 }
 

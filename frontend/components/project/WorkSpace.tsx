@@ -5,6 +5,8 @@ import {Card, CardHeader, CardBody, Image, ScrollShadow,
 } from "@nextui-org/react";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
+import { Tabs, Tab } from '@nextui-org/tabs';
+
 import { Navigation, Pagination, Scrollbar, A11y, Mousewheel } from 'swiper/modules';
 import {
     AlertDialog,
@@ -16,6 +18,13 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
   } from "@/components/ui/alert-dialog"
+  import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
+  } from "@/components/ui/carousel"
 import 'swiper/css/navigation';
 import 'swiper/css/effect-fade';
 import 'swiper/css/mousewheel'
@@ -30,49 +39,16 @@ import { DocumentTextIcon,
 
 import 'remixicon/fonts/remixicon.css';
 import '../project/config.css'
-const WorkSpace: React.FC = () => {
-    const dataDocuments = [
-        {
-            name: "Báo cáo nhóm 15",
-            uploadBy: "Nguyễn Bá Mạnh",
-            type: "pdf"
-        },
-        {
-            name: "Báo cáo nhóm 15",
-            uploadBy: "Nguyễn Bá Mạnh",
-            type: "pdf"
-        },
-        {
-            name: "Báo cáo nhóm 15",
-            uploadBy: "Nguyễn Bá Mạnh",
-            type: "pdf"
-        },
-        {
-            name: "Báo cáo nhóm 15",
-            uploadBy: "Nguyễn Bá Mạnh",
-            type: "pdf"
-        },
-        {
-            name: "Báo cáo nhóm 15",
-            uploadBy: "Nguyễn Bá Mạnh",
-            type: "pdf"
-        },
-        {
-            name: "Báo cáo nhóm 15",
-            uploadBy: "Nguyễn Bá Mạnh",
-            type: "pdf"
-        },
-        {
-            name: "Báo cáo nhóm 15",
-            uploadBy: "Nguyễn Bá Mạnh",
-            type: "pdf"
-        },
-        {
-            name: "Báo cáo nhóm 15",
-            uploadBy: "Nguyễn Bá Mạnh",
-            type: "pdf"
-        }
-    ]
+import { Project, Document, ImageType, Conversation } from "@/src/types/types";
+import {Skeleton} from "@nextui-org/react";
+interface WorkSpaceProps{
+    documents: Document[],
+    images: ImageType[],
+    conversations: Conversation[]
+    projectId: string
+}
+const WorkSpace: React.FC<WorkSpaceProps> = ({projectId, documents, images, conversations}) => {
+   
 
     const dataTables = [
         `
@@ -100,82 +76,7 @@ const WorkSpace: React.FC = () => {
         // Thêm các bảng khác tại đây
     ];
 
-    const dataImages = [
-        {
-            name: 'Figure 1',
-            document: 'Không biết',
-            link: 'https://nextui.org/images/hero-card-complete.jpeg'
-        },
-        {
-            name: 'Figure 1',
-            document: 'Không biết',
-            link: 'https://nextui.org/images/hero-card-complete.jpeg'
-        },
-        {
-            name: 'Figure 1',
-            document: 'Không biết',
-            link: 'https://nextui.org/images/hero-card-complete.jpeg'
-        },
-        {
-            name: 'Figure 1',
-            document: 'Không biết',
-            link: 'https://nextui.org/images/hero-card-complete.jpeg'
-        },
-        {
-            name: 'Figure 1',
-            document: 'Không biết',
-            link: 'https://nextui.org/images/hero-card-complete.jpeg'
-        },
-        {
-            name: 'Figure 1',
-            document: 'Không biết',
-            link: 'https://nextui.org/images/hero-card-complete.jpeg'
-        },
-        {
-            name: 'Figure 1',
-            document: 'Không biết',
-            link: 'https://nextui.org/images/hero-card-complete.jpeg'
-        },
-        {
-            name: 'Figure 1',
-            document: 'Không biết',
-            link: 'https://nextui.org/images/hero-card-complete.jpeg'
-        },
-        {
-            name: 'Figure 1',
-            document: 'Không biết',
-            link: 'https://nextui.org/images/hero-card-complete.jpeg'
-        },
-    ]
 
-    const dataNotes = [
-        {
-            name: 'Untitled Note',
-            createBy: 'Nguyễn Bá Mạnh',
-            createAt: '22/1/1221'
-        },
-        {
-            name: 'Untitled Note',
-            createBy: 'Nguyễn Bá Mạnh',
-            createAt: '22/1/1221'
-        },
-        {
-            name: 'Untitled Note',
-            createBy: 'Nguyễn Bá Mạnh',
-            createAt: '22/1/1221'
-        },
-        {
-            name: 'Untitled Note',
-            createBy: 'Nguyễn Bá Mạnh',
-            createAt: '22/1/1221'
-        },
-        {
-            name: 'Untitled Note',
-            createBy: 'Nguyễn Bá Mạnh',
-            createAt: '22/1/1221'
-        },
-
-    ]
 
     function parseMarkdownTable(markdown: string): string[][] {
         // Xóa khoảng trắng ở đầu và cuối và bỏ các ký tự không cần thiết
@@ -210,51 +111,94 @@ const WorkSpace: React.FC = () => {
     })
 
     const tableData = parseMarkdownTable(dataTables[1]);
-    const headers = tableData[0];
-    const rows = tableData.slice(1);
+    const handleRouterWorkspace = (conversationId: string) => {
+        const url = `/project/${projectId}/workspace/${conversationId}`
+        window.open(url, '_blank');
+    }
+
+    const handleOpenWorkspace = (conv: Conversation) => {
+        handleRouterWorkspace(conv.conversation_id)
+    }
+
+
     return (
-        <div className="overflow-auto flex justify-center bg-zinc-900 rounded-t-md mt-1 ml-1"
-        style={{ width: 'calc(100% - 8px)', height: 'calc(100vh - 60px)'}}
+        <div className="overflow-auto flex justify-center bg-zinc-800 w-full"
+        style={{ height: 'calc(100vh - 56px)'}}
         >
             <div className="w-full flex flex-col items-center px-12">
 
                 {/* WorkSpace */}
                 <div className="w-full flex-col max-w-screen-lg mt-8">
-                <span className="text-start opacity-85 py-4 block">WorkSpace</span>
-                <div className="flex overflow-auto w-full ">
-                    <Card className="max-w-[400px]">
-                        <CardHeader className="flex gap-3">
-                            <Image
-                            alt="nextui logo"
-                            height={40}
-                            radius="sm"
-                            src="https://icons.veryicon.com/png/o/education-technology/ballicons/workspace-1.png"
-                            width={40}
-                            />
-                            <div className="flex flex-col">
-                            <p className="text-md">Workspace name</p>
-                            <p className="text-small text-default-500">20/11/2024</p>
+                <span className="text-start opacity-85 py-4 block">Conversation</span>
+                <div className="">
+                    {
+                        conversations === undefined ? (
+                            <>
+                            <div className="max-w-[300px] w-full flex items-center gap-3">
+                                <div>
+                                    <Skeleton className="flex rounded-full w-12 h-12"/>
+                                </div>  
+                                <div className="w-full flex flex-col gap-2">
+                                    <Skeleton className="h-3 w-3/5 rounded-lg"/>
+                                    <Skeleton className="h-3 w-4/5 rounded-lg"/>
+                                </div>
                             </div>
-                        </CardHeader>
-                        <Divider/>
-                        <CardBody>
-                            Đang chưa biết nên để cái gì
-                        </CardBody>
-                        <Divider/>
-                        <CardFooter className="flex flex-col items-start">
-                            <div className="flex opacity-85 items-center">
-                                <DocumentTextIcon className="w-3 h-3 mr-1"/>
-                                <p className="text-xs"> 5 Documents</p>
-                            </div>
-                            <div className="flex opacity-85 items-center">
-                                <ChatBubbleLeftRightIcon className="w-3 h-3 mr-1" />
-                                <p className="text-xs"> 12 Conversations</p>
-                            </div>
-                            
-                        </CardFooter>
-                    </Card>
-                    </div>
+                            </>
+                        ) :
+                        (
+                            <>
+                            <Carousel>
+                            <CarouselContent>
+                            {
+                                conversations.map((conv, index) => (
+                                    <CarouselItem
+                                    onClick={() => handleOpenWorkspace(conv)}
+                                    className="basis-1/4">
+                                    <Card 
+                                    
+                                    className="w-60 hover:scale-105 cursor-pointer">
+                                        <CardHeader className="flex gap-3">
+                                            <Image
+                                            alt="nextui logo"
+                                            height={40}
+                                            radius="sm"
+                                            src="https://icons.veryicon.com/png/o/education-technology/ballicons/workspace-1.png"
+                                            width={40}
+                                            />
+                                            <div className="flex flex-col">
+                                            <p className="text-md">{conv.conversation_name}</p>
+                                            <p className="text-small text-default-500">{conv.created_at}</p>
+                                            </div>
+                                        </CardHeader>
+                                        <Divider/>
+                                        <CardBody>
+                                            Tin nhắn đầu tiên
+                                        </CardBody>
+                                        <Divider/>
+                                        <CardFooter className="flex flex-col items-start">
+                                            <div className="flex opacity-85 items-center">
+                                                <DocumentTextIcon className="w-3 h-3 mr-1"/>
+                                                <p className="text-xs"> 5 Documents</p>
+                                            </div>
+                                            <div className="flex opacity-85 items-center">
+                                                <ChatBubbleLeftRightIcon className="w-3 h-3 mr-1" />
+                                                <p className="text-xs"> 12 Conversations</p>
+                                            </div>
+                                            
+                                        </CardFooter>
+                                    </Card>
+                                </CarouselItem>
 
+                                ))
+                            }
+                            </CarouselContent>
+                            <CarouselPrevious />
+                            <CarouselNext />
+                            </Carousel>
+                            </>
+                        )
+                    }
+                    </div>
                 </div>  
 
 
@@ -263,27 +207,43 @@ const WorkSpace: React.FC = () => {
                     <span className="text-start opacity-85 py-4 block">Documents</span>
 
                     <div className="flex flex-col overflow-auto w-full max-h-72">
-                        {dataDocuments.map((document, index) => (
-                                <div
-                                key={index}
-                                className="group cursor-pointer relative flex items-center bg-zinc-700 my-1 mx-0 rounded-lg hover:bg-zinc-600"
-                                >
-                                <img
-                                    src="https://static.vecteezy.com/system/resources/previews/023/234/824/original/pdf-icon-red-and-white-color-for-free-png.png"
-                                    alt="Document icon"
-                                    className="w-12 h-12 object-cover rounded-lg"
-                                />
-                                <div className="ml-4 flex-grow">
-                                    <p className="text-tiny uppercase font-bold">{document.name}</p>
-                                    <p className="text-default-500 text-xs">{document.type}</p>
-                                </div>
-                                <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <Button isIconOnly className="text-red-500 hover:text-red-700"><TrashIcon className="w-4 h-4"/></Button>
-                                    <Button isIconOnly className="text-blue-500 hover:text-blue-700"><PencilSquareIcon className="w-4 h-4"/></Button>
-                                    <Button isIconOnly className="text-green-500 hover:text-green-700"><ArrowUpOnSquareIcon className="w-4 h-4"/></Button>
-                                </div>
-                                </div>
-                            ))}
+                        {documents === undefined ? (
+                            <div className=" w-full flex flex-col items-center gap-3">
+                                    <Skeleton className="h-12 w-full rounded-lg"/>
+                                    <Skeleton className="h-12 w-full rounded-lg"/>
+                            </div>
+                        ) : (
+                            <>
+                            {
+                                documents.map((doc, index) => (
+                                    <div
+                                        key={index}
+                                        className="group cursor-pointer relative flex items-center bg-zinc-700 my-1 mx-0 rounded-lg hover:bg-zinc-600"
+                                        >
+                                        <img
+                                            src="https://static.vecteezy.com/system/resources/previews/023/234/824/original/pdf-icon-red-and-white-color-for-free-png.png"
+                                            alt="Document icon"
+                                            className="w-12 h-12 object-cover rounded-lg"
+                                        />
+                                        <div className="ml-4 flex-grow">
+                                            <p className="text-tiny uppercase font-bold">{doc.document_name}</p>
+                                            <p className="text-default-500 text-xs">{doc.type}</p>
+                                        </div>
+                                        <div className="mr-96">
+                                            <p className="text-default-500 text-xs">{doc.updated_at}</p>
+
+                                        </div>
+                                        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <Button isIconOnly className="text-red-500 hover:text-red-700"><TrashIcon className="w-4 h-4"/></Button>
+                                            <Button isIconOnly className="text-blue-500 hover:text-blue-700"><PencilSquareIcon className="w-4 h-4"/></Button>
+                                            <Button isIconOnly className="text-green-500 hover:text-green-700"><ArrowUpOnSquareIcon className="w-4 h-4"/></Button>
+                                        </div>
+                                    </div>
+                                ))
+                            }
+                            </>
+                        )
+                    }
                     </div>
                 </div>
 
@@ -291,7 +251,7 @@ const WorkSpace: React.FC = () => {
                 <div className="w-full flex-col max-w-screen-lg mt-8">
                     <span className="text-start opacity-85 py-4 block">Notes</span>
                     <div className="flex overflow-auto w-full ">
-                    <Swiper
+                    {/* <Swiper
                             modules={[Navigation, Pagination, Scrollbar, A11y, Mousewheel]}
                             spaceBetween={20}
                             slidesPerView='auto'
@@ -319,7 +279,7 @@ const WorkSpace: React.FC = () => {
                                 </SwiperSlide>
                             ))
                         }
-                    </Swiper>
+                    </Swiper> */}
                     </div>
                 </div>
         </div>

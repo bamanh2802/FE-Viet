@@ -154,4 +154,16 @@ export async function renameProjectById(projectId: string, newName: string){
     return response
 }
 
-
+export async function getUser (){
+    const accessToken = localStorage.getItem('access_token')
+    const response = await axios.get(
+        `${API_URL}/api/users/me`, {
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            }
+        }
+    )
+    return response
+}

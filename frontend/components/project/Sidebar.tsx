@@ -115,7 +115,6 @@ useEffect(() => {
 
   const handleBackHome = () => {
     router.push('/home')
-    console.log('hello')
   }
   
 
@@ -150,6 +149,11 @@ useEffect(() => {
     }
 };
 
+const handleRouterDocument = (doc: Document) => {
+  const url = `/project/${project_id}/document/${doc.document_id}`
+  window.open(url, '_blank');
+}
+
   useEffect(() => {
     document.addEventListener('click', handleClickOutside);
     return () => {
@@ -159,12 +163,11 @@ useEffect(() => {
 
   const handleProjectClick = (projectId: string) => {
     router.push(`/project/${projectId}`);
-    console.log('hello')
   };
 
 
   return (
-    <div className="overflow-auto select-none h-screen w-64 bg-zinc-800 text-white flex flex-col justify-between p-2">
+    <div className="overflow-auto select-none h-screen w-64 bg-zinc-900 text-white flex flex-col justify-between p-2">
       <div>
         <div className="rounded-lg mb-4 border-gray-400">
         <Select 
@@ -213,25 +216,29 @@ useEffect(() => {
         {/* Tùy chỉnh các mục menu ở đây */}
         <div className="my-2">
           <div
-            className={`transition-all flex items-center justify-between p-3 rounded-lg cursor-pointer hover:bg-gray-700`}
+            className={`flex items-center justify-between text-sm font-semibold text-gray-500 transition-all rounded-lg px-2 p-1 cursor-pointer hover:bg-zinc-800`}
             onClick={() => toggleExpand('documents')}
             onContextMenu={(e) => handleContextMenu(e, 'documents')}
           >
-            <div className="flex items-center space-x-3">
+            <div className="flex justify-between items-center space-x-3">
               <FolderIcon className="h-5 w-5 text-gray-300" />
-              <span className="text-xs">Tài liệu</span>
+              <span className="text-xs">Documents</span>
             </div>
+            <ChevronDownIcon
+              className={`w-4 h-4 transform transition-transform duration-300`}
+            />
           </div>
           {/* Các item con cho mục "Tài liệu" */}
           {expandedSections.includes('documents') && (
             <div className="transition-all ml-4 mt-1 space-y-1 border-l-1 border-gray-400">
               {documents.map((doc, index) => (
                 <div
+                  onClick={() => handleRouterDocument(doc)}
                   key={index}
                   className="ml-2 group flex justify-between items-center space-x-2 text-xs text-gray-400 hover:text-white cursor-pointer p-2 rounded-lg hover:bg-gray-700"
                   onContextMenu={(e) => handleContextMenu(e, doc.document_id)}
                 >
-                  <div className='flex justify-center items-center '>
+                  <div className='flex justify-center items-center text-white '>
                     <DocumentTextIcon className='w-4 h-4 pr-1' />
                     <span>{doc.document_name}</span>
                   </div>
@@ -255,13 +262,14 @@ useEffect(() => {
         <div className="my-2">
           <div 
             className={`flex items-center justify-between p-3 rounded-lg cursor-pointer hover:bg-gray-700`} 
-            onClick={() => toggleExpand('images')}
             onContextMenu={(e) => handleContextMenu(e, 'images')}
           >
+                  <Tooltip content="Đang như l nên đợi tương lai nhé :(">
             <div className="flex items-center space-x-3">
               <PhotoIcon className="h-5 w-5 text-gray-300" />
               <span className="text-xs">Hình ảnh</span>
             </div>
+          </Tooltip>
           </div>
           {/* Các item con cho mục "Hình ảnh" */}
           {expandedSections.includes('images') && (

@@ -4,13 +4,15 @@ import { LockClosedIcon,
     ArrowUpTrayIcon,
     UserGroupIcon,
     ChatBubbleLeftIcon,
-    ChevronDoubleRightIcon
+    ChevronDoubleRightIcon,
+    ChevronDownIcon
  } from '@heroicons/react/24/outline';
 import { Button } from "@/components/ui/button"
 import { Project } from '@/src/types/types';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import {Skeleton} from "@nextui-org/react";
 import { useRouter } from 'next/router';
+
 
 
 interface SidebarHomeProps {
@@ -22,6 +24,11 @@ const SidebarHome: React.FC<SidebarHomeProps> = ({ projects }) => {
   const handleRouterToProject = (project: Project) => {
     router.push(`/project/${project.project_id}`)
   }
+  const [isOpen, setIsOpen] = useState(true); // Quản lý trạng thái đóng/mở
+
+  const toggleOpen = () => {
+    setIsOpen(!isOpen);
+  };
 
 
   return (
@@ -31,41 +38,53 @@ const SidebarHome: React.FC<SidebarHomeProps> = ({ projects }) => {
         <div className="mb-6">
           <h2 className="text-lg font-medium">Quick access</h2>
         </div>
-
+        <div className="bg-gray-800 p-2 rounded-lg flex items-center mb-8">
+          <input className="bg-transparent outline-none text-sm w-full" placeholder="Search..." />
+        </div>
         {/* Projects */}
         <div className="mb-6">
-          <h3 className="text-sm font-semibold text-gray-500">Projects</h3>
-          <ul className="mt-2">
-            {
-              projects.length === 0 ? (
-                <>
-                <Skeleton className="h-3 w-full rounded-lg"/>
-                <Skeleton className="h-3 w-full rounded-lg"/>
-                <Skeleton className="h-3 w-full rounded-lg"/>
-                <Skeleton className="h-3 w-full rounded-lg"/>
-                </>
-              ) : (
-                <>
-                {
-                  projects.map((project: Project, index: number) => (
-                    <li 
+      {/* Tiêu đề "Projects" với logic đóng/mở */}
+          <h3
+            onClick={toggleOpen}
+            className="flex items-center justify-between text-sm font-semibold text-gray-500 transition-all rounded-lg px-2 p-1 cursor-pointer hover:bg-zinc-800"
+          >
+            <span>Projects</span>
+            <ChevronDownIcon
+              className={`w-4 h-4 transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+            />
+          </h3>
+          
+          {/* Danh sách projects với hiệu ứng đóng/mở */}
+          <ul
+            className={`mt-2 overflow-hidden transition-max-height duration-300 ease-in-out ${isOpen ? 'max-h-96' : 'max-h-0'}`}
+          >
+            {projects.length === 0 ? (
+              <div className='gap-2'>
+                <Skeleton className="h-3 w-full rounded-lg mt-1" />
+                <Skeleton className="h-3 w-full rounded-lg mt-1" />
+                <Skeleton className="h-3 w-full rounded-lg mt-1" />
+                <Skeleton className="h-3 w-full rounded-lg mt-1" />
+              </div>
+            ) : (
+              <>
+                {projects.map((project: Project, index: number) => (
+                  <li
                     onClick={() => handleRouterToProject(project)}
-                    key={index} 
-                    className=" group transition-all cursor-pointer px-2 p-1 rounded-lg hover:bg-zinc-800 flex items-center justify-between text-sm space-x-1">
-                      <div className='flex items-center justify-between'>
-                        <UserGroupIcon className="h-4 w-4 text-gray-600" />
-                        <span className='pl-1'>{project.name}</span>
-                      </div>
-                      <div>
-                        <ChevronDoubleRightIcon className="h-4 w-4 text-gray-600 opacity-0 group-hover:opacity-95 transition-all"/>
-                      </div>
-                    </li>
-                  ))
-                }
-                </>
-              )
-            }
-                <Button className='text-xs text-gray-400 hover:bg-zinc-700 hover:text-white py-1 w-full' variant="ghost">
+                    key={index}
+                    className="group transition-all cursor-pointer px-2 p-1 rounded-lg hover:bg-zinc-800 flex items-center justify-between text-sm space-x-1"
+                  >
+                    <div className="flex items-center justify-between">
+                      <UserGroupIcon className="h-4 w-4 text-gray-600" />
+                      <span className="pl-1">{project.name}</span>
+                    </div>
+                    <div>
+                      <ChevronDoubleRightIcon className="h-4 w-4 text-gray-600 opacity-0 group-hover:opacity-95 transition-all" />
+                    </div>
+                  </li>
+                ))}
+              </>
+            )}
+            <Button className='text-xs text-gray-400 hover:bg-zinc-700 hover:text-white py-1 w-full' variant="ghost">
                     <PlusIcon className="h-4 w-4" />
                     &nbsp; New project
                 </Button>
@@ -73,7 +92,7 @@ const SidebarHome: React.FC<SidebarHomeProps> = ({ projects }) => {
         </div>
 
         {/* Documents */}
-        <div className="mb-6">
+        {/* <div className="mb-6">
           <h3 className="text-sm font-semibold text-gray-500">Documents</h3>
           <ul className="space-y-3 mt-2">
             <li className="flex items-center text-xs space-x-2">
@@ -91,10 +110,10 @@ const SidebarHome: React.FC<SidebarHomeProps> = ({ projects }) => {
                 </Button>
             </li>
           </ul>
-        </div>
+        </div> */}
 
         {/* Conversations */}
-        <div className="mb-6">
+        {/* <div className="mb-6">
           <h3 className="text-sm font-semibold text-gray-500">Conversations</h3>
           <ul className="space-y-3 mt-2">
             <li className="flex items-center text-xs space-x-2">
@@ -116,7 +135,7 @@ const SidebarHome: React.FC<SidebarHomeProps> = ({ projects }) => {
                 </Button>
             </li>
           </ul>
-        </div>
+        </div> */}
       </div>
     </div>
   );

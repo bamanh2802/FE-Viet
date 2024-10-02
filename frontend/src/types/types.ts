@@ -16,7 +16,7 @@ export interface Document{
     updated_at: string
 }
 
-export interface Image {
+export interface ImageType {
     image_id: string;
     image_path: string;
     document_id: string;
@@ -31,4 +31,15 @@ export interface Conversation {
     created_at: string;
     updated_at: string;
     project_id: string;
+}
+export interface User {
+    user_id: string;
+    username: string;
+    first_name: string;
+    last_name: string;
+    email: string
+    password: string
+    created_at: string
+    updated_at: string
+    dob: string
 }

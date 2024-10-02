@@ -23,6 +23,7 @@ import {
 import '../project/config.css'
 import UserAvatar from '../../public/avatar.jpg'
 import { useRouter } from 'next/router';
+import { User } from "@/src/types/types";
 
 
 const languages = [
@@ -30,7 +31,11 @@ const languages = [
   {key: "English", label: "English"},
 ]
 
-export default function NavbarHome() {
+interface NavbarHomeProps {
+  user?: User
+}
+
+const NavbarHome: React.FC<NavbarHomeProps> = ({user}) => {
   const router = useRouter()
   const [isNewProject, setIsNewProject] = useState<boolean>(false)
   const [projectName, setProjectName] = useState<string>('')
@@ -82,18 +87,7 @@ export default function NavbarHome() {
                 <PlusIcon />
             </Button> 
           </NavbarItem>
-        <Input
-          classNames={{
-            base: "max-w-full sm:max-w-[10rem] h-10",
-            mainWrapper: "h-full",
-            input: "text-small",
-            inputWrapper: "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
-          }}
-          placeholder="Type to search..."
-          size="sm"
-        //   startContent={<MagnifyingGlassCircleIcon  />}
-          type="search"
-        />
+       
         <Dropdown placement="bottom-end">
           <DropdownTrigger>
             <Avatar
@@ -168,3 +162,5 @@ export default function NavbarHome() {
     </Navbar>
   );
 }
+
+export default NavbarHome
