@@ -136,7 +136,7 @@ const Document: React.FC = () => {
         <SidebarDocument />
       </div>
       <div className="flex flex-col w-full">
-        <NavbarHome />
+        <NavbarDocument />
         <div className="flex border-box pt-1" style={{ height: "calc(100% - 48px)", width: "calc(100% - 4px)" }}>
         <ResizablePanelGroup direction="horizontal">
         <ResizablePanel defaultSize={50}>

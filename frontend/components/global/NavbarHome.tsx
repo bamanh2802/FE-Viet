@@ -3,7 +3,10 @@ import {Select, SelectItem} from "@nextui-org/react";
 import {Button, 
     ButtonGroup, 
     Navbar, 
-    NavbarBrand, NavbarContent, NavbarItem, Link, Input, DropdownItem, DropdownTrigger, Dropdown, DropdownMenu, Avatar} from "@nextui-org/react";
+    NavbarBrand, NavbarContent, NavbarItem, Link, Input, DropdownItem, DropdownTrigger, Dropdown, DropdownMenu, Avatar,
+    Switch
+  
+  } from "@nextui-org/react";
 import { MagnifyingGlassCircleIcon, PlusIcon, HomeIcon
     
  } from "@heroicons/react/24/outline";
@@ -23,7 +26,9 @@ import {
 import '../project/config.css'
 import UserAvatar from '../../public/avatar.jpg'
 import { useRouter } from 'next/router';
-
+import useDarkMode from "@/src/hook/useDarkMode";
+import { MoonIcon } from "../icon/MoonIcon";
+import { SunIcon } from "../icon/SunIcon";
 
 const languages = [
   {key: "Vietnamese", label: "Tiếng Việt"},
@@ -31,6 +36,7 @@ const languages = [
 ]
 
 export default function NavbarHome() {
+  const [isDarkMode, toggleDarkMode] = useDarkMode();
   const router = useRouter()
   const [isNewProject, setIsNewProject] = useState<boolean>(false)
   const [projectName, setProjectName] = useState<string>('')
@@ -66,7 +72,7 @@ export default function NavbarHome() {
   }
 
   return (
-    <Navbar isBordered className="navbar-custom bg-zinc-900 h-14">
+    <Navbar isBordered className="navbar-custom dark:bg-zinc-900 bg-slate-200 h-14">
       <NavbarContent justify="start">
         <NavbarBrand className="mr-4">
           <HomeIcon  className="w-5 h-5"/>
@@ -94,6 +100,15 @@ export default function NavbarHome() {
         //   startContent={<MagnifyingGlassCircleIcon  />}
           type="search"
         />
+        <Switch
+          isSelected={isDarkMode}
+          size="sm"
+          color="success"
+          startContent={<SunIcon />}
+          endContent={<MoonIcon />}
+          onClick={toggleDarkMode}
+        >
+        </Switch>
         <Dropdown placement="bottom-end">
           <DropdownTrigger>
             <Avatar
@@ -113,6 +128,8 @@ export default function NavbarHome() {
             </DropdownItem>
             <DropdownItem key="settings">My Settings</DropdownItem>
             <DropdownItem key="team_settings">Team Settings</DropdownItem>
+              
+            
             <DropdownItem key="">
             <Select
               isRequired
