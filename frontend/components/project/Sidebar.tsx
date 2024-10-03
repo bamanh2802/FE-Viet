@@ -167,7 +167,7 @@ const handleRouterDocument = (doc: Document) => {
 
 
   return (
-    <div className="overflow-auto select-none h-screen w-64 bg-zinc-900 text-white flex flex-col justify-between p-2">
+    <div className="dark:bg-zinc-900 bg-zinc-50 overflow-auto select-none h-screen w-64 flex flex-col justify-between p-2">
       <div>
         <div className="rounded-lg mb-4 border-gray-400">
         <Select 
@@ -363,7 +363,7 @@ const handleRouterDocument = (doc: Document) => {
         {/* Có thể thêm các mục khác tương tự */}
       </div>
 
-      <div className={`transition-opacity z-50 ${contextMenu.show && contextMenu.id === 'documents' ? 'visible opacity-100' : 'invisible opacity-0'} context-menu absolute bg-zinc-800 rounded-lg shadow-lg shadow-zinc-900 w-48`} style={{ top: contextMenu.y, left: contextMenu.x }}> 
+      <div className={`transition-opacity z-50 ${contextMenu.show && contextMenu.id === 'documents' ? 'visible opacity-100' : 'invisible opacity-0'} context-menu absolute rounded-lg shadow-lg  w-48`} style={{ top: contextMenu.y, left: contextMenu.x }}> 
         <ListboxWrapper>
           <Listbox aria-label="Actions" onAction={(key) => alert(key)}>
             <ListboxItem key="new" textValue="New file">
@@ -381,7 +381,7 @@ const handleRouterDocument = (doc: Document) => {
           </Listbox>
         </ListboxWrapper>
       </div>
-      <div className={`transition-opacity z-50 ${contextMenu.show && contextMenu.id === 'conversation' ? 'visible opacity-100' : 'invisible opacity-0'} context-menu absolute bg-zinc-800 rounded-lg shadow-lg shadow-zinc-900 w-48`} style={{ top: contextMenu.y, left: contextMenu.x }}> 
+      <div className={`transition-opacity z-50 ${contextMenu.show && contextMenu.id === 'conversation' ? 'visible opacity-100' : 'invisible opacity-0'} context-menu absolute rounded-lg shadow-lg w-48`} style={{ top: contextMenu.y, left: contextMenu.x }}> 
         <ListboxWrapper>
           <Listbox aria-label="Actions" onAction={(key) => alert(key)}>
             <ListboxItem key="popup" textValue="Pop Up">
@@ -394,7 +394,7 @@ const handleRouterDocument = (doc: Document) => {
         </ListboxWrapper>
       </div>
 
-      <div className={`transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith('doc-') ? 'visible opacity-100' : 'invisible opacity-0'} context-menu absolute bg-zinc-800 rounded-lg shadow-lg shadow-zinc-900 w-48`} style={{ top: contextMenu.y, left: contextMenu.x }}>
+      <div className={`transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith('doc-') ? 'visible opacity-100' : 'invisible opacity-0'} context-menu absolute rounded-lg shadow-lg w-48`} style={{ top: contextMenu.y, left: contextMenu.x }}>
         <ListboxWrapper>
           <Listbox aria-label="Actions" onAction={(key) => alert(key)}>
             <ListboxItem key="new" textValue="New file">
@@ -430,7 +430,7 @@ const handleRouterDocument = (doc: Document) => {
           </Listbox>
         </ListboxWrapper>
       </div>
-      <div className={`transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith('conv-') ? 'visible opacity-100' : 'invisible opacity-0'} context-menu absolute bg-zinc-800 rounded-lg shadow-lg shadow-zinc-900 w-48`} style={{ top: contextMenu.y, left: contextMenu.x }}>
+      <div className={`transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith('conv-') ? 'visible opacity-100' : 'invisible opacity-0'} context-menu absolute rounded-lg shadow-lg w-48`} style={{ top: contextMenu.y, left: contextMenu.x }}>
         <ListboxWrapper>
           <Listbox aria-label="Actions" onAction={(key) => alert(key)}>
             <ListboxItem key="create" textValue="Pop Up">
@@ -460,7 +460,7 @@ const handleRouterDocument = (doc: Document) => {
           </Listbox>
         </ListboxWrapper>
       </div>
-      <div className={`transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith('img-') ? 'visible opacity-100' : 'invisible opacity-0'} context-menu absolute bg-zinc-800 rounded-lg shadow-lg shadow-zinc-900 w-48`} style={{ top: contextMenu.y, left: contextMenu.x }}>
+      <div className={`transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith('img-') ? 'visible opacity-100' : 'invisible opacity-0'} context-menu absolute rounded-lg shadow-lg w-48`} style={{ top: contextMenu.y, left: contextMenu.x }}>
         <ListboxWrapper>
           <Listbox aria-label="Actions" onAction={(key) => alert(key)}>
             <ListboxItem key="popup" textValue="Pop Up">

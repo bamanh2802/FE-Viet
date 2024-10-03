@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import {Select, SelectItem} from "@nextui-org/react";
+import { useTheme } from "next-themes";
 import {Button, 
     ButtonGroup, 
     Navbar, 
@@ -36,6 +37,7 @@ const languages = [
 ]
 
 export default function NavbarHome() {
+  const { theme, setTheme } = useTheme()
   const [isDarkMode, toggleDarkMode] = useDarkMode();
   const router = useRouter()
   const [isNewProject, setIsNewProject] = useState<boolean>(false)
@@ -43,6 +45,15 @@ export default function NavbarHome() {
   const [isLoadingCreate, setIsLoadingCreate] = useState<boolean>(false)
   const handleToggleNewProject = () => {
     setIsNewProject(!isNewProject)
+  }
+
+  const handleTheme = () => {
+    toggleDarkMode()
+    if(isDarkMode) {
+      setTheme('light')
+    } else {
+      setTheme('dark')
+    }
   }
 
   const handleCreateProject = async () => {
@@ -72,7 +83,7 @@ export default function NavbarHome() {
   }
 
   return (
-    <Navbar isBordered className="navbar-custom dark:bg-zinc-900 bg-slate-200 h-14">
+    <Navbar isBordered className="navbar-custom dark:bg-zinc-900 bg-zinc-50 h-14">
       <NavbarContent justify="start">
         <NavbarBrand className="mr-4">
           <HomeIcon  className="w-5 h-5 dark:text-slate-600 text-gray-900"/>
@@ -103,10 +114,9 @@ export default function NavbarHome() {
         <Switch
           isSelected={!isDarkMode}
           size="sm"
-          color="success"
           startContent={<SunIcon />}
           endContent={<MoonIcon />}
-          onClick={toggleDarkMode}
+          onClick={handleTheme}
         >
         </Switch>
         <Dropdown placement="bottom-end">

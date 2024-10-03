@@ -241,18 +241,18 @@ const HomeMain: React.FC<HomeMainProps> = ({userName, projects: initialProjects,
   };
 
   return (
-    <div className="p-10 w-full flex flex-col items-center bg-zinc-800 h-[calc(100vh-56px)] overflow-auto">
+    <div className="p-10 w-full flex flex-col items-center bg-zinc-200 dark:bg-zinc-800 h-[calc(100vh-56px)] overflow-auto">
       
       {
         !userName ? (
-          <div className="max-w-[300px] w-full flex items-center gap-3">
+          <div className="max-w-[300px] w-full flex items-center gap-3 ">
             <div className="w-full flex flex-col gap-2">
               <Skeleton className="h-3 w-3/5 rounded-lg"/>
               <Skeleton className="h-3 w-4/5 rounded-lg"/>
             </div>
           </div>
         ) : (
-          <div className='w-full flex justify-center py-5'>
+          <div className='w-full flex justify-center py-5 '>
             <h2 className="text-2xl font-semibold mb-6">Good morning, {userName}. 
             <br></br>
             How can I help you today?</h2>
@@ -261,10 +261,10 @@ const HomeMain: React.FC<HomeMainProps> = ({userName, projects: initialProjects,
       }
 
       <div className='w-full max-w-4xl '>
-        <Tabs selectedKey={selectedTab} onSelectionChange={setSelectedTab} aria-label="Projects Tabs">
-            <Tab key="recent" title="Recent">
+        <Tabs variant='underlined' className=' ' selectedKey={selectedTab} onSelectionChange={setSelectedTab} aria-label="Projects Tabs">
+            <Tab  key="recent" title="Recent">
             <div className="mt-5">
-                <h3 className="flex items-center text-lg text-gray-300 font-medium mb-3">
+                <h3 className="flex items-center text-lg  font-medium mb-3">
                 <ClockIcon className='mr-2 w-5 h-5'/>
                     Recent projects
                     </h3>
@@ -274,10 +274,24 @@ const HomeMain: React.FC<HomeMainProps> = ({userName, projects: initialProjects,
                     <Card className="w-[268px] space-y-5 p-4" radius="lg">
                       <div className="space-y-3">
                         <Skeleton className="w-3/5 rounded-lg">
-                          <div className="h-3 w-3/5 rounded-lg bg-default-200"></div>
+                          <div className="h-3 w-3/5 rounded-lg "></div>
                         </Skeleton>
                         <Skeleton className="w-4/5 rounded-lg">
-                          <div className="h-3 w-4/5 rounded-lg bg-default-200"></div>
+                          <div className="h-3 w-4/5 rounded-lg "></div>
+                        </Skeleton>
+                        <Skeleton className="w-2/5 rounded-lg">  
+                          <div className="h-3 w-2/5 rounded-lg "></div>
+                        </Skeleton>
+                      </div>
+                    </Card>
+                    
+                    <Card className="w-[268px] space-y-5 p-4" radius="lg">
+                      <div className="space-y-3">
+                        <Skeleton className="w-3/5 rounded-lg">
+                          <div className="h-3 w-3/5 rounded-lg "></div>
+                        </Skeleton>
+                        <Skeleton className="w-4/5 rounded-lg">
+                          <div className="h-3 w-4/5 rounded-lg "></div>
                         </Skeleton>
                         <Skeleton className="w-2/5 rounded-lg">  
                           <div className="h-3 w-2/5 rounded-lg bg-default-300"></div>
@@ -288,24 +302,10 @@ const HomeMain: React.FC<HomeMainProps> = ({userName, projects: initialProjects,
                     <Card className="w-[268px] space-y-5 p-4" radius="lg">
                       <div className="space-y-3">
                         <Skeleton className="w-3/5 rounded-lg">
-                          <div className="h-3 w-3/5 rounded-lg bg-default-200"></div>
+                          <div className="h-3 w-3/5 rounded-lg "></div>
                         </Skeleton>
                         <Skeleton className="w-4/5 rounded-lg">
-                          <div className="h-3 w-4/5 rounded-lg bg-default-200"></div>
-                        </Skeleton>
-                        <Skeleton className="w-2/5 rounded-lg">  
-                          <div className="h-3 w-2/5 rounded-lg bg-default-300"></div>
-                        </Skeleton>
-                      </div>
-                    </Card>
-                    
-                    <Card className="w-[268px] space-y-5 p-4" radius="lg">
-                      <div className="space-y-3">
-                        <Skeleton className="w-3/5 rounded-lg">
-                          <div className="h-3 w-3/5 rounded-lg bg-default-200"></div>
-                        </Skeleton>
-                        <Skeleton className="w-4/5 rounded-lg">
-                          <div className="h-3 w-4/5 rounded-lg bg-default-200"></div>
+                          <div className="h-3 w-4/5 rounded-lg "></div>
                         </Skeleton>
                         <Skeleton className="w-2/5 rounded-lg">  
                           <div className="h-3 w-2/5 rounded-lg bg-default-300"></div>
@@ -348,17 +348,17 @@ const HomeMain: React.FC<HomeMainProps> = ({userName, projects: initialProjects,
             </Tab>
             <Tab key="all-projects" title="All Projects">
             <div className="mt-5">
-                <h3 className="text-lg text-gray-300 font-medium mb-3">All Projects</h3>
+                <h3 className="text-lg  font-medium mb-3">All Projects</h3>
                 <div className="flex flex-wrap gap-6">
                 {projects.length === 0 ? (
                     <>
                     <Card className="w-[268px] space-y-5 p-4" radius="lg">
                       <div className="space-y-3">
                         <Skeleton className="w-3/5 rounded-lg">
-                          <div className="h-3 w-3/5 rounded-lg bg-default-200"></div>
+                          <div className="h-3 w-3/5 rounded-lg "></div>
                         </Skeleton>
                         <Skeleton className="w-4/5 rounded-lg">
-                          <div className="h-3 w-4/5 rounded-lg bg-default-200"></div>
+                          <div className="h-3 w-4/5 rounded-lgx"></div>
                         </Skeleton>
                         <Skeleton className="w-2/5 rounded-lg">  
                           <div className="h-3 w-2/5 rounded-lg bg-default-300"></div>
@@ -368,26 +368,26 @@ const HomeMain: React.FC<HomeMainProps> = ({userName, projects: initialProjects,
                     <Card className="w-[268px] space-y-5 p-4" radius="lg">
                       <div className="space-y-3">
                         <Skeleton className="w-3/5 rounded-lg">
-                          <div className="h-3 w-3/5 rounded-lg bg-default-200"></div>
+                          <div className="h-3 w-3/5 rounded-lgx"></div>
                         </Skeleton>
                         <Skeleton className="w-4/5 rounded-lg">
-                          <div className="h-3 w-4/5 rounded-lg bg-default-200"></div>
+                          <div className="h-3 w-4/5 rounded-lgx"></div>
                         </Skeleton>
                         <Skeleton className="w-2/5 rounded-lg">  
-                          <div className="h-3 w-2/5 rounded-lg bg-default-300"></div>
+                          <div className="h-3 w-2/5 rounded-lg "></div>
                         </Skeleton>
                       </div>
                     </Card>
                     <Card className="w-[268px] space-y-5 p-4" radius="lg">
                       <div className="space-y-3">
                         <Skeleton className="w-3/5 rounded-lg">
-                          <div className="h-3 w-3/5 rounded-lg bg-default-200"></div>
+                          <div className="h-3 w-3/5 rounded-lgx"></div>
                         </Skeleton>
                         <Skeleton className="w-4/5 rounded-lg">
-                          <div className="h-3 w-4/5 rounded-lg bg-default-200"></div>
+                          <div className="h-3 w-4/5 rounded-lgx"></div>
                         </Skeleton>
                         <Skeleton className="w-2/5 rounded-lg">  
-                          <div className="h-3 w-2/5 rounded-lg bg-default-300"></div>
+                          <div className="h-3 w-2/5 rounded-lg "></div>
                         </Skeleton>
                       </div>
                     </Card>
