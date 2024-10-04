@@ -23,7 +23,7 @@ interface ShareWorkspaceProps {
 const ShareWorkspace: FC<ShareWorkspaceProps> = ({ isOpen, onClose }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-zinc-800 border-none">
+      <DialogContent className="sm:max-w-md bg-zinc-200 dark:bg-zinc-900 border-none">
         <DialogHeader>
           <DialogTitle>Share link</DialogTitle>
           <DialogDescription>

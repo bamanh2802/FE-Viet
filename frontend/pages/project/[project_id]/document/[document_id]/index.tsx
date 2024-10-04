@@ -182,10 +182,10 @@ const DocumentPage: React.FC = () => {
         <SidebarDocument />
         <div className="flex flex-col w-full">
           <NavbarDocument projectName={projectName} documentName={documentName} />
-          <div className="flex border-box pt-1" style={{ height: "calc(100% - 48px)", width: "calc(100% - 4px)" }}>
+          <div className="flex" style={{ height: "calc(100% - 48px)", width: "100%" }}>
             <ResizablePanelGroup direction="horizontal">
               <ResizablePanel defaultSize={50}>
-                <div className="flex-1 bg-neutral-800 rounded-t-md h-full">
+                <div className="flex-1 bg-zinc-200 dark:bg-zinc-800 h-full">
                   {chats.length > 7 ? (
                     <Dropdown>
                       <DropdownTrigger>
@@ -217,7 +217,7 @@ const DocumentPage: React.FC = () => {
                           title={chat.title}
                           onContextMenu={(e) => handleContextMenu(e, chat.id)}
                         >
-                          <ChatWindow conversationId="test" />
+                          <ChatWindow conversationId="test" isDocument={true}/>
                         </Tab>
                       ))}
                       <Tab key="add" title={<PlusIcon className="h-5 w-5 text-gray-500" />} />
@@ -243,7 +243,7 @@ const DocumentPage: React.FC = () => {
               </ResizablePanel>
               <ResizableHandle />
               <ResizablePanel minSize={50}>
-                <div className="flex-1 h-full rounded-t-md">
+                <div className="flex-1 h-full">
                   <TextInteraction />
                 </div>
               </ResizablePanel>

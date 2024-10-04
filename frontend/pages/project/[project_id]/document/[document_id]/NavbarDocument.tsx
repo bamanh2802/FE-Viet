@@ -10,6 +10,7 @@ import {Navbar,
 } from "@nextui-org/react";
 import { HomeIcon } from "@heroicons/react/24/outline";
 import '@/components/project/config.css'
+import UserDropdown from "@/components/global/UserDropdown";
 
 interface NavbarDocumentProps {
   projectName: string,
@@ -18,7 +19,7 @@ interface NavbarDocumentProps {
 
 const NavbarDocument: React.FC<NavbarDocumentProps> = ({projectName, documentName}) => {
   return (
-    <Navbar isBordered className="bg-zinc-800 navbar-custom mx-1 rounded-b-md h-12" style={{width: 'calc(100% - 8px)'}}>
+    <Navbar isBordered className="bg-zinc-50 dark:bg-zinc-800 navbar-custom h-12" style={{width: 'calc(100%)'}}>
       <NavbarBrand>
       <Breadcrumbs>
       <BreadcrumbItem><HomeIcon className="w-4 h-4"/></BreadcrumbItem>
@@ -30,7 +31,7 @@ const NavbarDocument: React.FC<NavbarDocumentProps> = ({projectName, documentNam
       </NavbarContent>
       <NavbarContent justify="end">
         <NavbarItem className="">
-
+        <UserDropdown />
         </NavbarItem>
         
       </NavbarContent>

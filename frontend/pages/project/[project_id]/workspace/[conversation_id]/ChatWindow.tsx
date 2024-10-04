@@ -10,6 +10,7 @@ import { ListboxWrapper } from '@/components/ListboxWrapper';
 
 interface ChatWindowProps {
   conversationId: string;
+  isDocument: boolean
 }
 
 interface Message {
@@ -19,7 +20,7 @@ interface Message {
   status: 'loading' | 'sent' | 'streaming';
 }
 
-const ChatWindow: FC<ChatWindowProps> = ({ conversationId }) => {
+const ChatWindow: FC<ChatWindowProps> = ({ conversationId, isDocument }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
@@ -133,8 +134,12 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversationId }) => {
   };
 
   return (
-    <div className="pt-4 flex flex-col relative justify-between h-screen overflow-auto bg-zinc-800 w-full">
-      <div className="flex flex-col w-9/12 max-w-2xl mx-auto flex-grow">
+    <div 
+    style={{
+      height: `${isDocument ? 'calc(100vh - 114px)' : '100vh'}`
+    }}
+    className={`pt-4 flex flex-col relative justify-between overflow-auto bg-zinc-200 dark:bg-zinc-800 w-full`}>
+      <div className={`flex flex-col ${isDocument ? 'w-full' : 'w-9/12'} max-w-2xl mx-auto flex-grow`}>
         {/* Chat window */}
         <div
           ref={chatWindowRef}
@@ -209,15 +214,15 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversationId }) => {
         </div>
 
         {/* Message input form */}
-        <div className="w-full bg-zinc-800 flex justify-center items-center flex-col mt-4 sticky bottom-0">
-          <form onSubmit={sendMessage} className="max-w-2xl pr-2 flex w-full justify-center items-center bg-neutral-700 rounded-3xl">
+        <div className="w-full bg-zinc-200 dark:bg-zinc-800 flex justify-center items-center flex-col mt-4 sticky bottom-0">
+          <form onSubmit={sendMessage} className="max-w-2xl pr-2 flex w-full justify-center items-center rounded-3xl">
             <Textarea
               minRows={1}
               variant="bordered"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => handleKeyDown(e)}
-              className="flex-1 p-1 rounded-full bg-neutral-700 border-custom-none"
+              className="flex-1 p-1 rounded-full border-custom-none"
               placeholder="Type your message..."
             />
             <Button isIconOnly className="ml-2 text-white p-2 rounded-full bg-slate-400" type="submit">

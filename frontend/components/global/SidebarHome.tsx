@@ -71,7 +71,7 @@ return (
                 <li
                   onClick={() => handleRouterToProject(project)}
                   key={index}
-                  className="group transition-all cursor-pointer px-2 p-1 rounded-lg dark:hover:bg-zinc-800 hover:bg-zinc-200 flex items-center justify-between text-sm space-x-1 dark:text-gray-400 text-gray-700"
+                  className="group transition-all cursor-pointer px-2 p-1 rounded-lg flex items-center justify-between text-sm space-x-1 dark:text-gray-400 text-gray-700 dark:hover:bg-zinc-800 hover:bg-zinc-200 "
                 >
                   <div className="flex items-center justify-between">
                     <UserGroupIcon className="h-4 w-4 dark:text-gray-400 text-gray-700" />

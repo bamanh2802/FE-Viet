@@ -68,7 +68,7 @@ const NewWorkspace: FC<NewWorkspaceProps> = ({ projectId, isOpen, onClose, docum
             <DialogTrigger asChild>
                 {/* Trigger button or component can be added here */}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[827px] bg-zinc-800 border-none">
+            <DialogContent className="sm:max-w-[827px] bg-zinc-200 dark:bg-zinc-900 border-none">
                 <DialogTitle>Select Files</DialogTitle>
                 
                 {/* Thêm trường input cho tên */}

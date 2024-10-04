@@ -59,7 +59,7 @@ const NavbarHome: React.FC<NavbarHomeProps> = ({user}) => {
       </NavbarContent>
 
       <Dialog open={isNewProject} onOpenChange={handleToggleNewProject}>
-        <DialogContent className=" bg-zinc-800 border-none">
+        <DialogContent className="bg-zinc-200 dark:bg-zinc-900 border-none">
           <CardHeader>
             <CardTitle>Create project</CardTitle>
             <CardDescription>Create your new project in one-click.</CardDescription>

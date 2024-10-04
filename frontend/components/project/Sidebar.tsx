@@ -70,7 +70,7 @@ const Sidebar: React.FC<SidebarProps> = ({ documents, images, conversations }) =
   const [selectedProject, setSelectedProject] = useState<string>('');
   // const [documents, setDocuments] = useState<Document[]>([])
   const [isLoadingProject, setIsLoadingProject] = useState<boolean>(true)
-  const [expandedSections, setExpandedSections] = useState<string[]>([]);
+  const [expandedSections, setExpandedSections] = useState<string[]>(['documents, conversation']);
   const dispatch = useDispatch();
   const [isUploadDocs, setIsUploadDocs] = useState<boolean>(false)
   const [contextMenu, setContextMenu] = useState({ show: false, x: 0, y: 0, id: '' });
@@ -216,70 +216,74 @@ const handleRouterDocument = (doc: Document) => {
         {/* Tùy chỉnh các mục menu ở đây */}
         <div className="my-2">
           <div
-            className={`flex items-center justify-between text-sm font-semibold text-gray-500 transition-all rounded-lg px-2 p-1 cursor-pointer hover:bg-zinc-800`}
+            className={`flex items-center justify-between text-sm font-semibold dark:text-gray-400 text-gray-700 transition-all rounded-lg px-2 p-1 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-800`}
             onClick={() => toggleExpand('documents')}
             onContextMenu={(e) => handleContextMenu(e, 'documents')}
           >
             <div className="flex justify-between items-center space-x-3">
-              <FolderIcon className="h-5 w-5 text-gray-300" />
               <span className="text-xs">Documents</span>
             </div>
             <ChevronDownIcon
-              className={`w-4 h-4 transform transition-transform duration-300`}
+              className={`w-4 h-4 transform transition-transform duration-300 ${expandedSections.includes('documents') ? 'rotate-180' : ''}`}
             />
           </div>
           {/* Các item con cho mục "Tài liệu" */}
-          {expandedSections.includes('documents') && (
-            <div className="transition-all ml-4 mt-1 space-y-1 border-l-1 border-gray-400">
-              {documents.map((doc, index) => (
-                <div
-                  onClick={() => handleRouterDocument(doc)}
-                  key={index}
-                  className="ml-2 group flex justify-between items-center space-x-2 text-xs text-gray-400 hover:text-white cursor-pointer p-2 rounded-lg hover:bg-gray-700"
-                  onContextMenu={(e) => handleContextMenu(e, doc.document_id)}
-                >
-                  <div className='flex justify-center items-center text-white '>
-                    <DocumentTextIcon className='w-4 h-4 pr-1' />
-                    <span>{doc.document_name}</span>
+          <div className={`mt-2 overflow-hidden transition-max-height duration-300 ease-in-out ${expandedSections.includes('documents') ? 'max-h-96' : 'max-h-0'}`}>
+            {expandedSections.includes('documents') && (
+              <div className="transition-all ml-4 mt-1 space-y-1 border-l-1 border-gray-400">
+                {documents.map((doc, index) => (
+                  <div
+                    onClick={() => handleRouterDocument(doc)}
+                    key={index}
+                    className="ml-2 group flex justify-between items-center space-x-2 text-xs text-gray-400 cursor-pointer p-2 rounded-lg dark:text-gray-400 text-gray-700 dark:hover:bg-zinc-800 hover:bg-zinc-200"
+                    onContextMenu={(e) => handleContextMenu(e, doc.document_id)}
+                  >
+                    <div className='flex justify-center items-center'>
+                      <DocumentTextIcon className='w-4 h-4 pr-1' />
+                      <span>{doc.document_name}</span>
+                    </div>
+                    <Tooltip content="Thêm">
+                      <EllipsisHorizontalIcon 
+                    onClick={(e) => handleClick(e, doc.document_id)}
+                      className='transition-all w-4 h-4 opacity-0 group-hover:opacity-100' />
+                    </Tooltip>
                   </div>
-                  <Tooltip content="Thêm">
-                    <EllipsisHorizontalIcon 
-                   onClick={(e) => handleClick(e, doc.document_id)}
-                    className='transition-all w-4 h-4 opacity-0 group-hover:opacity-100' />
-                  </Tooltip>
+                ))}
+                <div
+                  className="ml-2 transition-all flex items-center space-x-2 text-xs text-gray-400 hover:text-white cursor-pointer p-2 rounded-lg dark:text-gray-400 text-gray-700 dark:hover:bg-zinc-800 hover:bg-zinc-200 "
+                >
+                  <PlusIcon className='w-4 h-4' />
+                  <span>Thêm</span>
                 </div>
-              ))}
-              <div
-                className="ml-2 transition-all flex items-center space-x-2 text-xs text-gray-400 hover:text-white cursor-pointer p-2 rounded-lg hover:bg-gray-700"
-              >
-                <PlusIcon className='w-4 h-4' />
-                <span>Thêm</span>
               </div>
-            </div>
-          )}
+            )}
+          </div>
       </div>
 
         <div className="my-2">
           <div 
-            className={`flex items-center justify-between p-3 rounded-lg cursor-pointer hover:bg-gray-700`} 
+            className={`flex items-center justify-between text-sm font-semibold dark:text-gray-400 text-gray-700 transition-all rounded-lg px-2 p-1 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-800`} 
             onContextMenu={(e) => handleContextMenu(e, 'images')}
           >
-                  <Tooltip content="Đang như l nên đợi tương lai nhé :(">
-            <div className="flex items-center space-x-3">
-              <PhotoIcon className="h-5 w-5 text-gray-300" />
-              <span className="text-xs">Hình ảnh</span>
+            <Tooltip content="Chức năng hiện đang phát triển">
+            <div className="flex justify-between items-center space-x-3">
+              <span className="text-xs">Images</span>
             </div>
-          </Tooltip>
+            </Tooltip>
+            <ChevronDownIcon
+              className={`w-4 h-4 transform transition-transform duration-300 ${expandedSections.includes('images') ? 'rotate-180' : ''}`}
+            />
           </div>
+          <div className={`mt-2 overflow-hidden transition-max-height duration-300 ease-in-out ${expandedSections.includes('images') ? 'max-h-96' : 'max-h-0'}`}>
           {/* Các item con cho mục "Hình ảnh" */}
           {expandedSections.includes('images') && (
             <div className="transition-all ml-4 mt-1 space-y-1 border-l-1 border-gray-400">
               {images.map((img, index) => (
                 <div
                   key={index}
-                  className="ml-2 group flex justify-between items-center space-x-2 text-xs text-gray-400 hover:text-white cursor-pointer p-2 rounded-lg hover:bg-gray-700"
+                  className="ml-2 group flex justify-between items-center space-x-2 text-xs text-gray-400 hover:text-white cursor-pointer p-2 rounded-lg dark:text-gray-400 text-gray-700 dark:hover:bg-zinc-800 hover:bg-zinc-200 "
                   onContextMenu={(e) => handleContextMenu(e, img.image_id)}
-                >
+                  >
                   <div className='flex justify-center items-center '>
                     <DocumentTextIcon className='w-4 h-4 pr-1' />
                     <Tooltip content={img.caption}>
@@ -289,31 +293,36 @@ const handleRouterDocument = (doc: Document) => {
                   <Tooltip content="Thêm">
                     <EllipsisHorizontalIcon 
                    onClick={(e) => handleClick(e, img.image_id)}
-                    className='transition-all w-4 h-4 opacity-0 group-hover:opacity-100' />
+                   className='transition-all w-4 h-4 opacity-0 group-hover:opacity-100' />
                   </Tooltip>
                 </div>
               ))}
             </div>
           )}
+          </div>
         </div>
+
+        {/* Conversation */}
         <div className="my-2">
           <div 
-            className={`flex items-center justify-between p-3 rounded-lg cursor-pointer hover:bg-gray-700`} 
+            className={`flex items-center justify-between text-sm font-semibold dark:text-gray-400 text-gray-700 transition-all rounded-lg px-2 p-1 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-800`} 
             onClick={() => toggleExpand('conversation')}
             onContextMenu={(e) => handleContextMenu(e, 'conversation')}
           >
-            <div className="flex items-center space-x-3">
-              <PhotoIcon className="h-5 w-5 text-gray-300" />
-              <span className="text-xs">Conversation</span>
+           <div className="flex justify-between items-center space-x-3">
+              <span className="text-xs">Conversations</span>
             </div>
+            <ChevronDownIcon
+              className={`w-4 h-4 transform transition-transform duration-300 ${expandedSections.includes('conversation') ? 'rotate-180' : ''}`}
+            />
           </div>
-          {/* Các item con cho mục "Hình ảnh" */}
+          <div className={`mt-2 overflow-hidden transition-max-height duration-300 ease-in-out ${expandedSections.includes('conversation') ? 'max-h-96' : 'max-h-0'}`}>
           {expandedSections.includes('conversation') && (
             <div className="transition-all ml-4 mt-1 space-y-1 border-l-1 border-gray-400">
               {conversations.map((conversation, index) => (
                 <div
                   key={index}
-                  className="ml-2 group flex justify-between items-center space-x-2 text-xs text-gray-400 hover:text-white cursor-pointer p-2 rounded-lg hover:bg-gray-700"
+                  className="ml-2 group flex justify-between items-center space-x-2 text-xs text-gray-400 cursor-pointer p-2 rounded-lg dark:text-gray-400 text-gray-700 dark:hover:bg-zinc-800 hover:bg-zinc-200 "
                   onContextMenu={(e) => handleContextMenu(e, conversation.conversation_id)}
                 >
                   <div className='flex justify-center items-center '>
@@ -331,39 +340,53 @@ const handleRouterDocument = (doc: Document) => {
               ))}
             </div>
           )}
+          </div>
         </div>
 
         <div className="my-2">
           <div 
-            className={`flex items-center justify-between p-3 rounded-lg cursor-pointer hover:bg-gray-700`} 
-            onClick={() => toggleExpand('notes')}
-            onContextMenu={(e) => handleContextMenu(e, 'notes')}
+            className={`flex items-center justify-between text-sm font-semibold dark:text-gray-400 text-gray-700 transition-all rounded-lg px-2 p-1 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-800`} 
+            onClick={() => toggleExpand('note')}
+            onContextMenu={(e) => handleContextMenu(e, 'Note')}
           >
-            <div className="flex items-center space-x-3">
-              <ChartBarSquareIcon className="h-5 w-5 text-gray-300" />
-              <span className="text-xs">Ghi chú</span>
+           <div className="flex justify-between items-center space-x-3">
+              <span className="text-xs">Notes</span>
             </div>
+            <ChevronDownIcon
+              className={`w-4 h-4 transform transition-transform duration-300 ${expandedSections.includes('note') ? 'rotate-180' : ''}`}
+            />
           </div>
-          {/* Các item con cho mục "Ghi chú" */}
-          {expandedSections.includes('notes') && (
+          <div className={`mt-2 overflow-hidden transition-max-height duration-300 ease-in-out ${expandedSections.includes('note') ? 'max-h-96' : 'max-h-0'}`}>
+          {expandedSections.includes('note') && (
             <div className="transition-all ml-4 mt-1 space-y-1 border-l-1 border-gray-400">
-              {/* {notes.map((note, index) => (
+              {conversations.map((conversation, index) => (
                 <div
                   key={index}
-                  className="flex items-center space-x-2 text-xs text-gray-400 hover:text-white cursor-pointer p-2 rounded-lg hover:bg-gray-700"
-                  onContextMenu={(e) => handleContextMenu(e, note.id)}
+                  className="ml-2 group flex justify-between items-center space-x-2 text-xs text-gray-400 cursor-pointer p-2 rounded-lg dark:text-gray-400 text-gray-700 dark:hover:bg-zinc-800 hover:bg-zinc-200 "
+                  onContextMenu={(e) => handleContextMenu(e, conversation.conversation_id)}
                 >
-                  <span>{note.title}</span>
+                  <div className='flex justify-center items-center '>
+                    <DocumentTextIcon className='w-4 h-4 pr-1' />
+                    <Tooltip content={conversation.conversation_name}>
+                      <span className='truncate max-w-40'>{conversation.conversation_name}</span>
+                    </Tooltip>
+                  </div>
+                  <Tooltip content="Thêm">
+                    <EllipsisHorizontalIcon 
+                   onClick={(e) => handleClick(e, conversation.conversation_id)}
+                    className='transition-all w-4 h-4 opacity-0 group-hover:opacity-100' />
+                  </Tooltip>
                 </div>
-              ))} */}
+              ))}
             </div>
           )}
+          </div>
         </div>
 
         {/* Có thể thêm các mục khác tương tự */}
       </div>
 
-      <div className={`transition-opacity z-50 ${contextMenu.show && contextMenu.id === 'documents' ? 'visible opacity-100' : 'invisible opacity-0'} context-menu absolute rounded-lg shadow-lg  w-48`} style={{ top: contextMenu.y, left: contextMenu.x }}> 
+      <div className={`dark:bg-zinc-800 bg-zinc-200 transition-opacity z-50 ${contextMenu.show && contextMenu.id === 'documents' ? 'visible opacity-100' : 'invisible opacity-0'} context-menu absolute rounded-lg shadow-lg  w-48`} style={{ top: contextMenu.y, left: contextMenu.x }}> 
         <ListboxWrapper>
           <Listbox aria-label="Actions" onAction={(key) => alert(key)}>
             <ListboxItem key="new" textValue="New file">
@@ -381,7 +404,7 @@ const handleRouterDocument = (doc: Document) => {
           </Listbox>
         </ListboxWrapper>
       </div>
-      <div className={`transition-opacity z-50 ${contextMenu.show && contextMenu.id === 'conversation' ? 'visible opacity-100' : 'invisible opacity-0'} context-menu absolute rounded-lg shadow-lg w-48`} style={{ top: contextMenu.y, left: contextMenu.x }}> 
+      <div className={`dark:bg-zinc-800 bg-zinc-200 transition-opacity z-50 ${contextMenu.show && contextMenu.id === 'conversation' ? 'visible opacity-100' : 'invisible opacity-0'} context-menu absolute rounded-lg shadow-lg w-48`} style={{ top: contextMenu.y, left: contextMenu.x }}> 
         <ListboxWrapper>
           <Listbox aria-label="Actions" onAction={(key) => alert(key)}>
             <ListboxItem key="popup" textValue="Pop Up">
@@ -394,7 +417,7 @@ const handleRouterDocument = (doc: Document) => {
         </ListboxWrapper>
       </div>
 
-      <div className={`transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith('doc-') ? 'visible opacity-100' : 'invisible opacity-0'} context-menu absolute rounded-lg shadow-lg w-48`} style={{ top: contextMenu.y, left: contextMenu.x }}>
+      <div className={`dark:bg-zinc-800 bg-zinc-200 transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith('doc-') ? 'visible opacity-100' : 'invisible opacity-0'} context-menu absolute rounded-lg shadow-lg w-48`} style={{ top: contextMenu.y, left: contextMenu.x }}>
         <ListboxWrapper>
           <Listbox aria-label="Actions" onAction={(key) => alert(key)}>
             <ListboxItem key="new" textValue="New file">
@@ -430,7 +453,7 @@ const handleRouterDocument = (doc: Document) => {
           </Listbox>
         </ListboxWrapper>
       </div>
-      <div className={`transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith('conv-') ? 'visible opacity-100' : 'invisible opacity-0'} context-menu absolute rounded-lg shadow-lg w-48`} style={{ top: contextMenu.y, left: contextMenu.x }}>
+      <div className={`dark:bg-zinc-800 bg-zinc-200 transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith('conv-') ? 'visible opacity-100' : 'invisible opacity-0'} context-menu absolute rounded-lg shadow-lg w-48`} style={{ top: contextMenu.y, left: contextMenu.x }}>
         <ListboxWrapper>
           <Listbox aria-label="Actions" onAction={(key) => alert(key)}>
             <ListboxItem key="create" textValue="Pop Up">
@@ -460,7 +483,7 @@ const handleRouterDocument = (doc: Document) => {
           </Listbox>
         </ListboxWrapper>
       </div>
-      <div className={`transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith('img-') ? 'visible opacity-100' : 'invisible opacity-0'} context-menu absolute rounded-lg shadow-lg w-48`} style={{ top: contextMenu.y, left: contextMenu.x }}>
+      <div className={`dark:bg-zinc-800 bg-zinc-200 transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith('img-') ? 'visible opacity-100' : 'invisible opacity-0'} context-menu absolute rounded-lg shadow-lg w-48`} style={{ top: contextMenu.y, left: contextMenu.x }}>
         <ListboxWrapper>
           <Listbox aria-label="Actions" onAction={(key) => alert(key)}>
             <ListboxItem key="popup" textValue="Pop Up">
