@@ -13,24 +13,15 @@ import { Project, User } from "@/src/types/types";
 const Home = () => {
     const router = useRouter();
     const dispatch = useDispatch();
-    const [user, setUser] = useState<User | undefined>(undefined);
+    const user = useSelector((state: RootState) => state.user);
     const projects = useSelector((state: RootState) => state.projects.projects);
 
     useEffect(() => {
         // Gọi API để lấy danh sách dự án
         handleGetProjects();
-        handleGetUser()
     }, []);
 
-    const handleGetUser = async () => {
-        try {
-            const data = await getUser()
-            setUser(data.data.msg)
-            console.log(data)
-        } catch(e){
-            console.log(e)
-        }
-    }
+
 
     const handleGetProjects = async () => {
         try {

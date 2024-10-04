@@ -34,13 +34,15 @@ import { DocumentTextIcon,
     ChatBubbleLeftRightIcon,
     TrashIcon,
     PencilSquareIcon,
-    ArrowUpOnSquareIcon
+    ArrowUpOnSquareIcon,
+    PlusIcon
 } from "@heroicons/react/24/outline";
 
 import 'remixicon/fonts/remixicon.css';
 import '../project/config.css'
 import { Project, Document, ImageType, Conversation } from "@/src/types/types";
-import {Skeleton} from "@nextui-org/react";
+import {Skeleton, Avatar, Tooltip} from "@nextui-org/react";
+import { Plus } from "lucide-react";
 interface WorkSpaceProps{
     documents: Document[],
     images: ImageType[],
@@ -119,16 +121,40 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({projectId, documents, images, conv
     const handleOpenWorkspace = (conv: Conversation) => {
         handleRouterWorkspace(conv.conversation_id)
     }
+    function convertDate(dateString: string): string {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffInMs = now.getTime() - date.getTime();
+        const diffInSeconds = Math.floor(diffInMs / 1000);
+        const diffInMinutes = Math.floor(diffInSeconds / 60);
+        const diffInHours = Math.floor(diffInMinutes / 60);
+        const diffInDays = Math.floor(diffInHours / 24);
+        const diffInWeeks = Math.floor(diffInDays / 7);
+      
+        // Nếu dưới 1 tuần
+        if (diffInDays < 7) {
+          return `${diffInDays}d ago`;
+        }
+      
+        // Nếu dưới 1 tháng
+        if (diffInWeeks < 4) {
+          return `${diffInWeeks}w ago`;
+        }
+      
+        // Nếu trên 1 tháng, format là "Ngày Tháng" (VD: 1 Feb, 23 May)
+        const options: Intl.DateTimeFormatOptions = { day: "numeric", month: "short" };
+        return date.toLocaleDateString("en-US", options);
+      }
 
 
     return (
-        <div className="overflow-auto flex justify-center bg-zinc-800 w-full"
+        <div className="overflow-auto flex justify-center bg-zinc-200 dark:bg-zinc-800 w-full"
         style={{ height: 'calc(100vh - 56px)'}}
         >
             <div className="w-full flex flex-col items-center px-12">
 
                 {/* WorkSpace */}
-                <div className="w-full flex-col max-w-screen-lg mt-8">
+                <div className="w-full flex-col max-w-4xl  mt-8">
                 <span className="text-start opacity-85 py-4 block">Conversation</span>
                 <div className="">
                     {
@@ -149,6 +175,13 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({projectId, documents, images, conv
                             <>
                             <Carousel>
                             <CarouselContent>
+                            <CarouselItem className="cursor-pointer basis-1/5 hover:scale-[1.01] transition-all">
+                                <Tooltip content="Add new Conversation">
+                                    <Card className="shadow-none bg-opacity-0 max-w-[180px] h-[170px] flex justify-center items-center">
+                                        <PlusIcon className="w-h-16 h-16" />
+                                    </Card>
+                                </Tooltip>
+                                </CarouselItem>
                             {
                                 conversations.map((conv, index) => (
                                     <CarouselItem
@@ -156,7 +189,7 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({projectId, documents, images, conv
                                     className="basis-1/4">
                                     <Card 
                                     
-                                    className="w-60 hover:scale-105 cursor-pointer">
+                                    className="w-60 hover:scale-[1.01] cursor-pointer">
                                         <CardHeader className="flex gap-3">
                                             <Image
                                             alt="nextui logo"
@@ -167,7 +200,7 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({projectId, documents, images, conv
                                             />
                                             <div className="flex flex-col">
                                             <p className="text-md">{conv.conversation_name}</p>
-                                            <p className="text-small text-default-500">{conv.created_at}</p>
+                                            <p className="text-small text-default-500">{convertDate(conv.created_at)}</p>
                                             </div>
                                         </CardHeader>
                                         <Divider/>
@@ -203,10 +236,10 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({projectId, documents, images, conv
 
 
                 {/* Documents */}
-                <div className="w-full flex-col max-w-screen-lg mt-8">
+                <div className="w-full flex-col max-w-4xl mt-8">
                     <span className="text-start opacity-85 py-4 block">Documents</span>
 
-                    <div className="flex flex-col overflow-auto w-full max-h-72">
+                    <div className="">
                         {documents === undefined ? (
                             <div className=" w-full flex flex-col items-center gap-3">
                                     <Skeleton className="h-12 w-full rounded-lg"/>
@@ -214,34 +247,53 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({projectId, documents, images, conv
                             </div>
                         ) : (
                             <>
-                            {
-                                documents.map((doc, index) => (
-                                    <div
-                                        key={index}
-                                        className="group cursor-pointer relative flex items-center bg-zinc-700 my-1 mx-0 rounded-lg hover:bg-zinc-600"
-                                        >
-                                        <img
-                                            src="https://static.vecteezy.com/system/resources/previews/023/234/824/original/pdf-icon-red-and-white-color-for-free-png.png"
-                                            alt="Document icon"
-                                            className="w-12 h-12 object-cover rounded-lg"
-                                        />
-                                        <div className="ml-4 flex-grow">
-                                            <p className="text-tiny uppercase font-bold">{doc.document_name}</p>
-                                            <p className="text-default-500 text-xs">{doc.type}</p>
-                                        </div>
-                                        <div className="mr-96">
-                                            <p className="text-default-500 text-xs">{doc.updated_at}</p>
+                            <Carousel>
+                                <CarouselContent>
+                                {/* Thẻ "Plus" thêm mới */}
+                                <CarouselItem className="cursor-pointer basis-1/5 hover:scale-[1.01] transition-all">
+                                <Tooltip content="Add new Document">
+                                    <Card className="shadow-none bg-opacity-0 max-w-[180px] h-[170px] flex justify-center items-center">
+                                        <PlusIcon className="w-h-16 h-16" />
+                                    </Card>
+                                </Tooltip>
+                                </CarouselItem>
 
+                                {/* Lặp qua các tài liệu */}
+                                {documents.map((doc, index) => (
+                                    <CarouselItem className="basis-1/5 hover:scale-[1.01] transition-all" key={index}>
+                                    <Card className="max-w-[180px]">
+                                        <CardBody className="overflow-hidden p-0 h-[90px]">
+                                        <Image
+                                            alt="Card background"
+                                            className="object-cover rounded-t-xl"
+                                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGAA4Wd4bco5Xv33GasXrnDdQT5OFXwa3HUQ&s"
+                                            width={180}
+                                            height={180}
+                                        />
+                                        </CardBody>
+                                        <CardHeader className="pb-0 h-20 py-2 pt-2 px-2 flex-col justify-between items-start">
+                                        <div className="w-full h-8 truncate">
+                                            <h4 className="text-md">{doc.document_name}</h4>
                                         </div>
-                                        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                            <Button isIconOnly className="text-red-500 hover:text-red-700"><TrashIcon className="w-4 h-4"/></Button>
-                                            <Button isIconOnly className="text-blue-500 hover:text-blue-700"><PencilSquareIcon className="w-4 h-4"/></Button>
-                                            <Button isIconOnly className="text-green-500 hover:text-green-700"><ArrowUpOnSquareIcon className="w-4 h-4"/></Button>
+                                        <div className="flex justify-center">
+                                            <Avatar
+                                            src="https://i.pravatar.cc/150?u=a042581f4e29026024d"
+                                            className="w-4 h-4 text-tiny"
+                                            />
+                                            <p className="text-xs opacity-80 pl-2 text-center">
+                                            {convertDate(doc.created_at)}
+                                            </p>
                                         </div>
-                                    </div>
-                                ))
-                            }
+                                        </CardHeader>
+                                    </Card>
+                                    </CarouselItem>
+                                ))}
+                                </CarouselContent>
+                                <CarouselPrevious />
+                                <CarouselNext />
+                            </Carousel>
                             </>
+
                         )
                     }
                     </div>

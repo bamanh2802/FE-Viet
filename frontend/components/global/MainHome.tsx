@@ -38,6 +38,7 @@ import {
     DialogContent,
     DialogTitle
 } from "@/components/ui/dialog";
+import { useTranslation } from 'react-i18next';
 
 import { ListboxWrapper } from '../ListboxWrapper';
 
@@ -72,6 +73,7 @@ interface HomeMainProps {
 }
 const HomeMain: React.FC<HomeMainProps> = ({userName, projects: initialProjects, onProjectsUpdate }) => {
   const router = useRouter();
+  const { t } = useTranslation('common');
   const [selectedTab, setSelectedTab] = useState("recent");
   const [recentProjects, setRecentProject] = useState<Project[]>([])
   const [isOpenRename, setIsOpenRename] = useState<boolean>(false);
@@ -253,7 +255,7 @@ const HomeMain: React.FC<HomeMainProps> = ({userName, projects: initialProjects,
           </div>
         ) : (
           <div className='w-full flex justify-center py-5 '>
-            <h2 className="text-2xl font-semibold mb-6">Good morning, {userName}. 
+            <h2 className="text-2xl font-semibold mb-6">{t('welcome')}, {userName}. 
             <br></br>
             How can I help you today?</h2>
           </div>

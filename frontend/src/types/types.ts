@@ -43,3 +43,4 @@ export interface User {
     updated_at: string
     dob: string
 }
+
