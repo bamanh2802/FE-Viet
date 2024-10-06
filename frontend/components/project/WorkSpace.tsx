@@ -48,8 +48,10 @@ interface WorkSpaceProps{
     images: ImageType[],
     conversations: Conversation[]
     projectId: string
+    openNewDocument: () => void
+    onOpenDialog: () => void
 }
-const WorkSpace: React.FC<WorkSpaceProps> = ({projectId, documents, images, conversations}) => {
+const WorkSpace: React.FC<WorkSpaceProps> = ({onOpenDialog, openNewDocument, projectId, documents, images, conversations}) => {
    
 
     const dataTables = [
@@ -174,10 +176,13 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({projectId, documents, images, conv
                         (
                             <>
                             <Carousel>
-                            <CarouselContent>
-                            <CarouselItem className="cursor-pointer basis-1/5 hover:scale-[1.01] transition-all">
+                            <CarouselContent className="">
+                            <CarouselItem 
+                            onClick={onOpenDialog}
+                            className="cursor-pointer basis-1/5 hover:scale-[1.01] transition-all">
                                 <Tooltip content="Add new Conversation">
-                                    <Card className="shadow-none bg-opacity-0 max-w-[180px] h-[170px] flex justify-center items-center">
+                                    <Card 
+                                    className="shadow-none bg-opacity-0 w-full h-[170px] flex justify-center items-center">
                                         <PlusIcon className="w-h-16 h-16" />
                                     </Card>
                                 </Tooltip>
@@ -189,20 +194,22 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({projectId, documents, images, conv
                                     className="basis-1/4">
                                     <Card 
                                     
-                                    className="w-60 hover:scale-[1.01] cursor-pointer">
-                                        <CardHeader className="flex gap-3">
+                                    className=" hover:scale-[1.01] cursor-pointer">
+                                        <CardHeader className="flex gap-3 items-center">
                                             <Image
-                                            alt="nextui logo"
-                                            height={40}
-                                            radius="sm"
-                                            src="https://icons.veryicon.com/png/o/education-technology/ballicons/workspace-1.png"
-                                            width={40}
+                                                alt="nextui logo"
+                                                height={40}
+                                                width={40}
+                                                className="flex-shrink-0"
+                                                radius="sm"
+                                                src="https://icons.veryicon.com/png/o/education-technology/ballicons/workspace-1.png"
                                             />
                                             <div className="flex flex-col">
-                                            <p className="text-md">{conv.conversation_name}</p>
-                                            <p className="text-small text-default-500">{convertDate(conv.created_at)}</p>
+                                                <p className="text-md truncate max-w-[130px]">{conv.conversation_name}</p>
+                                                <p className="text-small text-default-500">{convertDate(conv.created_at)}</p>
                                             </div>
-                                        </CardHeader>
+                                            </CardHeader>
+
                                         <Divider/>
                                         <CardBody>
                                             Tin nhắn đầu tiên
@@ -250,7 +257,9 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({projectId, documents, images, conv
                             <Carousel>
                                 <CarouselContent>
                                 {/* Thẻ "Plus" thêm mới */}
-                                <CarouselItem className="cursor-pointer basis-1/5 hover:scale-[1.01] transition-all">
+                                <CarouselItem 
+                                onClick={openNewDocument}
+                                className="cursor-pointer basis-1/5 hover:scale-[1.01] transition-all">
                                 <Tooltip content="Add new Document">
                                     <Card className="shadow-none bg-opacity-0 max-w-[180px] h-[170px] flex justify-center items-center">
                                         <PlusIcon className="w-h-16 h-16" />

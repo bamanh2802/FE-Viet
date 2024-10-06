@@ -5,9 +5,10 @@ import { LockClosedIcon,
   UserGroupIcon,
   ChatBubbleLeftIcon,
   ChevronDoubleRightIcon,
-  ChevronDownIcon
+  ChevronDownIcon,
+  MagnifyingGlassIcon
 } from '@heroicons/react/24/outline';
-import { Button } from "@/components/ui/button"
+import {Button} from '@nextui-org/react';
 import { Project } from '@/src/types/types';
 import { FC, useState } from 'react';
 import {Skeleton} from "@nextui-org/react";
@@ -38,8 +39,13 @@ return (
       <div className="mb-6">
         <h2 className="text-lg font-medium text-zinc-900 dark:text-gray-400">Quick access</h2>
       </div>
-      <div className="bg-gray-800 p-2 rounded-lg flex items-center mb-8">
-        <input className="bg-transparent  outline-none text-sm w-full" placeholder="Search..." />
+      <div className='pb-8'>
+      <Button 
+          size='sm'
+          variant='flat' 
+          className='w-full' startContent={<MagnifyingGlassIcon className='w-4 h-4' />}>
+            Search something...
+        </Button>
       </div>
       {/* Projects */}
       <div className="mb-6">

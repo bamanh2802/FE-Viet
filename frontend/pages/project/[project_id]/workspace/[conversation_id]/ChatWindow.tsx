@@ -1,15 +1,17 @@
 import React, { FC, useEffect, useState, useRef, FormEvent, KeyboardEvent, MouseEvent } from 'react';
 import { Button, Textarea, Listbox, ListboxItem } from "@nextui-org/react";
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
-import PlusIcon from '@heroicons/react/24/outline';
 import { ClipboardIcon, HeartIcon, HandThumbDownIcon, PencilSquareIcon,
   Square2StackIcon, QuestionMarkCircleIcon, ClipboardDocumentCheckIcon
  } from '@heroicons/react/24/outline';
 import '@/components/project/config.css';
 import { ListboxWrapper } from '@/components/ListboxWrapper';
+import { useRouter } from 'next/router';
+import { useDispatch, useSelector } from 'react-redux';
+import { addUserMessage, addServerMessage, updateServerMessage, finalizeServerMessage } from '@/src/chatSlice';
+import { RootState } from '@/src/store';
 
 interface ChatWindowProps {
-  conversationId: string;
   isDocument: boolean
 }
 
@@ -20,8 +22,11 @@ interface Message {
   status: 'loading' | 'sent' | 'streaming';
 }
 
-const ChatWindow: FC<ChatWindowProps> = ({ conversationId, isDocument }) => {
+const ChatWindow: FC<ChatWindowProps> = ({ isDocument }) => {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [avatarLoading, setAvatarLoading] = useState<boolean>(false);
+  const router = useRouter()
+  const { conversation_id } = router.query as { conversation_id: string };
   const [input, setInput] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const socket = useRef<WebSocket | null>(null);
@@ -29,33 +34,34 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversationId, isDocument }) => {
   const [selectedText, setSelectedText] = useState<string | null>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
 
+  const dispatch = useDispatch();
+  const conversation = useSelector((state: RootState) => state.chat.conversations[conversation_id] || { messages: [], isLoading: false });
+  
+  const [currentMessage, setCurrentMessage] = useState<string>('');
+  const [buffer, setBuffer] = useState<string>('');
+
   useEffect(() => {
-    socket.current = new WebSocket('ws://localhost:3001/api/websocket');
+    socket.current = new WebSocket(`ws://localhost:8000/ws/conversations/${conversation_id}/send-message`);
 
     socket.current.onopen = () => {
       console.log('Connected to WebSocket server');
     };
 
     socket.current.onmessage = (event: MessageEvent) => {
-      setMessages((prev) => {
-        if (prev[prev.length - 1]?.content === 'loading...') {
-          return [
-            ...prev.slice(0, -1),
-            { id: prev.length, sender: 'Server', content: event.data, status: 'sent' },
-          ];
-        }
-        return prev.map((msg, index) =>
-          index === prev.length - 1 && msg.sender === 'Server'
-            ? { ...msg, content: msg.content + " " + event.data }
-            : msg
-        );
-      });
-
-      setLoading(false);
+      setLoading(true);
+      setAvatarLoading(false);
+      if (event.data !== 'done') {
+        setBuffer((prev) => prev + event.data);
+        dispatch(updateServerMessage({ conversation_id, content: event.data }));
+      } else {
+        setLoading(false);
+        dispatch(finalizeServerMessage({ conversation_id }));
+      }
     };
 
     socket.current.onclose = () => {
       console.log('Disconnected from WebSocket server');
+      dispatch(finalizeServerMessage({ conversation_id }));
     };
 
     return () => {
@@ -63,13 +69,31 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversationId, isDocument }) => {
         socket.current.close();
       }
     };
-  }, []);
+  }, [conversation_id, dispatch]);
+
+  useEffect(() => {
+    if (buffer) {
+      const interval = setInterval(() => {
+        setCurrentMessage((prev) => {
+          const nextChar = buffer.charAt(0);
+          setBuffer((prevBuffer) => prevBuffer.slice(1));
+          if (buffer.length === 1) {
+            dispatch(updateServerMessage({ conversation_id, content: prev + nextChar }));
+            return '';
+          }
+          return prev + nextChar;
+        });
+      }, 50); // Adjust typing speed here
+
+      return () => clearInterval(interval);
+    }
+  }, [buffer, conversation_id, dispatch]);
 
   useEffect(() => {
     if (chatWindowRef.current) {
       chatWindowRef.current.scrollTo({ top: chatWindowRef.current.scrollHeight, behavior: 'smooth' });
     }
-  }, [messages]);
+  }, [messages, currentMessage]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -88,20 +112,13 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversationId, isDocument }) => {
   }, [contextMenu]);
 
   const sendMessage = (e: FormEvent<HTMLFormElement>) => {
+    setAvatarLoading(true);
     e.preventDefault();
     if (input && socket.current && socket.current.readyState === WebSocket.OPEN) {
       socket.current.send(input);
-      setMessages((prev) => [
-        ...prev,
-        { id: prev.length, sender: 'User', content: input, status: 'sent' }
-      ]);
+      dispatch(addUserMessage({ conversation_id, content: input }));
       setInput('');
-
-      setMessages((prev) => [
-        ...prev,
-        { id: prev.length, sender: 'Server', content: 'loading...', status: 'loading' }
-      ]);
-      setLoading(true);
+      dispatch(addServerMessage({ conversation_id, content: '' }));
     }
   };
 
@@ -138,14 +155,14 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversationId, isDocument }) => {
     style={{
       height: `${isDocument ? 'calc(100vh - 114px)' : '100vh'}`
     }}
-    className={`pt-4 flex flex-col relative justify-between overflow-auto bg-zinc-200 dark:bg-zinc-800 w-full`}>
+    className={`pt-14 flex flex-col relative justify-between overflow-auto bg-zinc-200 dark:bg-zinc-800 w-full`}>
       <div className={`flex flex-col ${isDocument ? 'w-full' : 'w-9/12'} max-w-2xl mx-auto flex-grow`}>
         {/* Chat window */}
         <div
           ref={chatWindowRef}
           className="w-full flex-1 relative overflow-auto"
         >
-          {messages.map((msg) => (
+          {conversation.messages.map((msg, index) => (
             <div
               key={msg.id}
               className={`relative group ${msg.sender === 'User' ? 'bg-neutral-700 w-fit ml-auto max-w-xl' : 'flex'} 
@@ -155,15 +172,24 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversationId, isDocument }) => {
               {/* Avatar bot if Server */}
               {msg.sender === 'Server' && (
                 <div className="mr-2 flex-shrink-0 self-start">
+                  {avatarLoading ? (
+                    <Button color="primary" variant='flat' isLoading>
+                  </Button>
+                  ) : (
                   <img
                     src="https://i.pinimg.com/originals/02/c5/a8/02c5a82909a225411008d772ee6b7d62.png"
                     alt="Bot Avatar"
                     className="w-8 h-8 rounded-full"
                   />
+                  )}
                 </div>
               )}
               {/* Message content */}
-              <p className="text-left">{msg.content}</p>
+              <p className="text-left">
+                {msg.content}
+                {index === conversation.messages.length - 1 && msg.sender === 'Server' && currentMessage}
+              </p>
+              
               {/* Display icons on hover */}
               {msg.sender === 'Server' && (
                 <div className="absolute hidden group-hover:flex space-x-2 p-2"
@@ -218,11 +244,11 @@ const ChatWindow: FC<ChatWindowProps> = ({ conversationId, isDocument }) => {
           <form onSubmit={sendMessage} className="max-w-2xl pr-2 flex w-full justify-center items-center rounded-3xl">
             <Textarea
               minRows={1}
-              variant="bordered"
+              variant='faded'
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => handleKeyDown(e)}
-              className="flex-1 p-1 rounded-full border-custom-none"
+              className="flex-1 p-1 rounded-full"
               placeholder="Type your message..."
             />
             <Button isIconOnly className="ml-2 text-white p-2 rounded-full bg-slate-400" type="submit">

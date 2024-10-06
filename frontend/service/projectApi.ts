@@ -63,26 +63,27 @@ export async function getDocumentById (documentId: string) {
     return response
 }
 
-export async function createNewConversation (name: string, projectId: string, documentIds: string[]){
-    const accessToken = localStorage.getItem('access_token')
+export async function createNewConversation(name: string, projectId: string, documentIds: string[]) {
+    const accessToken = localStorage.getItem('access_token');
+    
     const data = qs.stringify({
-        project_id: projectId,
-        document_ids: documentIds.join(','), // Chuyển mảng thành chuỗi với dấu phẩy ngăn cách
+      project_id: projectId,
+      name: name,
+      document_ids: documentIds.join(',') 
     });
+  
     const response = await axios.post(
-        `${API_URL}/api/projects/new-conversation?name=${encodeURIComponent(name)}`, 
-        data, 
-        {
-            headers: {
-                'accept': 'application/json',
-                'Content-Type': 'application/x-www-form-urlencoded', // Sử dụng đúng content type
-                'Authorization': `Bearer ${accessToken}`
-            }
+      `${API_URL}/api/projects/new-conversation`, 
+      data,
+      {
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded', 
+          'Authorization': `Bearer ${accessToken}`
         }
+      }
     );
-    return response
+  
+    return response; 
 }
-
-
-
 

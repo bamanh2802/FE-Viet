@@ -73,7 +73,7 @@ const TextInteraction: React.FC = () => {
   };
 
   return (
-    <div className="h-full p-5 flex-1 bg-zinc-200 dark:bg-zinc-800">
+    <div className="h-full p-5 flex-1 bg-zinc-200 border-l-1 dark:bg-zinc-800">
      
       <Tabs variant='underlined' aria-label="Raw">
         <Tab key="raw" title="Raw">

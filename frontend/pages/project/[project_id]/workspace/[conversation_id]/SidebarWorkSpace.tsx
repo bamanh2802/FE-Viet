@@ -1,6 +1,6 @@
 import { FC, useMemo, useState, useEffect } from 'react';
 import { useRouter } from 'next/router'; // Lấy project_id từ URL
-import { ChevronLeftIcon, PlusIcon, HomeIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, PlusIcon, HomeIcon, PencilSquareIcon, TrashIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import dayjs from 'dayjs'; // Thư viện để xử lý ngày tháng
 import { Conversation } from '@/src/types/types';
 import { EllipsisHorizontalIcon } from '@heroicons/react/24/outline';
@@ -21,7 +21,7 @@ const SidebarWorkspace: FC<SidebarWorkspaceProps> = ({
 }) => {
   const router = useRouter();
   const [isCompactSidebar, setIsCompactSidebar] = useState<boolean>(false);
-  const { project_id } = router.query; // Lấy project_id từ URL
+  const { project_id, conversation_id } = router.query; // Lấy project_id từ URL
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; id: string | null }>({ x: 0, y: 0, id: null });
 
   // Sắp xếp cuộc trò chuyện theo ngày updated gần nhất
@@ -38,6 +38,7 @@ const SidebarWorkspace: FC<SidebarWorkspaceProps> = ({
   // Hàm để xử lý nhấp chuột phải
   const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>, conversationId: string) => {
     e.preventDefault();
+    e.stopPropagation();
     setContextMenu({ x: e.clientX, y: e.clientY, id: conversationId });
   };
 
@@ -62,24 +63,34 @@ const SidebarWorkspace: FC<SidebarWorkspaceProps> = ({
   const renderConversations = () => (
     sortedConversations?.length > 0 ? (
       <div className="ml-1 mt-1 space-y-1">
-        {sortedConversations.map((conv) => (
-          <div
-            key={conv.conversation_id}
-            className="transition-all ml-2 group flex justify-between items-center space-x-2 text-sm text-gray-400 cursor-pointer p-2 rounded-lg dark:text-gray-400 text-gray-700 dark:hover:bg-zinc-800 hover:bg-zinc-200"
-            onClick={() => onSelectConversation(conv.conversation_id)}
-            onContextMenu={(e) => handleContextMenu(e, conv.conversation_id)}
-          >
-            <span>{conv.conversation_name}</span>
-            <div className="opacity-0 group-hover:opacity-100">
-              <EllipsisHorizontalIcon className="h-4 w-4 text-gray-400" />
+        {sortedConversations.map((conv) => {
+          const isSelected = conversation_id === conv.conversation_id; // Check if this conversation is selected
+          return (
+            <div
+              key={conv.conversation_id}
+              className={`transition-all ml-2 group flex justify-between items-center space-x-2 text-sm cursor-pointer p-2 rounded-lg ${
+                isSelected
+                  ? 'bg-zinc-300 dark:bg-zinc-700 text-white' // Highlight selected conversation
+                  : 'text-gray-700 dark:text-gray-400 hover:bg-zinc-200 dark:hover:bg-zinc-800'
+              }`}
+              onClick={() => onSelectConversation(conv.conversation_id)}
+              onContextMenu={(e) => handleContextMenu(e, conv.conversation_id)}
+            >
+              <span>{conv.conversation_name}</span>
+              <div 
+              onClick={(e) => handleContextMenu(e, conv.conversation_id)}
+              className="opacity-0 group-hover:opacity-100">
+                <EllipsisHorizontalIcon className="h-4 w-4 text-gray-400" />
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     ) : (
       <div className="ml-4 mt-1 text-gray-500">Không có cuộc trò chuyện nào.</div>
     )
   );
+  
 
   // Đóng menu context khi nhấp ra ngoài
   useEffect(() => {
@@ -116,9 +127,12 @@ const SidebarWorkspace: FC<SidebarWorkspaceProps> = ({
           </div>
         </div>
 
-        <div className="bg-gray-800 p-2 rounded-lg flex items-center mb-8">
-          <input className="bg-transparent outline-none text-sm w-full" placeholder="Search..." />
-        </div>
+        <Button 
+          size='sm'
+          variant='flat' 
+          className='w-full' startContent={<MagnifyingGlassIcon className='w-4 h-4' />}>
+            Search something...
+        </Button>
         <h3 className="flex items-center justify-between text-sm font-semibold dark:text-gray-400 text-gray-700 transition-all rounded-lg px-2 p-1 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-800">
           <span>Conversations</span>
         </h3>
@@ -126,7 +140,7 @@ const SidebarWorkspace: FC<SidebarWorkspaceProps> = ({
 
         {/* Menu Context Tùy Chỉnh */}
           <div
-            className={`${contextMenu.id ? 'visible opacity-100' : 'invisible opacity-0'} absolute rounded shadow-lg z-10`}
+            className={`dark:bg-zinc-800 bg-zinc-200 ${contextMenu.id ? 'visible opacity-100' : 'invisible opacity-0'} absolute rounded shadow-lg z-10`}
             style={{ top: contextMenu.y, left: contextMenu.x }}
           >
             <ListboxWrapper>

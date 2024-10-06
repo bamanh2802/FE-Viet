@@ -44,3 +44,21 @@ export interface User {
     dob: string
 }
 
+export interface Message {
+    id: string;
+    sender: 'Server' | 'User';
+    content: string;
+    status: 'loading' | 'sent' | 'streaming';
+  }
+  
+  export interface ConversationState {
+    messages: Message[];
+    isLoading: boolean;
+  }
+  
+  export interface ChatState {
+    conversations: {
+      [conversation_id: string]: ConversationState;
+    };
+  }
+

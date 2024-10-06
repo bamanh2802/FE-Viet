@@ -3,7 +3,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogTitle } from '@/components/
 import { ListboxWrapper } from '@/components/ListboxWrapper';
 import { Listbox, ListboxItem, Button } from '@nextui-org/react';
 import { PlusIcon } from '@heroicons/react/24/outline';
-import '../../components/project/config.css'
+import '@/components/project/config.css'
 import { Document } from '@/src/types/types';
 import React, { useState, useEffect, FC } from 'react';
 import { createNewConversation } from '@/service/projectApi';
@@ -13,10 +13,11 @@ interface NewWorkspaceProps {
     onClose: () => void;
     documents: Document[]
     projectId: string
+    updateConversation: () => void
 }
 
 
-const NewWorkspace: FC<NewWorkspaceProps> = ({ projectId, isOpen, onClose, documents }) => {
+const NewWorkspace: FC<NewWorkspaceProps> = ({ updateConversation, projectId, isOpen, onClose, documents }) => {
     const router = useRouter()
     const [selectedKeys, setSelectedKeys] = React.useState<Set<string>>(new Set());
     const [conversationName, setConversationName] = useState<string>('');
@@ -41,6 +42,7 @@ const NewWorkspace: FC<NewWorkspaceProps> = ({ projectId, isOpen, onClose, docum
     }
 
     const handleRouterWorkspace = (conversationId: string) => {
+        updateConversation()
         const url = `/project/${projectId}/workspace/${conversationId}`
         window.open(url, '_blank');
     }

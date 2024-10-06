@@ -4,13 +4,15 @@ import Sidebar from "@/components/project/Sidebar";
 import { FC, useEffect, useState } from "react";
 import NavbarProject from "@/components/project/NavbarProject";
 import WorkSpace from "@/components/project/WorkSpace";
-import NewWorkspace from "../NewWorkspace";
+import NewWorkspace from "./NewWorkspace";
 import { useRouter } from "next/router";
 import ShareWorkspace from "./ShareWorkspace";
 import { getDocumentInProject, getConversationInProject, getImagesInProject } from "@/service/projectApi";
 import { Document, ImageType, Conversation } from "@/src/types/types";
 import Image from "next/image";
 import PreLoading from "@/public/img/project_preloading.gif";
+import NewDocument from "./NewDocument";
+import { useSSR } from "react-i18next";
 
 const Project: FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
@@ -22,11 +24,17 @@ const Project: FC = () => {
   const [documents, setDocuments] = useState<Document[] | undefined>(undefined);
   const [images, setImages] = useState<ImageType[] | undefined>(undefined);
   const [conversations, setConversations] = useState<Conversation[] | undefined>(undefined);
+  const [isOpenNewDocument, setIsOpenNewDocument] = useState<boolean> (false)
 
   const openDialog = () => setIsDialogOpen(true);
   const openShare = () => setIsOpenShare(true);
   const closeDialog = () => setIsDialogOpen(false);
   const closeShare = () => setIsOpenShare(false);
+  const closeNewDocument = () => setIsOpenNewDocument(false)
+  const openNewDocument = () => {
+    setIsOpenNewDocument(true)
+    console.log('hello')
+  }
 
   const handleGetDocuments = async () => {
     try {
@@ -55,10 +63,9 @@ const Project: FC = () => {
     }
   };
 
-  // Lấy dữ liệu khi `project_id` đã có giá trị
   useEffect(() => {
     if (project_id !== undefined) {
-      Promise.all([handleGetDocuments(), handleGetImages(), handleGetConversations()])
+      Promise.all([handleGetDocuments(), handleGetConversations()])
         .then(() => setIsLoading(false)) // Tắt loading khi dữ liệu đã tải xong
         .catch((err) => console.error(err));
     }
@@ -81,10 +88,27 @@ const Project: FC = () => {
       <div className="flex flex-col w-full">
         <NavbarProject onOpenShare={openShare} onOpenDialog={openDialog} />
         <div>
-          <WorkSpace projectId={project_id as string} documents={documents} images={images} conversations={conversations} />
+          <WorkSpace 
+          onOpenDialog={openDialog}
+          openNewDocument={openNewDocument}
+          projectId={project_id as string} 
+          documents={documents} 
+          images={images} 
+          conversations={conversations} />
         </div>
-        <NewWorkspace projectId={project_id as string} documents={documents} isOpen={isDialogOpen} onClose={closeDialog} />
+        <NewWorkspace 
+        updateConversation={handleGetConversations}
+        projectId={project_id as string} 
+        documents={documents} 
+        isOpen={isDialogOpen} 
+        onClose={closeDialog} />
         <ShareWorkspace isOpen={isOpenShare} onClose={closeShare} />
+        <NewDocument 
+        updateDocument={handleGetDocuments}
+        documents={documents}
+        isOpen={isOpenNewDocument} 
+        onClose={closeNewDocument} 
+        projectId={project_id as string}/>
       </div>
     </div>
   );

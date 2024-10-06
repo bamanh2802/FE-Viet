@@ -3,7 +3,7 @@ import { FC } from 'react';
 import React, {useState} from "react";
 import NavbarProject from "@/components/project/NavbarProject"
 import WorkSpace from "@/components/project/WorkSpace"
-import NewWorkspace from "./NewWorkspace"
+import NewWorkspace from "./[project_id]/NewWorkspace"
 import { useRouter } from 'next/router';
 
 const Project: FC = () => {

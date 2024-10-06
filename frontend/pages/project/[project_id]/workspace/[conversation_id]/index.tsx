@@ -5,6 +5,11 @@ import ChatWindow from "./ChatWindow";
 import SidebarDocument from "../../document/[document_id]/SidebarDocument";
 import { Conversation } from "@/src/types/types";
 import { getConversationInProject } from "@/service/projectApi";
+import UserDropdown from "@/components/global/UserDropdown";
+import {Breadcrumbs, BreadcrumbItem} from "@nextui-org/react";
+import { HomeIcon } from "@heroicons/react/24/outline";
+
+
 const WorkSpace : React.FC = () => {
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [currentConversation, setCurrentConversation] = useState<string | null>(null);
@@ -13,7 +18,7 @@ const WorkSpace : React.FC = () => {
       { name: 'image1.png', type: 'image' },
     ]);
     const router = useRouter()
-    const { project_id } = router.query; // Lấy project_id từ URL
+    const { project_id, conversation_id } = router.query; // Lấy project_id từ URL
 
   
     const handleCreateConversation = () => {
@@ -32,11 +37,13 @@ const WorkSpace : React.FC = () => {
     }
 
     useEffect(() => {
-      handleGetConversation()
-    })
+      if(project_id !== undefined) {
+        handleGetConversation()
+      }
+    }, [project_id])
   
     const handleSelectConversation = (id: string) => {
-      setCurrentConversation(id);
+      router.push(`/project/${project_id}/workspace/${id}`)
     };
   
     return (
@@ -46,12 +53,22 @@ const WorkSpace : React.FC = () => {
           onCreateConversation={handleCreateConversation}
           onSelectConversation={handleSelectConversation}
         />
-        <div className="flex-1 flex flex-col mr-1">
-          {currentConversation ? (
-            <ChatWindow conversationId={currentConversation} isDocument={false}/>
-          ) : (
-            <div className="flex-1 flex items-center justify-center">Select a conversation to start chatting!</div>
-          )}
+        <div className="flex-1 flex flex-col relative">
+          <div className="z-[5] absolute top-0 w-full h-14 bg-zinc-800">
+
+          </div>
+          <div className="absolute top-4 left-6 z-10">
+            <Breadcrumbs>
+              <BreadcrumbItem><HomeIcon className="w-4 h-4"/></BreadcrumbItem>
+              <BreadcrumbItem>{project_id}</BreadcrumbItem>
+              <BreadcrumbItem>{conversation_id}</BreadcrumbItem>
+            </Breadcrumbs>
+          </div>
+          <div className="absolute top-4 right-6">
+            <UserDropdown />
+          </div>
+            <ChatWindow isDocument={false}/>
+
         </div>
       </div>
     );

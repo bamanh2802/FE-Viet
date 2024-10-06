@@ -7,6 +7,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { User } from "@/src/types/types";
 import '@/components/project/config.css'
+import { createProject } from "@/service/apis";
 
 interface NavbarHomeProps {
   user: User
@@ -23,7 +24,13 @@ const NavbarHome: React.FC<NavbarHomeProps> = ({user}) => {
 
   const handleCreateProject = async () => {
     setIsLoadingCreate(true);
-    // handle project creation logic...
+    try {
+      const data = await createProject(isNewProject)
+      console.log(data)
+      router.push(`/project/${data.data.project_id}`)
+    } catch (e) {
+      console.log(e)
+    }
     setIsLoadingCreate(false);
   };
 

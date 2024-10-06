@@ -9,6 +9,7 @@ import {
   HashtagIcon,
   InboxIcon,
   UsersIcon,
+  MagnifyingGlassIcon,
   HomeIcon,
   DocumentTextIcon,
   DocumentIcon,
@@ -199,7 +200,7 @@ const handleRouterDocument = (doc: Document) => {
         <div>
           <div
             onClick={() => handleBackHome()} 
-            className="flex items-center justify-between p-3 rounded-lg cursor-pointer my-2 hover:bg-gray-700"
+            className="flex dark:text-gray-400 text-gray-700 transition-all p-3 rounded-lg cursor-pointer my-2 hover:bg-zinc-200 dark:hover:bg-zinc-800"
             onContextMenu={(e) => handleContextMenu(e, 'home')}
           >
             <div className="flex items-center space-x-3">
@@ -209,9 +210,12 @@ const handleRouterDocument = (doc: Document) => {
           </div>
         </div>
 
-        <div className="bg-gray-800 p-2 rounded-lg flex items-center mb-8">
-          <input className="bg-transparent outline-none text-sm w-full" placeholder="Search..." />
-        </div>
+          <Button 
+          size='sm'
+          variant='flat' 
+          className='w-full' startContent={<MagnifyingGlassIcon className='w-4 h-4' />}>
+            Search something...
+          </Button>
 
         {/* Tùy chỉnh các mục menu ở đây */}
         <div className="my-2">
@@ -238,10 +242,12 @@ const handleRouterDocument = (doc: Document) => {
                     className="ml-2 group flex justify-between items-center space-x-2 text-xs text-gray-400 cursor-pointer p-2 rounded-lg dark:text-gray-400 text-gray-700 dark:hover:bg-zinc-800 hover:bg-zinc-200"
                     onContextMenu={(e) => handleContextMenu(e, doc.document_id)}
                   >
-                    <div className='flex justify-center items-center'>
+                    <Tooltip content={doc.document_name}>
+                    <div className='truncate flex items-center w-40'>
                       <DocumentTextIcon className='w-4 h-4 pr-1' />
-                      <span>{doc.document_name}</span>
+                      <span className=''>{doc.document_name}</span>
                     </div>
+                    </Tooltip>
                     <Tooltip content="Thêm">
                       <EllipsisHorizontalIcon 
                     onClick={(e) => handleClick(e, doc.document_id)}
