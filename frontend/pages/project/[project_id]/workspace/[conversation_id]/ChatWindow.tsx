@@ -1,8 +1,9 @@
 import React, { FC, useEffect, useState, useRef, FormEvent, KeyboardEvent, MouseEvent } from 'react';
-import { Button, Textarea, Listbox, ListboxItem } from "@nextui-org/react";
+import { Button, Textarea, Listbox, ListboxItem, Tooltip } from "@nextui-org/react";
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import { ClipboardIcon, HeartIcon, HandThumbDownIcon, PencilSquareIcon,
-  Square2StackIcon, QuestionMarkCircleIcon, ClipboardDocumentCheckIcon
+  Square2StackIcon, QuestionMarkCircleIcon, ClipboardDocumentCheckIcon, FolderIcon,
+  EllipsisHorizontalIcon
  } from '@heroicons/react/24/outline';
 import '@/components/project/config.css';
 import { ListboxWrapper } from '@/components/ListboxWrapper';
@@ -10,6 +11,17 @@ import { useRouter } from 'next/router';
 import { useDispatch, useSelector } from 'react-redux';
 import { addUserMessage, addServerMessage, updateServerMessage, finalizeServerMessage } from '@/src/chatSlice';
 import { RootState } from '@/src/store';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { getDocumentsByConversation } from '@/service/documentApi';
+import { Document } from '@/src/types/types';
 
 interface ChatWindowProps {
   isDocument: boolean
@@ -33,12 +45,34 @@ const ChatWindow: FC<ChatWindowProps> = ({ isDocument }) => {
   const chatWindowRef = useRef<HTMLDivElement | null>(null);
   const [selectedText, setSelectedText] = useState<string | null>(null);
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
+  const [isOpenSource, setIsOpenSource] = useState<boolean>(false)
+  const [documents, setDocuments] = useState<Document[]>([])
+
+  const handleOpenSource = () => setIsOpenSource(true)
+  const handleCloseSource = () => setIsOpenSource(false)
 
   const dispatch = useDispatch();
   const conversation = useSelector((state: RootState) => state.chat.conversations[conversation_id] || { messages: [], isLoading: false });
   
   const [currentMessage, setCurrentMessage] = useState<string>('');
   const [buffer, setBuffer] = useState<string>('');
+
+
+  const handleGetDocumentByConversation = async () => {
+    try {
+      const data = await getDocumentsByConversation(conversation_id)
+      setDocuments(data.data)
+      console.log(data)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  useEffect(() => {
+    if(conversation_id !== undefined) {
+      handleGetDocumentByConversation()
+    }
+  }, [conversation_id])
 
   useEffect(() => {
     socket.current = new WebSocket(`ws://localhost:8000/ws/conversations/${conversation_id}/send-message`);
@@ -151,7 +185,8 @@ const ChatWindow: FC<ChatWindowProps> = ({ isDocument }) => {
   };
 
   return (
-    <div 
+    <div className='flex'>
+      <div 
     style={{
       height: `${isDocument ? 'calc(100vh - 114px)' : '100vh'}`
     }}
@@ -260,6 +295,45 @@ const ChatWindow: FC<ChatWindowProps> = ({ isDocument }) => {
           </div>
         </div>
       </div>
+      <div 
+      className='absolute bottom-9 right-9 z-5'>
+        <Tooltip content="Document Pool!">
+          <Button 
+          onClick={() => handleOpenSource()}
+          size="lg"  isIconOnly className='rounded-full'>
+          <FolderIcon  className='w-4 h-4'/>
+          </Button>
+        </Tooltip>
+      </div>
+
+       
+       
+    </div>
+    {
+      isOpenSource && (
+        <div className='w-96 h-full pt-14 bg-zinc-200 dark:bg-zinc-900 border-l-1 p-2'>
+            <div className="grid gap-4 py-4">
+              <h3 className="flex items-center justify-between text-sm font-semibold dark:text-gray-400 text-gray-700 transition-all rounded-lg px-2 p-1 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-800">
+                <span>Documents</span>
+              </h3>
+              <div className="ml-1 mt-1 space-y-1">
+                {documents?.map((doc) => (
+                  <div
+                    key={doc.document_id}
+                    className="transition-all ml-2 group flex justify-between items-center space-x-2 text-sm cursor-pointer p-2 rounded-lg dark:text-gray-400 text-gray-700 dark:hover:bg-zinc-800 hover:bg-zinc-200"
+                  >
+                    <span>{doc.document_name}</span>
+                    <div className="opacity-0 group-hover:opacity-100">
+                      <EllipsisHorizontalIcon className="h-4 w-4 text-gray-400" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+        </div>
+      )
+    }
+    
     </div>
   );
 };

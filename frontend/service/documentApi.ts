@@ -23,3 +23,19 @@ export async function uploadDocument(projectId: string, selectedFiles: File[]) {
   
     return response;
   }
+
+export async function getDocumentsByConversation(conversation_id: string) {
+  const accessToken = localStorage.getItem('access_token');
+
+  const response = await axios.get(
+    `${API_URL}/api/conversations/${conversation_id}/documents`,{
+      headers: {
+        'accept': 'application/json',
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${accessToken}`
+      }
+    }
+  )
+  return response
+
+}
