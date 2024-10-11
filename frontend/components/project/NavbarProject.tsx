@@ -40,7 +40,7 @@ const NavbarProject: FC<NavbarProjectProps> = ({ onOpenDialog, onOpenShare }) =>
   
   
   return (
-    <Navbar className="dark:bg-zinc-900 bg-zinc-50 navbar-custom h-14 max-w-none w-full">
+    <Navbar className="bg-zinc-200 dark:bg-zinc-800 navbar-custom h-14 max-w-none w-full">
       <NavbarBrand>
         <Breadcrumbs>
         <BreadcrumbItem><HomeIcon className='w-4 h-4'/></BreadcrumbItem>

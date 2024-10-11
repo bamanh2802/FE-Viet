@@ -3,6 +3,9 @@ import { ListboxWrapper } from '@/components/ListboxWrapper';
 import { Listbox, ListboxItem } from "@nextui-org/react";
 import { Square2StackIcon, QuestionMarkCircleIcon, ClipboardDocumentCheckIcon, ListBulletIcon } from '@heroicons/react/24/outline';
 import {Tabs, Tab, Card, CardBody} from "@nextui-org/react";
+import { getChunkDocument } from '@/service/documentApi';
+import { useRouter } from 'next/router';
+import { Chunk } from '@/src/types/types';
 
 
 interface DropdownPosition {
@@ -16,6 +19,24 @@ const TextInteraction: React.FC = () => {
   const [dropdownPosition, setDropdownPosition] = useState<DropdownPosition>({ x: 0, y: 0 });
   const textRef = useRef<HTMLDivElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const router = useRouter()
+  const { project_id, document_id} = router.query
+  const [chunks, setChunks] = useState<Chunk[]> ([])
+
+  const handleGetChunkDocument = async () => {
+    try {
+      const data = await getChunkDocument(document_id)
+      setChunks(data.data)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  useEffect(() => {
+    if(document_id !== 'undefined') {
+      handleGetChunkDocument()
+    }
+  }, [document_id])
 
   useEffect(() => {
     const handleContextMenu = (event: MouseEvent) => {
@@ -73,7 +94,7 @@ const TextInteraction: React.FC = () => {
   };
 
   return (
-    <div className="h-full p-5 flex-1 bg-zinc-200 border-l-1 dark:bg-zinc-800">
+    <div className="h-full flex-1 bg-zinc-200 border-l-1 dark:bg-zinc-800">
      
       <Tabs variant='underlined' aria-label="Raw">
         <Tab key="raw" title="Raw">
@@ -85,13 +106,23 @@ const TextInteraction: React.FC = () => {
           </div>
 
         </Tab>
-        <Tab key="analysis" title="Analysis">
-          <Card>
-            <CardBody>
-              Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-            </CardBody>
-          </Card>  
-        </Tab>
+        <Tab key="chunks" title="Chunks" className=''>
+          <div className="p-4 h-[calc(100vh-128px)] overflow-auto">
+              <h3 className="text-lg font-semibold">Document Chunks</h3>
+              {chunks.length > 0 ? (
+                <ul>
+                  {chunks?.map((chunk: Chunk, index: number) => (
+                    <li key={index} className="mb-2">
+                      <span className="font-bold">Chunk {index + 1}: </span>
+                      {chunk.content}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No chunks available</p>
+              )}
+            </div>
+          </Tab>
       </Tabs>
 
       {showDropdown && (

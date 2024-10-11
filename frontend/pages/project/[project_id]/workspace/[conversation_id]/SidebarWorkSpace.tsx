@@ -9,7 +9,7 @@ import { Listbox, ListboxItem, Button, Tooltip } from '@nextui-org/react';
 
 
 interface SidebarWorkspaceProps {
-  onSelectConversation: (id: string) => void;
+  onSelectConversation: (conv: Conversation) => void;
   onCreateConversation: () => void;
   conversations: Conversation[];
 }
@@ -59,12 +59,22 @@ const SidebarWorkspace: FC<SidebarWorkspaceProps> = ({
     }
   };
 
+  useEffect(() => {
+    if (conversation_id !== undefined) {
+      const selectedConv = conversations.find((conv) => conversation_id === conv.conversation_id);
+      if (selectedConv) {
+        onSelectConversation(selectedConv);
+      }
+    }
+  }, [conversation_id, conversations]);
+
   // Render cuộc trò chuyện
   const renderConversations = () => (
     sortedConversations?.length > 0 ? (
       <div className="ml-1 mt-1 space-y-1">
         {sortedConversations.map((conv) => {
-          const isSelected = conversation_id === conv.conversation_id; // Check if this conversation is selected
+          const isSelected = conversation_id === conv.conversation_id; 
+          
           return (
             <div
               key={conv.conversation_id}
@@ -73,7 +83,7 @@ const SidebarWorkspace: FC<SidebarWorkspaceProps> = ({
                   ? 'bg-zinc-300 dark:bg-zinc-700 text-white' // Highlight selected conversation
                   : 'text-gray-700 dark:text-gray-400 hover:bg-zinc-200 dark:hover:bg-zinc-800'
               }`}
-              onClick={() => onSelectConversation(conv.conversation_id)}
+              onClick={() => onSelectConversation(conv)}
               onContextMenu={(e) => handleContextMenu(e, conv.conversation_id)}
             >
               <span>{conv.conversation_name}</span>

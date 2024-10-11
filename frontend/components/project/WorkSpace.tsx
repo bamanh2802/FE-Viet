@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {Card, CardHeader, CardBody, Image, ScrollShadow,
-    Table, TableHeader, TableColumn, TableBody, TableRow, TableCell,
      CardFooter, Divider, Button
 } from "@nextui-org/react";
-import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import { Tabs, Tab } from '@nextui-org/tabs';
 
@@ -25,10 +23,6 @@ import {
     CarouselNext,
     CarouselPrevious,
   } from "@/components/ui/carousel"
-import 'swiper/css/navigation';
-import 'swiper/css/effect-fade';
-import 'swiper/css/mousewheel'
-import 'swiper/css/scrollbar'
 
 import { DocumentTextIcon, 
     ChatBubbleLeftRightIcon,
@@ -40,81 +34,20 @@ import { DocumentTextIcon,
 
 import 'remixicon/fonts/remixicon.css';
 import '../project/config.css'
-import { Project, Document, ImageType, Conversation } from "@/src/types/types";
+import { Project, Document, ImageType, Conversation, Note } from "@/src/types/types";
 import {Skeleton, Avatar, Tooltip} from "@nextui-org/react";
-import { Plus } from "lucide-react";
 interface WorkSpaceProps{
     documents: Document[],
     images: ImageType[],
     conversations: Conversation[]
+    notes: Note[]
     projectId: string
     openNewDocument: () => void
     onOpenDialog: () => void
 }
-const WorkSpace: React.FC<WorkSpaceProps> = ({onOpenDialog, openNewDocument, projectId, documents, images, conversations}) => {
-   
-
-    const dataTables = [
-        `
-    | STT | Tên        | Tuổi | Địa chỉ                |
-    |-----|------------|------|------------------------|
-    | 1   | Nguyễn An  | 25   | 123 Đường ABC, Hà Nội  |
-    | 2   | Trần Bình  | 30   | 456 Đường DEF, TP HCM  |
-    | 3   | Lê Cường   | 28   | 789 Đường GHI, Đà Nẵng |
-        `,
-        `
-    | STT | Sản phẩm   | Giá  | Số lượng               |
-    |-----|------------|------|------------------------|
-    | 1   | Bánh mì    | 15k  | 50                     |
-    | 2   | Sữa tươi   | 20k  | 30                     |
-    | 3   | Cà phê     | 25k  | 40                     |
-    | 1   | Bánh mì    | 15k  | 50                     |
-    | 2   | Sữa tươi   | 20k  | 30                     |
-    | 3   | Cà phê     | 25k  | 40                     |
-    | 3   | Cà phê     | 25k  | 40                     |
-    | 1   | Bánh mì    | 15k  | 50                     |
-    | 2   | Sữa tươi   | 20k  | 30                     |
-    | 3   | Cà phê     | 25k  | 40                     |
-        `,
-        `***gello***`
-        // Thêm các bảng khác tại đây
-    ];
+const WorkSpace: React.FC<WorkSpaceProps> = ({onOpenDialog, openNewDocument, projectId, documents, images, conversations, notes}) => {
 
 
-
-    function parseMarkdownTable(markdown: string): string[][] {
-        // Xóa khoảng trắng ở đầu và cuối và bỏ các ký tự không cần thiết
-        markdown = markdown.trim().replace(/^\|/, '').replace(/\|$/, '');
-    
-        // Tách các dòng và lọc các dòng không cần thiết
-        const lines = markdown.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-    
-        // Nếu không có đủ dòng dữ liệu, trả về mảng rỗng
-        if (lines.length < 2) return [];
-    
-        // Trích xuất tiêu đề
-        const headers = lines[0].split('|').map(cell => cell.trim()).filter(cell => cell.length > 0);
-        
-        // Trích xuất hàng phân cách và các hàng dữ liệu
-        const separator = lines[1];
-        const table: string[][] = [headers];
-        
-        // Xử lý dữ liệu từ dòng thứ ba trở đi
-        for (let i = 2; i < lines.length; i++) {
-            const row = lines[i].split('|').map(cell => cell.trim()).filter(cell => cell.length > 0);
-            if (row.length === headers.length) { // Chỉ thêm hàng nếu có số lượng ô khớp với tiêu đề
-                table.push(row);
-            }
-        }
-    
-        return table;
-    }
-
-    const tableDatas = dataTables.map((data, index) => {
-        return parseMarkdownTable(data)
-    })
-
-    const tableData = parseMarkdownTable(dataTables[1]);
     const handleRouterWorkspace = (conversationId: string) => {
         const url = `/project/${projectId}/workspace/${conversationId}`
         window.open(url, '_blank');
@@ -228,7 +161,6 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({onOpenDialog, openNewDocument, pro
                                         </CardFooter>
                                     </Card>
                                 </CarouselItem>
-
                                 ))
                             }
                             </CarouselContent>
@@ -256,7 +188,6 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({onOpenDialog, openNewDocument, pro
                             <>
                             <Carousel>
                                 <CarouselContent>
-                                {/* Thẻ "Plus" thêm mới */}
                                 <CarouselItem 
                                 onClick={openNewDocument}
                                 className="cursor-pointer basis-1/5 hover:scale-[1.01] transition-all">
@@ -269,7 +200,7 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({onOpenDialog, openNewDocument, pro
 
                                 {/* Lặp qua các tài liệu */}
                                 {documents.map((doc, index) => (
-                                    <CarouselItem className="basis-1/5 hover:scale-[1.01] transition-all" key={index}>
+                                    <CarouselItem className="cursor-pointer basis-1/5 hover:scale-[1.01] transition-all" key={index}>
                                     <Card className="max-w-[180px]">
                                         <CardBody className="overflow-hidden p-0 h-[90px]">
                                         <Image
@@ -309,38 +240,42 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({onOpenDialog, openNewDocument, pro
                 </div>
 
                 {/* Notes */}
-                <div className="w-full flex-col max-w-screen-lg mt-8">
+                <div className="w-full flex-col max-w-4xl mt-8">
                     <span className="text-start opacity-85 py-4 block">Notes</span>
-                    <div className="flex overflow-auto w-full ">
-                    {/* <Swiper
-                            modules={[Navigation, Pagination, Scrollbar, A11y, Mousewheel]}
-                            spaceBetween={20}
-                            slidesPerView='auto'
-                            navigation
-                            mousewheel
-                            onSwiper={(swiper) => console.log(swiper)}
-                            onSlideChange={() => console.log('slide change')}
-                            >
-                        
+                    <div className="">
+                    <Carousel>
+                        <CarouselContent>
+                        <CarouselItem 
+                        onClick={openNewDocument}
+                        className="cursor-pointer basis-1/5 hover:scale-[1.01] transition-all">
+                        <Tooltip content="Add new Note">
+                            <Card className="shadow-none bg-opacity-0 max-w-[180px] h-[113px] flex justify-center items-center">
+                                <PlusIcon className="w-h-16 h-16" />
+                            </Card>
+                        </Tooltip>
+                        </CarouselItem>
                         {
-                            dataNotes && dataNotes.map((note, index) => (
-                                <SwiperSlide key={index} className="w-44" style={{ width: '11rem !important'}}>
-                                <div className="bg-zinc-800 rounded-lg shadow-lg flex-shrink-0">
-                                    <div className="flex items-center justify-center h-12 bg-[#404144] rounded-t-lg relative opacity-80">
-                                        <i className="ri-booklet-line absolute left-4 top-8 text-3xl"></i>
-                                    </div>
-                                    <div className="mt-2 p-4">
-                                        <h2 className="text-sm font-semibold opacity-80">{note.name}</h2>
-                                        <div className="flex items-center mt-1">
-                                        <img src="https://scontent.fhan14-3.fna.fbcdn.net/v/t1.15752-9/458197052_1236440294376177_6824711196797531216_n.png?_nc_cat=111&ccb=1-7&_nc_sid=9f807c&_nc_ohc=iiV5NdYpcQoQ7kNvgHfMbLi&_nc_ht=scontent.fhan14-3.fna&oh=03_Q7cD1QFQOyEG2hWyk7qxQLsWicGk13o2kUO7XyQIJVZQzSbZAw&oe=67026137" alt="Avatar" className="w-5 h-5 rounded-full"/>
-                                        <span className="ml-2 text-xs text-gray-400">{note.createAt}</span>
+                            notes && notes.map((note, index) => (
+                                <CarouselItem className="cursor-pointer basis-1/5 hover:scale-[1.01] transition-all" key={index}>
+                                    <div className="bg-zinc-800 rounded-lg shadow-lg flex-shrink-0">
+                                        <div className="flex items-center justify-center h-12 bg-[#404144] rounded-t-lg relative opacity-80">
+                                            <i className="ri-booklet-line absolute left-4 top-8 text-3xl"></i>
+                                        </div>
+                                        <div className="mt-2 p-4">
+                                            <h2 className="text-sm font-semibold opacity-80">{note.title}</h2>
+                                            <div className="flex items-center mt-1">
+                                            <img src="https://scontent.fhan14-3.fna.fbcdn.net/v/t1.15752-9/458197052_1236440294376177_6824711196797531216_n.png?_nc_cat=111&ccb=1-7&_nc_sid=9f807c&_nc_ohc=iiV5NdYpcQoQ7kNvgHfMbLi&_nc_ht=scontent.fhan14-3.fna&oh=03_Q7cD1QFQOyEG2hWyk7qxQLsWicGk13o2kUO7XyQIJVZQzSbZAw&oe=67026137" alt="Avatar" className="w-5 h-5 rounded-full"/>
+                                            <span className="ml-2 text-xs text-gray-400">{convertDate(note.created_at)}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                </SwiperSlide>
+                                </CarouselItem>
                             ))
                         }
-                    </Swiper> */}
+                        </CarouselContent>
+                        <CarouselPrevious />
+                        <CarouselNext />
+                    </Carousel>
                     </div>
                 </div>
         </div>

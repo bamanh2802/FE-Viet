@@ -87,3 +87,31 @@ export async function createNewConversation(name: string, projectId: string, doc
     return response; 
 }
 
+export async function getProjectById (projectId: string) {
+    const accessToken = localStorage.getItem('access_token');
+    const response = await axios.get(
+        `${API_URL}/api/projects/${projectId}`, {
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded', 
+                'Authorization': `Bearer ${accessToken}`
+              }
+        }
+    )
+    return response
+}
+
+export async function getNotesInProject (projectId: string) {
+    const accessToken = localStorage.getItem('access_token');
+    const response = await axios.get(
+        `${API_URL}/api/projects/${projectId}/notes`, {
+            headers: {
+                'accept': 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded', 
+                'Authorization': `Bearer ${accessToken}`
+              }
+        }
+    )
+
+    return response
+}

@@ -45,12 +45,13 @@ export interface User {
 }
 
 export interface Message {
-    id: string;
-    sender: 'Server' | 'User';
-    content: string;
-    status: 'loading' | 'sent' | 'streaming';
-  }
-  
+  id: string;
+  sender: 'User' | 'Server';
+  content: string;
+  status: 'sent' | 'streaming';
+  chunk_ids?: Chunk[]; // Thêm thuộc tính này
+}
+
   export interface ConversationState {
     messages: Message[];
     isLoading: boolean;
@@ -62,3 +63,20 @@ export interface Message {
     };
   }
 
+export interface Chunk {
+  chunk_id: string
+  content: string
+  created_at: string
+  updated_at: string
+  document_id: string
+  order_in_ref: number
+}
+
+export interface Note{
+  note_id: string
+  title: string
+  content: string
+  created_at: string
+  updated_at: string
+  project_id: string
+}

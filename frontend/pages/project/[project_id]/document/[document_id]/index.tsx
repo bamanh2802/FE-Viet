@@ -15,8 +15,10 @@ import ChatWindow from "../../workspace/[conversation_id]/ChatWindow";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/router";
 import { getDocumentById, getDocumentInProject } from "@/service/projectApi";
+import { getConversationByDocument, getDocumentsByConversation } from "@/service/documentApi";
 import { getAllProjects } from "@/service/apis";
-import { Document, Project } from "@/src/types/types";
+import { Document, Project, Conversation } from "@/src/types/types";
+
 
 // Sample data for chats
 const chatData = [
@@ -31,10 +33,10 @@ const DocumentPage: React.FC = () => {
   // State management with proper type annotations
   const [documents, setDocuments] = useState<Document[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
-  const [chats, setChats] = useState(chatData);
+  const [conversation, setConversations] = useState<Conversation[]>([]);
   const [projectName, setProjectName] = useState<string>("Loading...");
   const [documentName, setDocumentName] = useState<string>("Loading...");
-  const [selectedChat, setSelectedChat] = useState<string>(chats[0]?.id || "");
+  const [selectedChat, setSelectedChat] = useState<string>(conversation[0]?.conversation_id || "");
   const [contextMenu, setContextMenu] = useState<{ visible: boolean; x: number; y: number; tabId: string | null }>({
     visible: false,
     x: 0,
@@ -58,6 +60,15 @@ const DocumentPage: React.FC = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const handleGetConversations = async () => {
+    try {
+      const data = await getDocumentsByConversation(document_id as string)
+      setConversations(data.data)
+    } catch (e) {
+      console.log(e)
+    }
+  }
 
   // Fetch all projects
   const handleGetProjects = async () => {
@@ -113,6 +124,7 @@ const DocumentPage: React.FC = () => {
     if (project_id && document_id) {
       handleGetDocument();
       handleGetAllDocument();
+      handleGetConversations()
     }
   }, [project_id, document_id]);
 
@@ -121,21 +133,13 @@ const DocumentPage: React.FC = () => {
     setContextMenu({ visible: false, x: 0, y: 0, tabId: null });
   };
 
-  // Generate next chat ID
-  const getNextChatId = (): string => {
-    const maxId = chats.reduce((max, chat) => {
-      const numericId = parseInt(chat.id.replace("chat", ""), 10);
-      return Math.max(max, numericId);
-    }, 0);
-    return `chat${maxId + 1}`;
-  };
 
   const addNewChat = () => {
-    const newChatId = getNextChatId();
-    const newChat = { id: newChatId, title: `Chat ${newChatId.replace("chat", "")}`, messages: [] };
-    setChats([...chats, newChat]);
-    setSelectedChat(newChatId);
-    hideContextMenu();
+    // const newChatId = getNextChatId();
+    // const newChat = { id: newChatId, title: `Chat ${newChatId.replace("chat", "")}`, messages: [] };
+    // setChats([...chats, newChat]);
+    // setSelectedChat(newChatId);
+    // hideContextMenu();
   };
 
   const handleTabChange = (key: string) => {
@@ -167,9 +171,9 @@ const DocumentPage: React.FC = () => {
       if (action === "open") {
         setSelectedChat(contextMenu.tabId);
       } else if (action === "delete") {
-        setChats(chats.filter((chat) => chat.id !== contextMenu.tabId));
+        setConversations(conversation.filter((conv) => conv.conversation_id !== contextMenu.tabId));
         if (selectedChat === contextMenu.tabId) {
-          setSelectedChat(chats[0]?.id || "");
+          setSelectedChat(conversation[0]?.conversation_id || "");
         }
       }
     }
@@ -178,80 +182,99 @@ const DocumentPage: React.FC = () => {
 
   return (
     <ResizablePanelGroup direction="horizontal" className="w-screen h-screen">
-      <div className="flex h-full relative" ref={containerRef}>
-        <SidebarDocument />
-        <div className="flex flex-col w-full">
-          <NavbarDocument projectName={projectName} documentName={documentName} />
-          <div className="flex" style={{ height: "calc(100% - 48px)", width: "100%" }}>
-            <ResizablePanelGroup direction="horizontal">
-              <ResizablePanel defaultSize={50}>
-                <div className="flex-1 bg-zinc-200 dark:bg-zinc-800 h-full">
-                  {chats.length > 7 ? (
-                    <Dropdown>
-                      <DropdownTrigger>
-                        <Button variant="bordered">Chat Menu</Button>
-                      </DropdownTrigger>
-                      <DropdownMenu aria-label="Chat Menu">
-                        <DropdownSection>
-                          {chats.map((chat) => (
-                            <DropdownItem textValue="temp" key={chat.id} onClick={() => handleTabChange(chat.id)}>
-                              {chat.title}
-                            </DropdownItem>
-                          ))}
-                        </DropdownSection>
-                        <DropdownItem textValue="temp" key="add" onClick={createNewChat}>
-                          <PlusIcon className="h-4 w-4 pr-1" /> Add New Chat
-                        </DropdownItem>
-                      </DropdownMenu>
-                    </Dropdown>
-                  ) : (
-                    <Tabs
-                      aria-label="Chat Tabs"
+    <div className="flex h-full relative" ref={containerRef}>
+      <SidebarDocument />
+      <div className="flex flex-col w-full">
+        <NavbarDocument projectName={projectName} documentName={documentName} />
+        <div className="flex" style={{ height: "calc(100% - 48px)", width: "100%" }}>
+          <ResizablePanelGroup direction="horizontal">
+            <ResizablePanel minSize={40} defaultSize={50}>
+              <div className="flex-1 bg-zinc-200 dark:bg-zinc-800 h-full">
+                <Tabs
+                  variant="underlined"
+                  className="w-full p-0"
+                  aria-label="Document Sections" // Đảm bảo Tabs có aria-label
+                >
+                  {/* Conversations Tab */}
+                  <Tab key="conversations" title="Conversations">
+                    {/* <Tabs
+                      aria-label="Chat Tabs" // Thêm aria-label
                       selectedKey={selectedChat}
                       onSelectionChange={(key) => handleTabChange(key as string)}
                       className="w-full p-0"
                     >
-                      {chats.map((chat) => (
+                      {conversation.map((conv, index) => (
                         <Tab
-                          key={chat.id}
-                          title={chat.title}
-                          onContextMenu={(e) => handleContextMenu(e, chat.id)}
+                          key={conv.conversation_id}
+                          title={conv.conversation_name}
+                          onContextMenu={(e) => handleContextMenu(e, conv.conversation_id)}
+                          aria-label={`Conversation ${conv.conversation_name}`} // Thêm aria-label
                         >
-                          <ChatWindow conversationId="test" isDocument={true}/>
+                          <ChatWindow conversationId={conv.conversation_id} isDocument={true} />
                         </Tab>
                       ))}
-                      <Tab key="add" title={<PlusIcon className="h-5 w-5 text-gray-500" />} />
-                    </Tabs>
-                  )}
-                  <div
-                    ref={menuRef}
-                    style={{ top: contextMenu.y, left: contextMenu.x, zIndex: 1000, display: contextMenu.visible ? "block" : "none" }}
-                    className="absolute bg-white rounded shadow-md border py-1"
-                  >
-                    <ListboxWrapper selectionMode="single" onAction={handleMenuClick}>
-                      <ListboxItem key="open" textValue="Open">
-                        <ChatBubbleBottomCenterIcon className="h-4 w-4 pr-1" />
-                        Open Chat
+                      <Tab 
+                        key="add" 
+                        title={<PlusIcon className="h-5 w-5 text-gray-500" aria-label="Add new chat" />} // Thêm aria-label cho icon
+                        aria-label="Add new chat" // Đảm bảo tab có aria-label
+                      />
+                    </Tabs> */}
+                  </Tab>
+  
+                  {/* Analysis Tab */}
+                  <Tab key="analysis" title="Analysis" aria-label="Analysis Tab">
+                    <div className="flex justify-center items-center h-full">
+                      <p className="text-lg">Analysis Content Goes Here</p>
+                    </div>
+                  </Tab>
+                </Tabs>
+  
+                {/* Context Menu for Chat Tabs */}
+                <div
+                  ref={menuRef}
+                  style={{
+                    top: contextMenu.y,
+                    left: contextMenu.x,
+                    zIndex: 1000,
+                    display: contextMenu.visible ? "block" : "none",
+                  }}
+                  className="absolute dark:bg-zinc-800 bg-zinc-200 rounded-lg shadow-md border"
+                  aria-label="Context Menu" // Thêm aria-label cho context menu
+                >
+                  <ListboxWrapper selectionMode="single" onAction={handleMenuClick}>
+                    <Listbox aria-label="Chat Actions">
+                      <ListboxItem key="rename" textValue="Rename" aria-label="Rename Chat">
+                        <div className="flex items-center">
+                          <ChatBubbleBottomCenterIcon className="h-4 w-4 pr-1" aria-hidden="true" />
+                          <span>Rename</span>
+                        </div>
                       </ListboxItem>
-                      <ListboxItem key="delete" textValue="Delete">
-                        <TrashIcon className="h-4 w-4 pr-1" />
-                        Delete Chat
+                      <ListboxItem key="delete" textValue="Delete" className="text-danger" aria-label="Delete Chat">
+                        <div className="flex items-center">
+                          <TrashIcon className="h-4 w-4 pr-1" aria-hidden="true" />
+                          <span>Delete</span>
+                        </div>
                       </ListboxItem>
-                    </ListboxWrapper>
-                  </div>
+                    </Listbox>
+                  </ListboxWrapper>
                 </div>
-              </ResizablePanel>
-              <ResizableHandle />
-              <ResizablePanel minSize={50}>
-                <div className="flex-1 h-full">
-                  <TextInteraction />
-                </div>
-              </ResizablePanel>
-            </ResizablePanelGroup>
-          </div>
+              </div>
+            </ResizablePanel>
+  
+            <ResizableHandle />
+  
+            <ResizablePanel minSize={20}>
+              <div className="flex-1 h-full">
+                <TextInteraction />
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
         </div>
       </div>
-    </ResizablePanelGroup>
+    </div>
+  </ResizablePanelGroup>
+  
+  
   );
 };
 

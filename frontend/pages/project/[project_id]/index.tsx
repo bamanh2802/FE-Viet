@@ -7,12 +7,13 @@ import WorkSpace from "@/components/project/WorkSpace";
 import NewWorkspace from "./NewWorkspace";
 import { useRouter } from "next/router";
 import ShareWorkspace from "./ShareWorkspace";
-import { getDocumentInProject, getConversationInProject, getImagesInProject } from "@/service/projectApi";
-import { Document, ImageType, Conversation } from "@/src/types/types";
+import { getDocumentInProject, getConversationInProject, getImagesInProject, getNotesInProject } from "@/service/projectApi";
+import { Document, ImageType, Conversation, Note } from "@/src/types/types";
 import Image from "next/image";
 import PreLoading from "@/public/img/project_preloading.gif";
 import NewDocument from "./NewDocument";
 import { useSSR } from "react-i18next";
+import RichTextEditor from "./Note";
 
 const Project: FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
@@ -21,10 +22,12 @@ const Project: FC = () => {
   const router = useRouter();
   const { project_id } = router.query;
 
-  const [documents, setDocuments] = useState<Document[] | undefined>(undefined);
-  const [images, setImages] = useState<ImageType[] | undefined>(undefined);
-  const [conversations, setConversations] = useState<Conversation[] | undefined>(undefined);
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [images, setImages] = useState<ImageType[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isOpenNewDocument, setIsOpenNewDocument] = useState<boolean> (false)
+  const [notes, setNotes] = useState<Note[]> ([])
+  const [selectedNote, setSelectedNote] = useState<string>()
 
   const openDialog = () => setIsDialogOpen(true);
   const openShare = () => setIsOpenShare(true);
@@ -44,6 +47,15 @@ const Project: FC = () => {
       console.log(e);
     }
   };
+
+  const handleGetNotes = async () => {
+    try {
+      const data = await getNotesInProject(project_id as string)
+      setNotes(data.data)
+    } catch (e) {
+      console.log(e)
+    }
+  }
 
   const handleGetImages = async () => {
     try {
@@ -65,7 +77,7 @@ const Project: FC = () => {
 
   useEffect(() => {
     if (project_id !== undefined) {
-      Promise.all([handleGetDocuments(), handleGetConversations()])
+      Promise.all([handleGetDocuments(), handleGetConversations(), handleGetNotes()])
         .then(() => setIsLoading(false)) // Tắt loading khi dữ liệu đã tải xong
         .catch((err) => console.error(err));
     }
@@ -83,18 +95,27 @@ const Project: FC = () => {
   return (
     <div className="flex box-border">
       <div>
-        <Sidebar documents={documents} images={images} conversations={conversations} />
+        <Sidebar 
+        notes={notes}
+        documents={documents} 
+        images={images} 
+        conversations={conversations} />
       </div>
       <div className="flex flex-col w-full">
         <NavbarProject onOpenShare={openShare} onOpenDialog={openDialog} />
         <div>
-          <WorkSpace 
+          {/* <WorkSpace 
           onOpenDialog={openDialog}
           openNewDocument={openNewDocument}
           projectId={project_id as string} 
           documents={documents} 
           images={images} 
-          conversations={conversations} />
+          conversations={conversations} 
+          notes={notes}
+          /> */}
+          <div className="w-full h-[calc(100vh-56px)] bg-zinc-200 dark:bg-zinc-800">
+          <RichTextEditor />
+          </div>
         </div>
         <NewWorkspace 
         updateConversation={handleGetConversations}

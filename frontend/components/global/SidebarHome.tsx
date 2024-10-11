@@ -43,7 +43,7 @@ return (
       <Button 
           size='sm'
           variant='flat' 
-          className='w-full' startContent={<MagnifyingGlassIcon className='w-4 h-4' />}>
+          className='w-full mb-6' startContent={<MagnifyingGlassIcon className='w-4 h-4' />}>
             Search something...
         </Button>
       </div>

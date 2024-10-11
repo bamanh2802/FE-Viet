@@ -51,7 +51,7 @@ import { RootState } from "@/src/store";
 import { useSelector, useDispatch } from "react-redux";
 import { getAllProjects } from "@/service/apis";
 import { setProjects } from "@/src/projectsSlice";
-import { Document, Image, Conversation } from '@/src/types/types';
+import { Document, ImageType, Conversation, Note } from '@/src/types/types';
 import { getDocumentInProject } from '@/service/projectApi';
 
 
@@ -59,14 +59,15 @@ import { getDocumentInProject } from '@/service/projectApi';
 
 interface SidebarProps {
   documents: Document[],
-  images: Image[],
+  images: ImageType[],
   conversations: Conversation[]
+  notes: Note[]
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ documents, images, conversations }) => {
+const Sidebar: React.FC<SidebarProps> = ({ documents, images, conversations, notes }) => {
   const router = useRouter();
   const projects = useSelector((state: RootState) => state.projects.projects);
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<string>('');
   const [isDeleteDocument, setIsDeleteDocument] = useState<boolean>(false)
   const [selectedProject, setSelectedProject] = useState<string>('');
   // const [documents, setDocuments] = useState<Document[]>([])
@@ -82,7 +83,7 @@ const Sidebar: React.FC<SidebarProps> = ({ documents, images, conversations }) =
     if(projects.length === 0) {
       handleGetProjects()
     }
-    setSelectedProjectId(project_id)
+    setSelectedProjectId(project_id as string)
     if(projects.length > 0) {
       setIsLoadingProject(false)
     }
@@ -127,13 +128,13 @@ useEffect(() => {
     );
   };
 
-  const handleContextMenu = (e, id) => {
+  const handleContextMenu = (e: MouseEvent, id: string) => {
     e.preventDefault();
     setContextMenu({ show: true, x: e.pageX, y: e.pageY, id });
     console.log(id)
   };
   
-  const handleClick = (e, id) => {
+  const handleClick = (e: MouseEvent, id: string) => {
     // Kiểm tra xem menu có đang mở không
     e.stopPropagation();
     e.preventDefault()
@@ -168,7 +169,7 @@ const handleRouterDocument = (doc: Document) => {
 
 
   return (
-    <div className="dark:bg-zinc-900 bg-zinc-50 overflow-auto select-none h-screen w-64 flex flex-col justify-between p-2">
+    <div className="dark:bg-zinc-900 bg-zinc-50 overflow-auto select-none h-screen w-52 flex flex-col justify-between p-2">
       <div>
         <div className="rounded-lg mb-4 border-gray-400">
         <Select 
@@ -213,7 +214,7 @@ const handleRouterDocument = (doc: Document) => {
           <Button 
           size='sm'
           variant='flat' 
-          className='w-full' startContent={<MagnifyingGlassIcon className='w-4 h-4' />}>
+          className='w-full mb-6' startContent={<MagnifyingGlassIcon className='w-4 h-4' />}>
             Search something...
           </Button>
 
@@ -365,21 +366,27 @@ const handleRouterDocument = (doc: Document) => {
           <div className={`mt-2 overflow-hidden transition-max-height duration-300 ease-in-out ${expandedSections.includes('note') ? 'max-h-96' : 'max-h-0'}`}>
           {expandedSections.includes('note') && (
             <div className="transition-all ml-4 mt-1 space-y-1 border-l-1 border-gray-400">
-              {conversations.map((conversation, index) => (
+              {notes.map((note, index) => (
                 <div
                   key={index}
                   className="ml-2 group flex justify-between items-center space-x-2 text-xs text-gray-400 cursor-pointer p-2 rounded-lg dark:text-gray-400 text-gray-700 dark:hover:bg-zinc-800 hover:bg-zinc-200 "
-                  onContextMenu={(e) => handleContextMenu(e, conversation.conversation_id)}
+                  onContextMenu={(e) => handleContextMenu(e, note.note_id)}
                 >
                   <div className='flex justify-center items-center '>
                     <DocumentTextIcon className='w-4 h-4 pr-1' />
-                    <Tooltip content={conversation.conversation_name}>
-                      <span className='truncate max-w-40'>{conversation.conversation_name}</span>
+                    <Tooltip content={note.title}>
+                      {
+                        note.title === null ? (
+                          <span className='truncate max-w-40'>No Name</span>
+                        ) : (
+                          <span className='truncate max-w-40'>{note.title}</span>
+                        )
+                      }
                     </Tooltip>
                   </div>
                   <Tooltip content="Thêm">
                     <EllipsisHorizontalIcon 
-                   onClick={(e) => handleClick(e, conversation.conversation_id)}
+                   onClick={(e) => handleClick(e, note.note_id)}
                     className='transition-all w-4 h-4 opacity-0 group-hover:opacity-100' />
                   </Tooltip>
                 </div>
@@ -513,23 +520,6 @@ const handleRouterDocument = (doc: Document) => {
           </Listbox>
         </ListboxWrapper>
       </div>
-      {/* {contextMenu.show  && (
-        <div className="absolute" style={{ top: contextMenu.y, left: contextMenu.x }}>
-          {contextMenu.id === 'documents' ? (
-            <div className="bg-gray-800 p-2 rounded-lg shadow-lg">
-              <div className="hover:bg-gray-700 cursor-pointer p-2">Thêm tài liệu</div>
-              <div className="hover:bg-gray-700 cursor-pointer p-2">Tạo cuộc trò chuyện</div>
-            </div>
-          ) : (
-            <div className="bg-gray-800 p-2 rounded-lg shadow-lg">
-              <div className="hover:bg-gray-700 cursor-pointer p-2">Thêm tài liệu</div>
-              <div className="hover:bg-gray-700 cursor-pointer p-2">Pop Up</div>
-              <div className="hover:bg-gray-700 cursor-pointer p-2">Xóa tài liệu</div>
-              <div className="hover:bg-gray-700 cursor-pointer p-2">Sửa tên tài liệu</div>
-            </div>
-          )}
-        </div>
-      )} */}
 
       <AlertDialog open={isDeleteDocument} onOpenChange={() => handleOpenDeleteDocument()}>
         <AlertDialogContent className="bg-zinc-800 border-none">
