@@ -3,6 +3,8 @@ export interface Project {
   name: string;
   created_at: string;
   updated_at: string;
+  doc_count: number;
+  conv_count: number
 };
 
 

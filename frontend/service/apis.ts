@@ -91,6 +91,20 @@ export async function getAllProjects() {
     return response
 }
 
+export async function getAllProjectsWithInfo () {
+    const accessToken = localStorage.getItem('access_token')
+    const response = await axios.get(
+        `${API_URL}/api/projects-with-info`,
+        {
+            headers: {
+                'accept': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            }
+        }
+    )
+    return response
+}
+
 export async function createProject(name: string) {
     const accessToken = localStorage.getItem('access_token')
     const response = await axios.post(

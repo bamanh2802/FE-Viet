@@ -60,7 +60,7 @@ export async function getConversationByDocument(documentId: string) {
   const accessToken = localStorage.getItem('access_token');
 
   const response = await axios.get(
-    `${API_URL}/api/conversation/${documentId}/get-by-doc`, {
+    `${API_URL}/api/conversations/${documentId}/get-by-doc`, {
       headers: {
         'accept': 'application/json',
         'Content-Type': 'multipart/form-data',

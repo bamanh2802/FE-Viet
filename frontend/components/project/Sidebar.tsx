@@ -53,6 +53,9 @@ import { getAllProjects } from "@/service/apis";
 import { setProjects } from "@/src/projectsSlice";
 import { Document, ImageType, Conversation, Note } from '@/src/types/types';
 import { getDocumentInProject } from '@/service/projectApi';
+import { createNewNote } from '@/service/noteApi';
+import { useToast } from '@/hooks/use-toast';
+import { ToastAction } from "@/components/ui/toast"
 
 
 
@@ -62,10 +65,14 @@ interface SidebarProps {
   images: ImageType[],
   conversations: Conversation[]
   notes: Note[]
+  setSelectedNote: (note: string) => void
+  setLoading: () => void
+  openSearch: () => void
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ documents, images, conversations, notes }) => {
+const Sidebar: React.FC<SidebarProps> = ({ openSearch, setLoading, documents, images, conversations, notes, setSelectedNote }) => {
   const router = useRouter();
+  const { toast } = useToast()
   const projects = useSelector((state: RootState) => state.projects.projects);
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
   const [isDeleteDocument, setIsDeleteDocument] = useState<boolean>(false)
@@ -102,11 +109,23 @@ const Sidebar: React.FC<SidebarProps> = ({ documents, images, conversations, not
       }
 };
 
-useEffect(() => {
 
-}, [project_id])
-
-
+const handleCreateNewNote = async () => {
+  try {
+      const data = await createNewNote (project_id as string)
+      setSelectedNote(data.data.note_id)
+      console.log(data)
+      toast({
+        title: "New note created successfully",
+        description: "Waiting for data loading",
+        action: (
+          <ToastAction altText="Goto schedule to undo">Undo</ToastAction>
+        ),
+      })
+  } catch (e) {
+      console.log(e)
+  }
+}
 
 
   const getProjectNameById = (projectId: string | null) => {
@@ -165,6 +184,8 @@ const handleRouterDocument = (doc: Document) => {
 
   const handleProjectClick = (projectId: string) => {
     router.push(`/project/${projectId}`);
+    setLoading()
+    setSelectedNote('')
   };
 
 
@@ -174,7 +195,7 @@ const handleRouterDocument = (doc: Document) => {
         <div className="rounded-lg mb-4 border-gray-400">
         <Select 
           disabled={isLoadingProject} 
-          defaultValue={selectedProjectId} 
+          defaultValue={getProjectNameById(selectedProjectId)} 
           onValueChange={(projectId) => {
             setSelectedProjectId(projectId);
             handleProjectClick(projectId); // Gọi hàm xử lý sau khi chọn
@@ -212,6 +233,7 @@ const handleRouterDocument = (doc: Document) => {
         </div>
 
           <Button 
+          onClick={openSearch}
           size='sm'
           variant='flat' 
           className='w-full mb-6' startContent={<MagnifyingGlassIcon className='w-4 h-4' />}>
@@ -235,7 +257,7 @@ const handleRouterDocument = (doc: Document) => {
           {/* Các item con cho mục "Tài liệu" */}
           <div className={`mt-2 overflow-hidden transition-max-height duration-300 ease-in-out ${expandedSections.includes('documents') ? 'max-h-96' : 'max-h-0'}`}>
             {expandedSections.includes('documents') && (
-              <div className="transition-all ml-4 mt-1 space-y-1 border-l-1 border-gray-400">
+              <div className="transition-all mt-1 space-y-1 border-gray-400">
                 {documents.map((doc, index) => (
                   <div
                     onClick={() => handleRouterDocument(doc)}
@@ -284,7 +306,7 @@ const handleRouterDocument = (doc: Document) => {
           <div className={`mt-2 overflow-hidden transition-max-height duration-300 ease-in-out ${expandedSections.includes('images') ? 'max-h-96' : 'max-h-0'}`}>
           {/* Các item con cho mục "Hình ảnh" */}
           {expandedSections.includes('images') && (
-            <div className="transition-all ml-4 mt-1 space-y-1 border-l-1 border-gray-400">
+            <div className="transition-all mt-1 space-y-1 border-gray-400">
               {images.map((img, index) => (
                 <div
                   key={index}
@@ -325,7 +347,7 @@ const handleRouterDocument = (doc: Document) => {
           </div>
           <div className={`mt-2 overflow-hidden transition-max-height duration-300 ease-in-out ${expandedSections.includes('conversation') ? 'max-h-96' : 'max-h-0'}`}>
           {expandedSections.includes('conversation') && (
-            <div className="transition-all ml-4 mt-1 space-y-1 border-l-1 border-gray-400">
+            <div className="transition-all mt-1 space-y-1 border-gray-400">
               {conversations.map((conversation, index) => (
                 <div
                   key={index}
@@ -365,9 +387,10 @@ const handleRouterDocument = (doc: Document) => {
           </div>
           <div className={`mt-2 overflow-hidden transition-max-height duration-300 ease-in-out ${expandedSections.includes('note') ? 'max-h-96' : 'max-h-0'}`}>
           {expandedSections.includes('note') && (
-            <div className="transition-all ml-4 mt-1 space-y-1 border-l-1 border-gray-400">
+            <div className="transition-all mt-1 space-y-1 border-gray-400">
               {notes.map((note, index) => (
                 <div
+                  onClick={() => setSelectedNote(note.note_id)}
                   key={index}
                   className="ml-2 group flex justify-between items-center space-x-2 text-xs text-gray-400 cursor-pointer p-2 rounded-lg dark:text-gray-400 text-gray-700 dark:hover:bg-zinc-800 hover:bg-zinc-200 "
                   onContextMenu={(e) => handleContextMenu(e, note.note_id)}
@@ -391,6 +414,13 @@ const handleRouterDocument = (doc: Document) => {
                   </Tooltip>
                 </div>
               ))}
+              <div
+              onClick={handleCreateNewNote}
+                  className="ml-2 transition-all flex items-center space-x-2 text-xs text-gray-400 hover:text-white cursor-pointer p-2 rounded-lg dark:text-gray-400 text-gray-700 dark:hover:bg-zinc-800 hover:bg-zinc-200 "
+                >
+                  <PlusIcon className='w-4 h-4' />
+                  <span>Thêm</span>
+                </div>
             </div>
           )}
           </div>

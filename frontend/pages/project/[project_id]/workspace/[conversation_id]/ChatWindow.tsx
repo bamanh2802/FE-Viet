@@ -238,7 +238,7 @@ const ChatWindow: FC<ChatWindowProps> = ({ isDocument, conversation_id }) => {
     <div className='flex'>
       <div 
     style={{
-      height: `${isDocument ? 'calc(100vh - 112px)' : '100vh'}`
+      height: `${isDocument ? 'calc(100vh - 179px)' : '100vh'}`
     }}
     className={`flex flex-col relative justify-between overflow-auto bg-zinc-200 dark:bg-zinc-800 w-full`}>
       <div className={`flex flex-col ${isDocument ? 'w-full px-7' : 'w-9/12 pr-16 pl-10 pt-14 '} max-w-3xl  mx-auto flex-grow`}>
@@ -252,7 +252,7 @@ const ChatWindow: FC<ChatWindowProps> = ({ isDocument, conversation_id }) => {
             <div
               key={msg.id}
               className={` group flex  ${msg.sender === 'User' ? 'bg-neutral-700 w-fit ml-auto max-w-md' : 'flex'} 
-              mb-2 p-2 rounded-3xl mt-3 px-4 ${msg.status === 'streaming' ? 'bg-gray-700' : ''}`}
+              mb-2 p-2 rounded-3xl mt-3 px-4 `}
               onContextMenu={(e) => handleRightClick(e, msg)}
             >
               {/* Avatar bot if Server */}
@@ -290,7 +290,7 @@ const ChatWindow: FC<ChatWindowProps> = ({ isDocument, conversation_id }) => {
                       return (
                         <HoverCard key={chunkId.chunk_id}>
                           <HoverCardTrigger asChild>
-                            <Button className='ml-3' variant="shadow" isIconOnly key={chunkId.chunk_id}>
+                            <Button size='sm' className='ml-3' variant="shadow" isIconOnly key={chunkId.chunk_id}>
                               {icon} {/* Render the icon here */}
                               {/* You can also include the order number if desired */}
                             </Button>
@@ -376,7 +376,7 @@ const ChatWindow: FC<ChatWindowProps> = ({ isDocument, conversation_id }) => {
               className="flex-1 p-1 rounded-full"
               placeholder="Type your message..."
             />
-            <Button isIconOnly className="ml-2 text-white p-2 rounded-full bg-slate-400" type="submit">
+            <Button  isIconOnly className="ml-2 text-white p-2 rounded-full bg-slate-400" type="submit">
               <ArrowRightIcon />
             </Button>
           </form>

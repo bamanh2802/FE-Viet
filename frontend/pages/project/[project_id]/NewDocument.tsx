@@ -188,15 +188,15 @@ const NewDocument: FC<NewDocumentProps> = ({ updateDocument, isOpen, onClose, do
             Documents allow
           </label>
           <div className="grid grid-cols-3 gap-4">
-            <Button variant="outline" className="flex flex-col items-center justify-center h-24">
+            <Button variant="outline" className="flex dark:bg-zinc-800 bg-zinc-200 flex-col items-center justify-center h-24">
               <FileText className="h-6 w-6 mb-2" />
               <span className="text-xs">PDF</span>
             </Button>
-            <Button variant="outline" className="flex flex-col items-center justify-center h-24">
+            <Button variant="outline" className="flex dark:bg-zinc-800 bg-zinc-200 flex-col items-center justify-center h-24">
               <Link className="h-6 w-6 mb-2" />
               <span className="text-xs">TXT</span>
             </Button>
-            <Button variant="outline" className="flex flex-col items-center justify-center h-24">
+            <Button variant="outline" className="flex dark:bg-zinc-800 bg-zinc-200 flex-col items-center justify-center h-24">
               <FileText className="h-6 w-6 mb-2" />
               <span className="text-xs">DOCS</span>
             </Button>

@@ -4,7 +4,7 @@ import { MoonIcon } from "../icon/MoonIcon";
 import { SunIcon } from "../icon/SunIcon";
 import { useTheme } from "next-themes";
 import useDarkMode from "@/src/hook/useDarkMode";
-import { Logout, getUser } from "@/service/apis";
+import { Logout, getUser, refreshToken } from "@/service/apis";
 import { useRouter } from "next/router";
 import { User } from "@/src/types/types";
 import { useDispatch, useSelector } from "react-redux";
@@ -36,7 +36,17 @@ const UserDropdown = () => {
       const data = await getUser()
       dispatch(setUser(data.data.msg));
     } catch (e) {
-      console.log(e)
+      if(e.response && e.response.status === 403) {
+        try {
+          await refreshToken()
+          const data = await getUser()
+          dispatch(setUser(data.data.msg));
+        } catch(e) {
+          console.log(e)
+        }
+      } else {
+        console.log(e)
+      }
     }
   }
 
@@ -68,20 +78,19 @@ const UserDropdown = () => {
           isBordered
           as="button"
           className="transition-transform"
-          color="secondary"
-          name={user?.username}
+          name={user?.last_name}
           size="sm"
-          src="https://scontent.fhan14-3.fna.fbcdn.net/v/t1.15752-9/458197052_1236440294376177_6824711196797531216_n.png?_nc_cat=111&ccb=1-7&_nc_sid=9f807c&_nc_ohc=iiV5NdYpcQoQ7kNvgHfMbLi&_nc_ht=scontent.fhan14-3.fna&oh=03_Q7cD1QFQOyEG2hWyk7qxQLsWicGk13o2kUO7XyQIJVZQzSbZAw&oe=67026137"
+          showFallback
         />
       </DropdownTrigger>
       <DropdownMenu closeOnSelect={false} aria-label="Profile Actions" variant="flat">
-        <DropdownItem key="profile" className="h-14 gap-2">
+        <DropdownItem key="profile" className="h-14 gap-2" aria-label="Profile Info">
           <p className="font-semibold">Signed in as</p>
           <p className="font-semibold">{user?.email}</p>
         </DropdownItem>
-        <DropdownItem key="settings">My Settings</DropdownItem>
-        <DropdownItem key="team_settings">Team Settings</DropdownItem>
-        <DropdownItem key="theme">
+        <DropdownItem key="settings" aria-label="My Settings">My Settings</DropdownItem>
+        <DropdownItem key="team_settings" aria-label="Team Settings">Team Settings</DropdownItem>
+        <DropdownItem key="theme" aria-label="Theme Settings">
           <div className="flex justify-between items-center">
             Theme
             <Switch
@@ -93,22 +102,23 @@ const UserDropdown = () => {
             />
           </div>
         </DropdownItem>
-        <DropdownItem key="language">
-          <Select isRequired defaultSelectedKeys={["Vietnamese"]} className="max-w-xs">
+        <DropdownItem key="language" aria-label="Language Selection">
+          <Select isRequired defaultSelectedKeys={["Vietnamese"]} className="max-w-xs" aria-label="Select Language">
             {languages.map((language) => (
               <SelectItem key={language.key}>{language.label}</SelectItem>
             ))}
           </Select>
         </DropdownItem>
-        <DropdownItem key="analytics">Analytics</DropdownItem>
-        <DropdownItem key="system">System</DropdownItem>
-        <DropdownItem key="configurations">Configurations</DropdownItem>
-        <DropdownItem key="help_and_feedback">Help & Feedback</DropdownItem>
-        <DropdownItem onClick={handleLogout} key="logout" color="danger">
+        <DropdownItem key="analytics" aria-label="Analytics">Analytics</DropdownItem>
+        <DropdownItem key="system" aria-label="System Settings">System</DropdownItem>
+        <DropdownItem key="configurations" aria-label="Configurations">Configurations</DropdownItem>
+        <DropdownItem key="help_and_feedback" aria-label="Help & Feedback">Help & Feedback</DropdownItem>
+        <DropdownItem onClick={handleLogout} key="logout" color="danger" aria-label="Log Out">
           Log Out
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>
+  
   );
 };
 

@@ -18,6 +18,7 @@ import { getDocumentById, getDocumentInProject } from "@/service/projectApi";
 import { getConversationByDocument, getDocumentsByConversation } from "@/service/documentApi";
 import { getAllProjects } from "@/service/apis";
 import { Document, Project, Conversation } from "@/src/types/types";
+import { createNewConversation } from "@/service/projectApi";
 
 
 // Sample data for chats
@@ -61,10 +62,22 @@ const DocumentPage: React.FC = () => {
     };
   }, []);
 
+  const handleCreateNewConversation = async () => {
+    console.log('hello')
+    try {
+      const data = await createNewConversation('Conv 1', project_id as string, [`{${document_id}}`])
+      console.log(data)
+      handleGetConversations()
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   const handleGetConversations = async () => {
     try {
-      const data = await getDocumentsByConversation(document_id as string)
+      const data = await getConversationByDocument(document_id as string)
       setConversations(data.data)
+      console.log(data)
     } catch (e) {
       console.log(e)
     }
@@ -74,7 +87,6 @@ const DocumentPage: React.FC = () => {
   const handleGetProjects = async () => {
     try {
       const data = await getAllProjects();
-      console.log(data);
       setProjects(data.data);
       setProjectName(getProjectNameById(project_id ?? "", data.data));
     } catch (e) {
@@ -111,7 +123,6 @@ const DocumentPage: React.FC = () => {
     try {
       if (project_id) {
         const data = await getDocumentInProject(project_id);
-        console.log(data);
         setDocuments(data.data);
         setDocumentName(getDocumentNameById(document_id ?? "", data.data));
       }
@@ -195,30 +206,27 @@ const DocumentPage: React.FC = () => {
                   className="w-full p-0"
                   aria-label="Document Sections" // Đảm bảo Tabs có aria-label
                 >
-                  {/* Conversations Tab */}
-                  <Tab key="conversations" title="Conversations">
-                    {/* <Tabs
-                      aria-label="Chat Tabs" // Thêm aria-label
-                      selectedKey={selectedChat}
-                      onSelectionChange={(key) => handleTabChange(key as string)}
-                      className="w-full p-0"
-                    >
-                      {conversation.map((conv, index) => (
-                        <Tab
-                          key={conv.conversation_id}
-                          title={conv.conversation_name}
-                          onContextMenu={(e) => handleContextMenu(e, conv.conversation_id)}
-                          aria-label={`Conversation ${conv.conversation_name}`} // Thêm aria-label
-                        >
-                          <ChatWindow conversationId={conv.conversation_id} isDocument={true} />
-                        </Tab>
-                      ))}
-                      <Tab 
-                        key="add" 
-                        title={<PlusIcon className="h-5 w-5 text-gray-500" aria-label="Add new chat" />} // Thêm aria-label cho icon
-                        aria-label="Add new chat" // Đảm bảo tab có aria-label
-                      />
-                    </Tabs> */}
+                 
+                  
+                  <Tab 
+                    key="add" 
+                    onClick={() => handleCreateNewConversation()}
+                    title="Conversations" // Thêm aria-label cho icon
+                    aria-label="Add new chat" // Đảm bảo tab có aria-label
+                  > 
+                  <Tabs aria-label="test">
+                  {conversation.map((conv, index) => (
+                      <Tab
+                        key={conv.conversation_id}
+                        title={conv.conversation_name}
+                        onContextMenu={(e) => handleContextMenu(e, conv.conversation_id)}
+                        aria-label={`Conversation ${conv.conversation_name}`} // Thêm aria-label
+                      >
+                        <ChatWindow conversationId={conv.conversation_id} isDocument={true} />
+                      </Tab>
+                    ))}
+                  </Tabs>
+                  
                   </Tab>
   
                   {/* Analysis Tab */}

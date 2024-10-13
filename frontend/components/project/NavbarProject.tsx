@@ -20,13 +20,16 @@ import {Navbar,
 import '../project/config.css'
 import { useSelector, useDispatch } from "react-redux";
 import UserDropdown from '../global/UserDropdown';
+import { Note } from '@/src/types/types';
 
 
 interface NavbarProjectProps {
   onOpenDialog: () => void;
   onOpenShare: () => void;
+  setSelectedNote: (note: string) => void
+  note: Note
 }
-const NavbarProject: FC<NavbarProjectProps> = ({ onOpenDialog, onOpenShare }) => {
+const NavbarProject: FC<NavbarProjectProps> = ({ setSelectedNote, onOpenDialog, onOpenShare, note }) => {
   const router = useRouter();
   const projects = useSelector((state: RootState) => state.projects.projects);
   const { project_id } = router.query;
@@ -37,6 +40,9 @@ const NavbarProject: FC<NavbarProjectProps> = ({ onOpenDialog, onOpenShare }) =>
     return project ? project.name : "Loading...";
   };
   
+  const handleBackProject = () => {
+    setSelectedNote('')
+  }
   
   
   return (
@@ -44,7 +50,8 @@ const NavbarProject: FC<NavbarProjectProps> = ({ onOpenDialog, onOpenShare }) =>
       <NavbarBrand>
         <Breadcrumbs>
         <BreadcrumbItem><HomeIcon className='w-4 h-4'/></BreadcrumbItem>
-        <BreadcrumbItem>{getProjectNameById(project_id)}</BreadcrumbItem>
+        <BreadcrumbItem onClick={handleBackProject}>{getProjectNameById(project_id)}</BreadcrumbItem>
+        {note && (<BreadcrumbItem >{note.title}</BreadcrumbItem>)}
       </Breadcrumbs>
       </NavbarBrand>
 

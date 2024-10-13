@@ -38,33 +38,8 @@ import {
     DialogContent,
     DialogTitle
 } from "@/components/ui/dialog";
-import { useTranslation } from 'react-i18next';
 
 import { ListboxWrapper } from '../ListboxWrapper';
-
-
-const documents = [
-    {
-      name: "NLP book",
-      project: "Viet project",
-      type: "pdf"
-    },
-    {
-      name: "AI for Everyone",
-      project: "AI Learning",
-      type: "pdf"
-    },
-    {
-      name: "Data Science Handbook",
-      project: "Data Science Initiative",
-      type: "pdf"
-    },
-    {
-      name: "Deep Learning Notes",
-      project: "Viet project",
-      type: "doc"
-    },
-]
 
 interface HomeMainProps {
   projects: Project[];
@@ -73,7 +48,6 @@ interface HomeMainProps {
 }
 const HomeMain: React.FC<HomeMainProps> = ({userName, projects: initialProjects, onProjectsUpdate }) => {
   const router = useRouter();
-  const { t } = useTranslation('common');
   const [selectedTab, setSelectedTab] = useState("recent");
   const [recentProjects, setRecentProject] = useState<Project[]>([])
   const [isOpenRename, setIsOpenRename] = useState<boolean>(false);
@@ -177,7 +151,6 @@ const HomeMain: React.FC<HomeMainProps> = ({userName, projects: initialProjects,
 
   useEffect(() => {
     setProjects(initialProjects)
-    console.log(initialProjects)
     if (initialProjects.length !== 0) {
       const recentProjects = getRecentProjects([...initialProjects]); // Tạo bản sao mới của projects
       setRecentProject(recentProjects);
@@ -255,7 +228,7 @@ const HomeMain: React.FC<HomeMainProps> = ({userName, projects: initialProjects,
           </div>
         ) : (
           <div className='w-full flex justify-center py-5 '>
-            <h2 className="text-2xl font-semibold mb-6">{t('welcome')}, {userName}. 
+            <h2 className="text-2xl font-semibold mb-6">Welcome, {userName}. 
             <br></br>
             How can I help you today?</h2>
           </div>
@@ -331,7 +304,7 @@ const HomeMain: React.FC<HomeMainProps> = ({userName, projects: initialProjects,
                         <h4 className="truncate w-full block mt-0">{project.name}</h4>
                       </CardHeader>
                       <CardBody className="space-y-0 flex flex-col justify-between p-0"> {/* Sử dụng flex để căn chỉnh nội dung */}
-                        <p className="text-xs ml-2 py-1">2 documents, 2 conversations</p>
+                        <p className="text-xs ml-2 py-1">{project.doc_count} documents, {project.conv_count} conversations</p>
                         <div className="flex items-center text-xs text-gray-300">
                           <UserGroupIcon className="w-3 h-3 mx-1 ml-2" />
                           {formatTimeAgo(project.updated_at)}
@@ -410,7 +383,7 @@ const HomeMain: React.FC<HomeMainProps> = ({userName, projects: initialProjects,
                           <h4 className="truncate w-full block mt-0">{project.name}</h4>
                         </CardHeader>
                         <CardBody className="space-y-0 flex flex-col justify-between p-0"> {/* Sử dụng flex để căn chỉnh nội dung */}
-                          <p className="text-xs ml-2 py-1">2 documents, 2 conversations</p>
+                          <p className="text-xs ml-2 py-1">{project.doc_count} documents, {project.conv_count} conversations</p>
                           <div className="flex items-center text-xs text-gray-300">
                             <UserGroupIcon className="w-3 h-3 mx-1 ml-2" />
                             {formatDate(project.updated_at)}

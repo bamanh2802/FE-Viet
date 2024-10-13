@@ -14,6 +14,8 @@ import PreLoading from "@/public/img/project_preloading.gif";
 import NewDocument from "./NewDocument";
 import { useSSR } from "react-i18next";
 import RichTextEditor from "./Note";
+import { getNoteById, renameNote, editNote } from "@/service/noteApi";
+import SearchComponent from "@/components/project/SearchComponent";
 
 const Project: FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
@@ -21,22 +23,63 @@ const Project: FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true); // State cho loading
   const router = useRouter();
   const { project_id } = router.query;
+  const [isOpenSearch, setIsOpenSearch] = useState<boolean>(false)
 
   const [documents, setDocuments] = useState<Document[]>([]);
   const [images, setImages] = useState<ImageType[]>([]);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isOpenNewDocument, setIsOpenNewDocument] = useState<boolean> (false)
   const [notes, setNotes] = useState<Note[]> ([])
-  const [selectedNote, setSelectedNote] = useState<string>()
+  const [selectedNote, setSelectedNote] = useState<string>('')
+  const [note, setNote] = useState<Note>()
 
   const openDialog = () => setIsDialogOpen(true);
   const openShare = () => setIsOpenShare(true);
   const closeDialog = () => setIsDialogOpen(false);
   const closeShare = () => setIsOpenShare(false);
   const closeNewDocument = () => setIsOpenNewDocument(false)
+  const closeSearch = () => setIsOpenSearch(false)
+  const openSearch = () => setIsOpenSearch(true)
   const openNewDocument = () => {
     setIsOpenNewDocument(true)
     console.log('hello')
+  }
+
+  const handleSetSelectedNote = (noteId: string) => {
+    setSelectedNote(noteId)
+    console.log(noteId)
+    if (noteId !== '') {
+      handleGetNoteById(noteId)
+    }
+  }
+
+  const handleRenameNote = async (noteId: string, newName: string) => {
+    try {
+      const data = await renameNote(noteId, newName)
+      console.log(data)
+      handleGetNotes()
+      handleGetNoteById(selectedNote)
+    } catch(e) {
+      console.log(e)
+    }
+  }
+  const handleEditNote = async (noteId: string, content:string) => {
+    try {
+      const data = await editNote(noteId, content)
+      console.log(data)
+    } catch(e) {
+      console.log(e)
+    }
+  }
+
+  const handleGetNoteById = async (noteId: string) => {
+    try {
+      const data = await getNoteById(noteId)
+      console.log(data)
+      setNote(data.data.note)
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   const handleGetDocuments = async () => {
@@ -96,26 +139,43 @@ const Project: FC = () => {
     <div className="flex box-border">
       <div>
         <Sidebar 
+        openSearch={openSearch}
+        setLoading={() => setIsLoading(true)}
+        setSelectedNote={setSelectedNote}
         notes={notes}
         documents={documents} 
         images={images} 
         conversations={conversations} />
       </div>
       <div className="flex flex-col w-full">
-        <NavbarProject onOpenShare={openShare} onOpenDialog={openDialog} />
+        <NavbarProject 
+        note={note}
+        setSelectedNote={handleSetSelectedNote}
+        onOpenShare={openShare} 
+        onOpenDialog={openDialog} />
         <div>
-          {/* <WorkSpace 
-          onOpenDialog={openDialog}
-          openNewDocument={openNewDocument}
-          projectId={project_id as string} 
-          documents={documents} 
-          images={images} 
-          conversations={conversations} 
-          notes={notes}
-          /> */}
+          {
+            selectedNote !== '' ? (
+
           <div className="w-full h-[calc(100vh-56px)] bg-zinc-200 dark:bg-zinc-800">
-          <RichTextEditor />
+          <RichTextEditor 
+          renameNote = {handleRenameNote}
+          editNote = {handleEditNote}
+          note={note}/>
           </div>
+            ) : (
+             <WorkSpace 
+              setSelectedNote={handleSetSelectedNote}
+              onOpenDialog={openDialog}
+              openNewDocument={openNewDocument}
+              projectId={project_id as string} 
+              documents={documents} 
+              images={images} 
+              conversations={conversations} 
+              notes={notes}
+              /> 
+            )
+          }
         </div>
         <NewWorkspace 
         updateConversation={handleGetConversations}
@@ -131,6 +191,7 @@ const Project: FC = () => {
         onClose={closeNewDocument} 
         projectId={project_id as string}/>
       </div>
+      <SearchComponent documents={documents} notes={notes} onClose={closeSearch} isOpen={isOpenSearch}/>
     </div>
   );
 };

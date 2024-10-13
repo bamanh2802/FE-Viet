@@ -31,6 +31,7 @@ import { DocumentTextIcon,
     ArrowUpOnSquareIcon,
     PlusIcon
 } from "@heroicons/react/24/outline";
+import { createNewNote } from "@/service/noteApi";
 
 import 'remixicon/fonts/remixicon.css';
 import '../project/config.css'
@@ -44,8 +45,9 @@ interface WorkSpaceProps{
     projectId: string
     openNewDocument: () => void
     onOpenDialog: () => void
+    setSelectedNote: (note: string) => void
 }
-const WorkSpace: React.FC<WorkSpaceProps> = ({onOpenDialog, openNewDocument, projectId, documents, images, conversations, notes}) => {
+const WorkSpace: React.FC<WorkSpaceProps> = ({setSelectedNote, onOpenDialog, openNewDocument, projectId, documents, images, conversations, notes}) => {
 
 
     const handleRouterWorkspace = (conversationId: string) => {
@@ -70,7 +72,7 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({onOpenDialog, openNewDocument, pro
         if (diffInDays < 7) {
           return `${diffInDays}d ago`;
         }
-      
+        setSelectedNote
         // Nếu dưới 1 tháng
         if (diffInWeeks < 4) {
           return `${diffInWeeks}w ago`;
@@ -81,6 +83,15 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({onOpenDialog, openNewDocument, pro
         return date.toLocaleDateString("en-US", options);
       }
 
+    const handleCreateNewNote = async () => {
+        try {
+            const data = await createNewNote (projectId)
+            setSelectedNote(data.data.note_id)
+            console.log(data)
+        } catch (e) {
+            console.log(e)
+        }
+    }
 
     return (
         <div className="overflow-auto flex justify-center bg-zinc-200 dark:bg-zinc-800 w-full"
@@ -110,7 +121,7 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({onOpenDialog, openNewDocument, pro
                             <>
                             <Carousel>
                             <CarouselContent className="">
-                            <CarouselItem 
+                            <CarouselItem key="plus"
                             onClick={onOpenDialog}
                             className="cursor-pointer basis-1/5 hover:scale-[1.01] transition-all">
                                 <Tooltip content="Add new Conversation">
@@ -123,6 +134,7 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({onOpenDialog, openNewDocument, pro
                             {
                                 conversations.map((conv, index) => (
                                     <CarouselItem
+                                    key={index}
                                     onClick={() => handleOpenWorkspace(conv)}
                                     className="basis-1/4">
                                     <Card 
@@ -189,6 +201,7 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({onOpenDialog, openNewDocument, pro
                             <Carousel>
                                 <CarouselContent>
                                 <CarouselItem 
+                                key="plus"
                                 onClick={openNewDocument}
                                 className="cursor-pointer basis-1/5 hover:scale-[1.01] transition-all">
                                 <Tooltip content="Add new Document">
@@ -200,7 +213,9 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({onOpenDialog, openNewDocument, pro
 
                                 {/* Lặp qua các tài liệu */}
                                 {documents.map((doc, index) => (
-                                    <CarouselItem className="cursor-pointer basis-1/5 hover:scale-[1.01] transition-all" key={index}>
+                                    <CarouselItem 
+                                    key={index}
+                                    className="cursor-pointer basis-1/5 hover:scale-[1.01] transition-all" key={index}>
                                     <Card className="max-w-[180px]">
                                         <CardBody className="overflow-hidden p-0 h-[90px]">
                                         <Image
@@ -209,6 +224,7 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({onOpenDialog, openNewDocument, pro
                                             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGAA4Wd4bco5Xv33GasXrnDdQT5OFXwa3HUQ&s"
                                             width={180}
                                             height={180}
+
                                         />
                                         </CardBody>
                                         <CardHeader className="pb-0 h-20 py-2 pt-2 px-2 flex-col justify-between items-start">
@@ -246,7 +262,8 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({onOpenDialog, openNewDocument, pro
                     <Carousel>
                         <CarouselContent>
                         <CarouselItem 
-                        onClick={openNewDocument}
+                        key="plus"
+                        onClick={handleCreateNewNote}
                         className="cursor-pointer basis-1/5 hover:scale-[1.01] transition-all">
                         <Tooltip content="Add new Note">
                             <Card className="shadow-none bg-opacity-0 max-w-[180px] h-[113px] flex justify-center items-center">
@@ -256,15 +273,18 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({onOpenDialog, openNewDocument, pro
                         </CarouselItem>
                         {
                             notes && notes.map((note, index) => (
-                                <CarouselItem className="cursor-pointer basis-1/5 hover:scale-[1.01] transition-all" key={index}>
+                                <CarouselItem 
+                                key={index}
+                                onClick={() => setSelectedNote(note.note_id)} 
+                                className="cursor-pointer basis-1/5 hover:scale-[1.01] transition-all" key={index}>
                                     <div className="bg-zinc-800 rounded-lg shadow-lg flex-shrink-0">
                                         <div className="flex items-center justify-center h-12 bg-[#404144] rounded-t-lg relative opacity-80">
                                             <i className="ri-booklet-line absolute left-4 top-8 text-3xl"></i>
                                         </div>
                                         <div className="mt-2 p-4">
-                                            <h2 className="text-sm font-semibold opacity-80">{note.title}</h2>
+                                            <h2 className=" truncate">{note.title}</h2>
                                             <div className="flex items-center mt-1">
-                                            <img src="https://scontent.fhan14-3.fna.fbcdn.net/v/t1.15752-9/458197052_1236440294376177_6824711196797531216_n.png?_nc_cat=111&ccb=1-7&_nc_sid=9f807c&_nc_ohc=iiV5NdYpcQoQ7kNvgHfMbLi&_nc_ht=scontent.fhan14-3.fna&oh=03_Q7cD1QFQOyEG2hWyk7qxQLsWicGk13o2kUO7XyQIJVZQzSbZAw&oe=67026137" alt="Avatar" className="w-5 h-5 rounded-full"/>
+                                            <img src="https://scontent.fhan14-5.fna.fbcdn.net/v/t39.30808-6/432733982_1611954199540695_6178013665723587549_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=XmQZxVgU9HkQ7kNvgEEhCg6&_nc_ht=scontent.fhan14-5.fna&_nc_gid=A1FPRUXT5gOpbXYMtQWSxuo&oh=00_AYB-qR5B-fumXpeNjxGGewaJ1-utlrUBk5u3VlrFW08MfA&oe=670EE2FE" alt="Avatar" className="w-5 h-5 rounded-full"/>
                                             <span className="ml-2 text-xs text-gray-400">{convertDate(note.created_at)}</span>
                                             </div>
                                         </div>

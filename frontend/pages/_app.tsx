@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { Provider } from "react-redux";
 import { store } from "@/src/store";
+import { Toaster } from "@/components/ui/toaster"
 
 import { fontSans, fontMono } from "@/config/fonts";
 import "@/styles/globals.css";
@@ -34,6 +35,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <NextUIProvider navigate={router.push}>
       <NextThemesProvider attribute="class" defaultTheme="dark">
         <Component {...pageProps} />
+        <Toaster />
       </NextThemesProvider>
     </NextUIProvider>
     </Provider>
