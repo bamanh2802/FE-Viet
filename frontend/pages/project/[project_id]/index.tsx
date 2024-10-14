@@ -42,7 +42,6 @@ const Project: FC = () => {
   const openSearch = () => setIsOpenSearch(true)
   const openNewDocument = () => {
     setIsOpenNewDocument(true)
-    console.log('hello')
   }
 
   const handleSetSelectedNote = (noteId: string) => {
@@ -52,6 +51,7 @@ const Project: FC = () => {
       handleGetNoteById(noteId)
     }
   }
+
 
   const handleRenameNote = async (noteId: string, newName: string) => {
     try {
@@ -86,6 +86,9 @@ const Project: FC = () => {
     try {
       const data = await getDocumentInProject(project_id as string); // Sử dụng `as string` cho `project_id`
       setDocuments(data.data);
+      if(data.data.length === 0 ) {
+        openNewDocument()
+      }
     } catch (e) {
       console.log(e);
     }
@@ -139,7 +142,9 @@ const Project: FC = () => {
     <div className="flex box-border">
       <div>
         <Sidebar 
+        openNewDocument={openNewDocument}
         openSearch={openSearch}
+        onOpenDialog={openDialog}
         setLoading={() => setIsLoading(true)}
         setSelectedNote={setSelectedNote}
         notes={notes}

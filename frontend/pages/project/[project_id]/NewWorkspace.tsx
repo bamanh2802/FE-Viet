@@ -112,7 +112,7 @@ const NewWorkspace: FC<NewWorkspaceProps> = ({ updateConversation, projectId, is
                     isDisabled={isDisable}
                     color="default"
                     onClick={() => handleCreateNewConversation()}
-                    startContent={<PlusIcon className="w-5 h-5" />}
+                    startContent={!isLoading && <PlusIcon className="w-5 h-5" />}
                     className="mt-4"
                 >
                     Create
