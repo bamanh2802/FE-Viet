@@ -56,7 +56,7 @@ import { getDocumentInProject } from '@/service/projectApi';
 import { createNewNote } from '@/service/noteApi';
 import { useToast } from '@/hooks/use-toast';
 import { ToastAction } from "@/components/ui/toast"
-import RenameObject from '../global/RenameObject';
+import RenameObject from '../global/DeleteObject';
 
 
 
@@ -218,7 +218,7 @@ const handleRouterDocument = (doc: Document) => {
 
 
   return (
-    <div className="dark:bg-zinc-900 bg-zinc-50 overflow-auto select-none h-screen w-52 flex flex-col justify-between p-2">
+    <div className="dark:bg-zinc-900 bg-zinc-50 overflow-auto select-none h-screen w-56 flex flex-col justify-between p-2">
       <div>
         <div className="rounded-lg mb-4 border-gray-400">
         <Select 

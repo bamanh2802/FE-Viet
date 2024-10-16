@@ -70,3 +70,53 @@ export async function getConversationByDocument(documentId: string) {
   )
   return response
 }
+
+export async function deleteDocument (documentId: string) {
+  const accessToken = localStorage.getItem('access_token');
+
+  const response = await axios.post(
+    `${API_URL}/api/documents/delete`, {
+      document_id: documentId
+    }, {
+      headers: {
+        'accept': 'application/json',
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${accessToken}`
+      }
+    }
+  )
+
+  return response
+}
+
+export async function summarizeDocument (documentId: string) {
+  const accessToken = localStorage.getItem('access_token');
+
+  const response = await axios.get(
+    `${API_URL}/api/documents/${documentId}/summarize`, {
+      headers: {
+        'accept': 'application/json',
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${accessToken}`
+      }
+    }
+  )
+
+  return response
+}
+
+export async function shallowOutlineDocument (documentId: string) {
+  const accessToken = localStorage.getItem('access_token');
+  
+  const response = await axios.get(
+    `${API_URL}/api/documents/${documentId}/shallow-outline`, {
+      headers: {
+        'accept': 'application/json',
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${accessToken}`
+      }
+    }
+  )
+
+  return response
+}

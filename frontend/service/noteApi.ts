@@ -100,3 +100,20 @@ export async function createNewNote(
   
     return response;
   }
+
+  export async function deleteNote(noteId: string) {
+    const accessToken = localStorage.getItem('access_token');
+    const response = await axios.delete(
+      `${API_URL}/api/notes/delete`, 
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+        data: {
+          note_id: noteId
+        }
+      }
+    );
+    return response;
+}

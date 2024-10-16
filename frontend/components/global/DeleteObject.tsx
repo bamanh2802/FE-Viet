@@ -11,7 +11,7 @@ import {
   } from "@/components/ui/dialog";
   import { Button } from "@/components/ui/button"
   import { Input } from "@/components/ui/input"
-interface RenameObjectProps {
+interface DeleteObjectProps {
   id: string;
   name: string;
   isOpen: boolean
@@ -19,11 +19,9 @@ interface RenameObjectProps {
   onRename: (id: string, newName: string) => void; // Callback function to handle renaming
 }
 
-const RenameObject: React.FC<RenameObjectProps> = ({ id, name, onRename, onClose, isOpen }) => {
-  const [newName, setNewName] = useState(name);
+const DeleteObject: React.FC<DeleteObjectProps> = ({ id, name, onRename, onClose, isOpen }) => {
 
   const handleRename = () => {
-    onRename(id, newName);
     onClose(); 
   };
 
@@ -32,15 +30,11 @@ const RenameObject: React.FC<RenameObjectProps> = ({ id, name, onRename, onClose
 
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Rename Object</DialogTitle>
+            <DialogTitle>Delete Something...</DialogTitle>
           </DialogHeader>
 
           <div className="mt-4">
-            <Input 
-              value={newName} 
-              onChange={(e) => setNewName(e.target.value)} 
-              placeholder="Enter new name" 
-            />
+            Do you want delete
           </div>
 
           <DialogFooter>
@@ -54,4 +48,4 @@ const RenameObject: React.FC<RenameObjectProps> = ({ id, name, onRename, onClose
   );
 };
 
-export default RenameObject;
+export default DeleteObject;

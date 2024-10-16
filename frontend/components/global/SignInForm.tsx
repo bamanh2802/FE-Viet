@@ -31,8 +31,8 @@ const SignInForm: React.FC<SignInFormProps> = ({ isOpen, closeForm }) => {
         e.preventDefault();
         try {
             const data = await SignIn(userNameSignIn, passwordSignIn)
-            localStorage.setItem('access_token', data.access_token)
-            localStorage.setItem('refresh_token', data.refresh_token)
+            localStorage.setItem('access_token', data.data.access_token)
+            localStorage.setItem('refresh_token', data.data.refresh_token)
             console.log(data)
             setIsLoadingSignIn(false)
             router.push('/home')

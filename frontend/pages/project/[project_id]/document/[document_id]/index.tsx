@@ -19,6 +19,8 @@ import { getConversationByDocument, getDocumentsByConversation } from "@/service
 import { getAllProjects } from "@/service/apis";
 import { Document, Project, Conversation } from "@/src/types/types";
 import { createNewConversation } from "@/service/projectApi";
+import Analysis from "./Analysis";
+import { refreshToken } from "@/service/apis";
 
 
 // Sample data for chats
@@ -194,7 +196,7 @@ const DocumentPage: React.FC = () => {
   return (
     <ResizablePanelGroup direction="horizontal" className="w-screen h-screen">
     <div className="flex h-full relative" ref={containerRef}>
-      <SidebarDocument />
+      <SidebarDocument documentName={documentName}/>
       <div className="flex flex-col w-full">
         <NavbarDocument projectName={projectName} documentName={documentName} />
         <div className="flex" style={{ height: "calc(100% - 48px)", width: "100%" }}>
@@ -206,13 +208,11 @@ const DocumentPage: React.FC = () => {
                   className="w-full p-0"
                   aria-label="Document Sections" // Đảm bảo Tabs có aria-label
                 >
-                 
                   
                   <Tab 
                     key="add" 
                     onClick={() => handleCreateNewConversation()}
                     title="Conversations" // Thêm aria-label cho icon
-                    aria-label="Add new chat" // Đảm bảo tab có aria-label
                   > 
                   <Tabs aria-label="test">
                   {conversation.map((conv, index) => (
@@ -220,7 +220,6 @@ const DocumentPage: React.FC = () => {
                         key={conv.conversation_id}
                         title={conv.conversation_name}
                         onContextMenu={(e) => handleContextMenu(e, conv.conversation_id)}
-                        aria-label={`Conversation ${conv.conversation_name}`} // Thêm aria-label
                       >
                         <ChatWindow conversationId={conv.conversation_id} isDocument={true} />
                       </Tab>
@@ -230,9 +229,9 @@ const DocumentPage: React.FC = () => {
                   </Tab>
   
                   {/* Analysis Tab */}
-                  <Tab key="analysis" title="Analysis" aria-label="Analysis Tab">
+                  <Tab key="analysis" title="Analysis">
                     <div className="flex justify-center items-center h-full">
-                      <p className="text-lg">Analysis Content Goes Here</p>
+                      <Analysis />
                     </div>
                   </Tab>
                 </Tabs>
@@ -247,17 +246,17 @@ const DocumentPage: React.FC = () => {
                     display: contextMenu.visible ? "block" : "none",
                   }}
                   className="absolute dark:bg-zinc-800 bg-zinc-200 rounded-lg shadow-md border"
-                  aria-label="Context Menu" // Thêm aria-label cho context menu
+                   // Thêm aria-label cho context menu
                 >
                   <ListboxWrapper selectionMode="single" onAction={handleMenuClick}>
                     <Listbox aria-label="Chat Actions">
-                      <ListboxItem key="rename" textValue="Rename" aria-label="Rename Chat">
+                      <ListboxItem key="rename" textValue="Rename">
                         <div className="flex items-center">
                           <ChatBubbleBottomCenterIcon className="h-4 w-4 pr-1" aria-hidden="true" />
                           <span>Rename</span>
                         </div>
                       </ListboxItem>
-                      <ListboxItem key="delete" textValue="Delete" className="text-danger" aria-label="Delete Chat">
+                      <ListboxItem key="delete" textValue="Delete" className="text-danger" >
                         <div className="flex items-center">
                           <TrashIcon className="h-4 w-4 pr-1" aria-hidden="true" />
                           <span>Delete</span>

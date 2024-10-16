@@ -36,7 +36,7 @@ const UserDropdown = () => {
       const data = await getUser()
       dispatch(setUser(data.data.msg));
     } catch (e) {
-      if(e.response && e.response.status === 403) {
+      if(e.response && e.response.status === 421) {
         try {
           await refreshToken()
           const data = await getUser()
@@ -101,13 +101,6 @@ const UserDropdown = () => {
               onClick={handleTheme}
             />
           </div>
-        </DropdownItem>
-        <DropdownItem key="language" aria-label="Language Selection">
-          <Select isRequired defaultSelectedKeys={["Vietnamese"]} className="max-w-xs" aria-label="Select Language">
-            {languages.map((language) => (
-              <SelectItem key={language.key}>{language.label}</SelectItem>
-            ))}
-          </Select>
         </DropdownItem>
         <DropdownItem key="analytics" aria-label="Analytics">Analytics</DropdownItem>
         <DropdownItem key="system" aria-label="System Settings">System</DropdownItem>

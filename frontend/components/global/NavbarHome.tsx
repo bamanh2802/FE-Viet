@@ -3,36 +3,43 @@ import { Button, Navbar, NavbarBrand, NavbarContent, NavbarItem, Input } from "@
 import { PlusIcon, HomeIcon } from "@heroicons/react/24/outline";
 import { useRouter } from 'next/router';
 import UserDropdown from "./UserDropdown";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { User } from "@/src/types/types";
 import '@/components/project/config.css'
 import { createProject } from "@/service/apis";
+import { VisuallyHidden } from "@nextui-org/react";
 
 interface NavbarHomeProps {
   user: User
+  updatedProject: () => void
 }
 
-const NavbarHome: React.FC<NavbarHomeProps> = ({user}) => {
+const NavbarHome: React.FC<NavbarHomeProps> = ({user, updatedProject}) => {
   const router = useRouter();
   const [isNewProject, setIsNewProject] = useState<boolean>(false);
   const [isLoadingCreate, setIsLoadingCreate] = useState<boolean>(false);
+  const [projectName, setProjectName] = useState<string>()
 
   const handleToggleNewProject = () => {
     setIsNewProject(!isNewProject);
   };
 
-  const handleCreateProject = async () => {
+  const handleCreateProject = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); 
     setIsLoadingCreate(true);
+
     try {
-      const data = await createProject(isNewProject)
-      console.log(data)
-      router.push(`/project/${data.data.project_id}`)
-    } catch (e) {
-      console.log(e)
+      const data = await createProject(projectName as string);
+      updatedProject();
+      router.push(`/project/${data.data.project_id}`);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoadingCreate(false);
     }
-    setIsLoadingCreate(false);
-  };
+};
+
 
   return (
     <Navbar isBordered className="navbar-custom dark:bg-zinc-900 bg-zinc-50 h-14">
@@ -49,52 +56,43 @@ const NavbarHome: React.FC<NavbarHomeProps> = ({user}) => {
             <PlusIcon />
           </Button>
         </NavbarItem>
-        <Input
-          classNames={{
-            base: "max-w-full sm:max-w-[10rem] h-10",
-            mainWrapper: "h-full",
-            input: "text-small",
-            inputWrapper: "h-full font-normal text-default-500 bg-default-200/20 dark:bg-default-500/20",
-          }}
-          placeholder="Type to search..."
-          size="sm"
-          type="search"
-        />
-
         <UserDropdown
         />
       </NavbarContent>
 
       <Dialog open={isNewProject} onOpenChange={handleToggleNewProject}>
         <DialogContent className="bg-zinc-200 dark:bg-zinc-900 border-none">
-          <CardHeader>
-            <CardTitle>Create project</CardTitle>
-            <CardDescription>Create your new project in one-click.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form>
-              <div className="grid w-full items-center gap-4">
-                <div className="flex flex-col space-y-1.5">
-                  <label htmlFor="name">Name</label>
-                  <Input
-                    className="rounded-md border-1 border-gray-400"
-                    onChange={(e) => (setIsNewProject(e.target.value))}
-                    required
-                    id="name"
-                    placeholder="Name of your project"
-                  />
-                </div>
+          {/* Use DialogTitle and DialogDescription */}
+          <DialogTitle>Create Project</DialogTitle>
+          <DialogDescription>Create your new project in one-click.</DialogDescription>
+
+          <form id="create-project-form" onSubmit={handleCreateProject}>
+            <div className="grid w-full items-center gap-4 mt-4">
+              <div className="flex flex-col space-y-1.5">
+                <label htmlFor="name">Name</label>
+                <Input
+                  className="rounded-md border-1 border-gray-400"
+                  onChange={(e) => setProjectName(e.target.value)}
+                  required
+                  id="name"
+                  placeholder="Name of your project"
+                />
               </div>
-            </form>
-          </CardContent>
-          <CardFooter className="flex justify-between">
-            <Button variant="bordered">Cancel</Button>
-            <Button isLoading={isLoadingCreate} onClick={handleCreateProject}>
+            </div>
+          </form>
+
+          {/* Footer for the Dialog with buttons */}
+          <div className="flex justify-between mt-6">
+            <Button variant="bordered" onClick={handleToggleNewProject}>
+              Cancel
+            </Button>
+            <Button form="create-project-form" isLoading={isLoadingCreate} type="submit">
               Create
             </Button>
-          </CardFooter>
+          </div>
         </DialogContent>
       </Dialog>
+
     </Navbar>
   );
 }

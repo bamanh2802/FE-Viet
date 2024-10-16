@@ -1,6 +1,6 @@
 import API_URL from "./ApiUrl";
 import axios from 'axios';
-
+import axiosInstance from "./axiosInterceptor";
 
 
 export async function SignIn(username:string, password:string) {
@@ -22,36 +22,38 @@ export async function SignIn(username:string, password:string) {
         }
     );
 
-    return response.data;
+    return response;
 }
 
-export async function Logout() {
-    const accessToken = localStorage.getItem('access_token')
-    const refreshToken = localStorage.getItem('refresh_token'); // Cần đảm bảo rằng bạn đã lưu refresh token ở đây
-    const response = await axios.post(
-        `${API_URL}/api/auth/logout`, 
-            {
-                refresh_token: refreshToken, // Gửi refresh token trong body
-            },
-            {
-                headers: {
-                    'accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`
-                }
-            }
-    )
+export async function getAllProjects() {
+    const response = await axiosInstance.get(`/api/projects`);
+    return response; // Trả về data từ response
+}
+
+export async function getAllProjectsWithInfo() {
+    const response = await axiosInstance.get(`/api/projects-with-info`);
+    return response; // Trả về data từ response
+}
+
+export async function getUser() {
+    const response = await axiosInstance.get(`/api/users/me`);
+    return response; // Trả về data từ response
+}
+
+export async function getAllDocumentByUser() {
+    const response = await axiosInstance.get(`/api/documents`);
+    return response; // Trả về data từ response
+}
+
+export async function getAllConversationByUser() {
+    const response = await axiosInstance.get(`/api/conversations`);
+    return response; // Trả về data từ response
 }
 
 export async function refreshToken() {
+    const accessToken = localStorage.getItem('access_token')
     const refreshToken = localStorage.getItem('refresh_token'); 
-    
-    if (!refreshToken) {
-        return Promise.reject('No refresh token available');
-    }
 
-    try {
-        // Gửi yêu cầu POST đến API refresh
         const response = await axios.post(
             `${API_URL}/api/auth/refresh`,
             {
@@ -60,50 +62,18 @@ export async function refreshToken() {
             {
                 headers: {
                     'accept': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`,
                     'Content-Type': 'application/json',
                 }
             }
         );
         console.log(response)
 
-        if (response.data.access_token) {
-            localStorage.setItem('access_token', response.data.access_token);
-        }
+ 
+        return response; 
 
-        return response.data; 
-    } catch (error) {
-        console.error('Error refreshing token:', error);
-        return Promise.reject(error); 
-    }
 }
 
-export async function getAllProjects() {
-    const accessToken = localStorage.getItem('access_token')
-    const response = await axios.get(
-        `${API_URL}/api/projects`,
-        {
-            headers: {
-                'accept': 'application/json',
-                'Authorization': `Bearer ${accessToken}`
-            }
-        }
-    )
-    return response
-}
-
-export async function getAllProjectsWithInfo () {
-    const accessToken = localStorage.getItem('access_token')
-    const response = await axios.get(
-        `${API_URL}/api/projects-with-info`,
-        {
-            headers: {
-                'accept': 'application/json',
-                'Authorization': `Bearer ${accessToken}`
-            }
-        }
-    )
-    return response
-}
 
 export async function createProject(name: string) {
     const accessToken = localStorage.getItem('access_token')
@@ -158,20 +128,6 @@ export async function renameProjectById(projectId: string, newName: string){
         {
         },
         {
-            headers: {
-                'accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`
-            }
-        }
-    )
-    return response
-}
-
-export async function getUser (){
-    const accessToken = localStorage.getItem('access_token')
-    const response = await axios.get(
-        `${API_URL}/api/users/me`, {
             headers: {
                 'accept': 'application/json',
                 'Content-Type': 'application/json',

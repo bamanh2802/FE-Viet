@@ -6,6 +6,7 @@ import {Tabs, Tab, Card, CardBody} from "@nextui-org/react";
 import { getChunkDocument } from '@/service/documentApi';
 import { useRouter } from 'next/router';
 import { Chunk } from '@/src/types/types';
+import { Input } from '@/components/ui/input';
 
 
 interface DropdownPosition {
@@ -25,7 +26,7 @@ const TextInteraction: React.FC = () => {
 
   const handleGetChunkDocument = async () => {
     try {
-      const data = await getChunkDocument(document_id)
+      const data = await getChunkDocument(document_id as string)
       setChunks(data.data)
     } catch (e) {
       console.log(e)
@@ -108,6 +109,11 @@ const TextInteraction: React.FC = () => {
         </Tab>
         <Tab key="chunks" title="Chunks" className=''>
           <div className="p-4 h-[calc(100vh-128px)] overflow-auto">
+          <Input
+          type="text"
+          placeholder="Search..."
+          className="p-2 border rounded-lg "
+          />
               <h3 className="text-lg font-semibold">Document Chunks</h3>
               {chunks.length > 0 ? (
                 <ul>
