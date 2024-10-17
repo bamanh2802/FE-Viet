@@ -29,7 +29,6 @@ const Home = () => {
         try {
             const data = await getAllDocumentByUser()
             setDocuments(data.data)
-            console.log(data)
         } catch(e) {
             console.log(e)
         }
@@ -59,12 +58,20 @@ const Home = () => {
 
     return (
         <div className="flex">
-            <SidebarHome projects={projects} documents={documents} conversations={conversations}/>
+            <SidebarHome 
+            projects={projects} 
+            documents={documents} 
+            conversations={conversations}
+            />
             <div className="flex flex-col w-full">
                 <NavbarHome 
                 updatedProject={handleGetProjects}
                 user={user}/>
-                <HomeMain userName={`${user?.first_name ?? ''} ${user?.last_name ?? ''}`.trim()}  projects={projects} onProjectsUpdate={handleProjectsUpdate} />
+                <HomeMain 
+                documents={documents}
+                conversations={conversations}
+                userName={`${user?.first_name ?? ''} ${user?.last_name ?? ''}`.trim()}  
+                projects={projects} onProjectsUpdate={handleProjectsUpdate} />
             </div>
         </div>
     );

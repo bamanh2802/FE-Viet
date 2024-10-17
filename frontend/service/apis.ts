@@ -74,6 +74,10 @@ export async function refreshToken() {
 
 }
 
+export async function Logout () {
+    
+}
+
 
 export async function createProject(name: string) {
     const accessToken = localStorage.getItem('access_token')

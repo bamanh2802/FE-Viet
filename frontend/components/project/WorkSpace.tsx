@@ -32,6 +32,7 @@ import { DocumentTextIcon,
     PlusIcon
 } from "@heroicons/react/24/outline";
 import { createNewNote } from "@/service/noteApi";
+import PdfImage from '@/public/img/pdf.png'
 
 import 'remixicon/fonts/remixicon.css';
 import '../project/config.css'
@@ -156,10 +157,6 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({setSelectedNote, onOpenDialog, ope
                                             </CardHeader>
 
                                         <Divider/>
-                                        <CardBody>
-                                            Tin nhắn đầu tiên
-                                        </CardBody>
-                                        <Divider/>
                                         <CardFooter className="flex flex-col items-start">
                                             <div className="flex opacity-85 items-center">
                                                 <DocumentTextIcon className="w-3 h-3 mr-1"/>
@@ -186,10 +183,8 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({setSelectedNote, onOpenDialog, ope
                 </div>  
 
 
-                {/* Documents */}
                 <div className="w-full flex-col max-w-4xl mt-8">
                     <span className="text-start opacity-85 py-4 block">Documents</span>
-
                     <div className="">
                         {documents === undefined ? (
                             <div className=" w-full flex flex-col items-center gap-3">
@@ -210,21 +205,31 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({setSelectedNote, onOpenDialog, ope
                                     </Card>
                                 </Tooltip>
                                 </CarouselItem>
+                                {documents.map((doc, index) => {
+                                let imageSrc = '/img/default.png'; 
+                                if (doc.type === 'pdf') {
+                                    imageSrc = '/img/pdf.png';
+                                } else if (doc.type === 'word') {
+                                    imageSrc = '/img/word.png';
+                                } else if (doc.type === 'pptx') {
+                                    imageSrc = '/img/pptx.png';
+                                } else if (doc.type === 'link') {
+                                    imageSrc = '/img/website.png';
+                                }
 
-                                {/* Lặp qua các tài liệu */}
-                                {documents.map((doc, index) => (
+                                return (
                                     <CarouselItem 
                                     key={index}
-                                    className="cursor-pointer basis-1/5 hover:scale-[1.01] transition-all" key={index}>
+                                    className="cursor-pointer basis-1/5 hover:scale-[1.01] transition-all">
                                     <Card className="max-w-[180px]">
-                                        <CardBody className="overflow-hidden p-0 h-[90px]">
+                                        <CardBody className="overflow-hidden p-0 h-[40px]">
                                         <Image
+                                            isZoomed
                                             alt="Card background"
                                             className="object-cover rounded-t-xl"
-                                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGAA4Wd4bco5Xv33GasXrnDdQT5OFXwa3HUQ&s"
+                                            src={imageSrc}  // Sử dụng ảnh tương ứng với loại tài liệu
                                             width={180}
                                             height={180}
-
                                         />
                                         </CardBody>
                                         <CardHeader className="pb-0 h-20 py-2 pt-2 px-2 flex-col justify-between items-start">
@@ -243,7 +248,9 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({setSelectedNote, onOpenDialog, ope
                                         </CardHeader>
                                     </Card>
                                     </CarouselItem>
-                                ))}
+                                );
+                                })}
+
                                 </CarouselContent>
                                 <CarouselPrevious />
                                 <CarouselNext />
@@ -276,7 +283,7 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({setSelectedNote, onOpenDialog, ope
                                 <CarouselItem 
                                 key={index}
                                 onClick={() => setSelectedNote(note.note_id)} 
-                                className="cursor-pointer basis-1/5 hover:scale-[1.01] transition-all" key={index}>
+                                className="cursor-pointer basis-1/5 hover:scale-[1.01] transition-all" >
                                     <div className="bg-zinc-800 rounded-lg shadow-lg flex-shrink-0">
                                         <div className="flex items-center justify-center h-12 bg-[#404144] rounded-t-lg relative opacity-80">
                                             <i className="ri-booklet-line absolute left-4 top-8 text-3xl"></i>

@@ -36,17 +36,7 @@ const UserDropdown = () => {
       const data = await getUser()
       dispatch(setUser(data.data.msg));
     } catch (e) {
-      if(e.response && e.response.status === 421) {
-        try {
-          await refreshToken()
-          const data = await getUser()
-          dispatch(setUser(data.data.msg));
-        } catch(e) {
-          console.log(e)
-        }
-      } else {
         console.log(e)
-      }
     }
   }
 

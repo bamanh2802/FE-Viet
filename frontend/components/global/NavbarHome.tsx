@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Button, Navbar, NavbarBrand, NavbarContent, NavbarItem, Input } from "@nextui-org/react";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Input } from "@nextui-org/react";
 import { PlusIcon, HomeIcon } from "@heroicons/react/24/outline";
+import { Button } from "../ui/button";
 import { useRouter } from 'next/router';
 import UserDropdown from "./UserDropdown";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -9,6 +10,7 @@ import { User } from "@/src/types/types";
 import '@/components/project/config.css'
 import { createProject } from "@/service/apis";
 import { VisuallyHidden } from "@nextui-org/react";
+import { Loader2 } from "lucide-react"
 
 interface NavbarHomeProps {
   user: User
@@ -51,7 +53,7 @@ const NavbarHome: React.FC<NavbarHomeProps> = ({user, updatedProject}) => {
 
       <NavbarContent as="div" className="items-center" justify="end">
         <NavbarItem>
-          <Button onClick={handleToggleNewProject} color="primary" variant="ghost">
+          <Button className="dark:bg-zinc-900 bg-zinc-50" onClick={handleToggleNewProject} variant="outline">
             New Project
             <PlusIcon />
           </Button>
@@ -61,7 +63,7 @@ const NavbarHome: React.FC<NavbarHomeProps> = ({user, updatedProject}) => {
       </NavbarContent>
 
       <Dialog open={isNewProject} onOpenChange={handleToggleNewProject}>
-        <DialogContent className="bg-zinc-200 dark:bg-zinc-900 border-none">
+        <DialogContent className="bg-zinc-50 dark:bg-zinc-900 border-none">
           {/* Use DialogTitle and DialogDescription */}
           <DialogTitle>Create Project</DialogTitle>
           <DialogDescription>Create your new project in one-click.</DialogDescription>
@@ -83,10 +85,13 @@ const NavbarHome: React.FC<NavbarHomeProps> = ({user, updatedProject}) => {
 
           {/* Footer for the Dialog with buttons */}
           <div className="flex justify-between mt-6">
-            <Button variant="bordered" onClick={handleToggleNewProject}>
+            <Button className="bg-zinc-800"  onClick={handleToggleNewProject}>
               Cancel
             </Button>
-            <Button form="create-project-form" isLoading={isLoadingCreate} type="submit">
+            <Button className="bg-zinc-800" disabled={isLoadingCreate} form="create-project-form" type="submit">
+              {isLoadingCreate && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Create
             </Button>
           </div>

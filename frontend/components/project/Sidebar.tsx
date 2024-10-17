@@ -49,7 +49,7 @@ import {
 } from "@/components/ui/dialog"
 import { RootState } from "@/src/store";
 import { useSelector, useDispatch } from "react-redux";
-import { getAllProjects } from "@/service/apis";
+import { getAllProjectsWithInfo } from "@/service/apis";
 import { setProjects } from "@/src/projectsSlice";
 import { Document, ImageType, Conversation, Note } from '@/src/types/types';
 import { getDocumentInProject } from '@/service/projectApi';
@@ -127,7 +127,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onOpenDialog, openNewDocument, openSe
   }
   const handleGetProjects = async () => {
     try {
-        const data = await getAllProjects()
+        const data = await getAllProjectsWithInfo()
         console.log(data)
         dispatch(setProjects(data.data))
       } catch (e) {
