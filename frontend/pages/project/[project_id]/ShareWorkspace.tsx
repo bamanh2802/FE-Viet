@@ -1,7 +1,7 @@
-import { CopyIcon } from "@radix-ui/react-icons"
-import { FC } from 'react';
-import React from 'react';
-import { Button, Input } from "@nextui-org/react"
+import { CopyIcon } from "@radix-ui/react-icons";
+import { FC } from "react";
+import React from "react";
+import { Button, Input } from "@nextui-org/react";
 
 import {
   Dialog,
@@ -11,13 +11,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-
+} from "@/components/ui/dialog";
 
 interface ShareWorkspaceProps {
-    isOpen: boolean;
-    onClose: () => void;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 const ShareWorkspace: FC<ShareWorkspaceProps> = ({ isOpen, onClose }) => {
@@ -32,16 +30,16 @@ const ShareWorkspace: FC<ShareWorkspaceProps> = ({ isOpen, onClose }) => {
         </DialogHeader>
         <div className="flex items-center space-x-2">
           <div className="grid flex-1 gap-2">
-            <label htmlFor="link" className="sr-only">
+            <label className="sr-only" htmlFor="link">
               Link
             </label>
             <Input
-              id="link"
-              defaultValue="https://sharing@project_id"
               readOnly
+              defaultValue="https://sharing@project_id"
+              id="link"
             />
           </div>
-          <Button type="submit" size="sm" className="px-3">
+          <Button className="px-3" size="sm" type="submit">
             <span className="sr-only">Copy</span>
             <CopyIcon className="h-4 w-4" />
           </Button>
@@ -55,7 +53,7 @@ const ShareWorkspace: FC<ShareWorkspaceProps> = ({ isOpen, onClose }) => {
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};
 
-export default ShareWorkspace
+export default ShareWorkspace;

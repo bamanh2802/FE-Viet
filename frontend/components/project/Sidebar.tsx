@@ -1,190 +1,277 @@
-import React, { useState, useEffect, FC } from 'react';
-import { useRouter } from 'next/router';
-import {ExclamationCircleIcon} from '@heroicons/react/24/outline';
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import {
-  FolderIcon,
-  TableCellsIcon,
-  ChartBarSquareIcon,
-  Cog6ToothIcon,
-  HashtagIcon,
-  InboxIcon,
-  UsersIcon,
+  ChatBubbleBottomCenterIcon,
+  ExclamationCircleIcon,
+} from "@heroicons/react/24/outline";
+import {
   MagnifyingGlassIcon,
   HomeIcon,
   DocumentTextIcon,
-  DocumentIcon,
   ChevronDownIcon,
   PlusIcon,
   ArrowTopRightOnSquareIcon,
   TrashIcon,
-  StarIcon,
   PencilSquareIcon,
-  PhotoIcon,
   EllipsisHorizontalIcon,
-  ChatBubbleLeftIcon
-} from '@heroicons/react/24/outline';
+  ChatBubbleLeftIcon,
+  WindowIcon,
+} from "@heroicons/react/24/outline";
+import { Listbox, ListboxItem, Button, Tooltip } from "@nextui-org/react";
+import { useSelector, useDispatch } from "react-redux";
+
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { RootState } from "@/src/store/store";
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { ListboxWrapper } from '../ListboxWrapper';
-import { Listbox, ListboxItem, Button, Tooltip } from '@nextui-org/react';
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input"
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { RootState } from "@/src/store";
-import { useSelector, useDispatch } from "react-redux";
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
+import { setProjects } from "@/src/store/projectsSlice";
+import { Document, ImageType, Conversation, Note } from "@/src/types/types";
+import { ToastAction } from "@/components/ui/toast";
 import { getAllProjectsWithInfo } from "@/service/apis";
-import { setProjects } from "@/src/projectsSlice";
-import { Document, ImageType, Conversation, Note } from '@/src/types/types';
-import { getDocumentInProject } from '@/service/projectApi';
-import { createNewNote } from '@/service/noteApi';
-import { useToast } from '@/hooks/use-toast';
-import { ToastAction } from "@/components/ui/toast"
-import RenameObject from '../global/DeleteObject';
+import { createNewNote, deleteNote, renameNote } from "@/service/noteApi";
+import { renameConversation, deleteConversation } from "@/service/projectApi";
+import { renameDocument, deleteDocument } from "@/service/documentApi";
 
-
-
+import { ListboxWrapper } from "../ListboxWrapper";
 
 interface SidebarProps {
-  documents: Document[],
-  images: ImageType[],
-  conversations: Conversation[]
-  notes: Note[]
-  setSelectedNote: (note: string) => void
-  setLoading: () => void
-  onOpenDialog: () => void
-  openSearch: () => void
-  openNewDocument: () => void
-
+  documents: Document[];
+  images: ImageType[];
+  conversations: Conversation[];
+  notes: Note[];
+  selectedNote: string;
+  setSelectedNote: (note: string) => void;
+  setLoading: () => void;
+  onOpenDialog: () => void;
+  openSearch: () => void;
+  openNewDocument: () => void;
+  updatedDocuments: () => void;
+  updatedNotes: () => void;
+  updatedConversations: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ onOpenDialog, openNewDocument, openSearch, setLoading, documents, images, conversations, notes, setSelectedNote }) => {
+const Sidebar: React.FC<SidebarProps> = ({
+  updatedConversations,
+  updatedNotes,
+  updatedDocuments,
+  onOpenDialog,
+  openNewDocument,
+  openSearch,
+  setLoading,
+  documents,
+  images,
+  selectedNote,
+  conversations,
+  notes,
+  setSelectedNote,
+}) => {
   const router = useRouter();
-  const { toast } = useToast()
+  const { toast } = useToast();
   const projects = useSelector((state: RootState) => state.projects.projects);
-  const [selectedProjectId, setSelectedProjectId] = useState<string>('');
-  const [isDeleteDocument, setIsDeleteDocument] = useState<boolean>(false)
-  const [selectedProject, setSelectedProject] = useState<string>('');
+  const [selectedProjectId, setSelectedProjectId] = useState<string>("");
+  const [isDeleteDocument, setIsDeleteDocument] = useState<boolean>(false);
+  const [selectedProject, setSelectedProject] = useState<string>("");
   // const [documents, setDocuments] = useState<Document[]>([])
-  const [isLoadingProject, setIsLoadingProject] = useState<boolean>(true)
-  const [expandedSections, setExpandedSections] = useState<string[]>(['documents, conversation']);
+  const [isLoadingProject, setIsLoadingProject] = useState<boolean>(true);
+  const [expandedSections, setExpandedSections] = useState<string[]>([
+    "documents, conversation",
+  ]);
   const dispatch = useDispatch();
-  const [isUploadDocs, setIsUploadDocs] = useState<boolean>(false)
-  const [contextMenu, setContextMenu] = useState({ show: false, x: 0, y: 0, id: '' });
-  const [isRename, setIsRename] = useState<boolean>(false)
+  const [isUploadDocs, setIsUploadDocs] = useState<boolean>(false);
+  const [contextMenu, setContextMenu] = useState({
+    show: false,
+    x: 0,
+    y: 0,
+    id: "",
+  });
   const { project_id } = router.query;
-  const [renameDocId, setRenameDocId] = useState(''); 
+  const [renameDocId, setRenameDocId] = useState("");
   const [newDocumentName, setNewDocumentName] = useState("");
-  const [selectedId, setSelectedId] = useState<string>('')
-  const [selectedName, setSelectedName] = useState<string>('')
+  const [selectedId, setSelectedId] = useState<string>("");
+  const [selectedName, setSelectedName] = useState<string>("");
+  const [isLoadingDelete, setIsLoadingDelete] = useState<boolean>(false);
 
   const handleOpenRename = (docId: string) => {
-    setRenameDocId(docId); 
-    setNewDocumentName(selectedName); 
+    setRenameDocId(docId);
+    setNewDocumentName(selectedName);
     setContextMenu({ ...contextMenu, show: false });
   };
 
-  const handleRename = (docId: string) => {
-    console.log(`Renaming document ${docId} to ${newDocumentName}`);
-    
-    setRenameDocId(''); // Exit rename mode after saving
+  const handleRename = async (id: string) => {
+    if (newDocumentName?.trim() === "" || newDocumentName === selectedName) {
+      toast({
+        description: "Name is the same or empty. No changes made.",
+      });
+      setRenameDocId("");
+
+      return; // Không thực hiện đổi tên nếu điều kiện không thỏa
+    }
+
+    // Hiển thị toast loading
+    toast({
+      description: "Loading...",
+    });
+
+    try {
+      let data;
+
+      if (id.startsWith("doc-")) {
+        console.log(`Renaming document ${id} to ${newDocumentName}`);
+        data = await renameDocument(id, newDocumentName);
+        updatedDocuments();
+      } else if (id.startsWith("note-")) {
+        console.log(`Renaming note ${id} to ${newDocumentName}`);
+        data = await renameNote(id, newDocumentName);
+        updatedNotes();
+      } else if (id.startsWith("conv-")) {
+        console.log(`Renaming conversation ${id} to ${newDocumentName}`);
+        data = await renameConversation(id, newDocumentName);
+        updatedConversations();
+      }
+
+      console.log(data);
+
+      toast({
+        description: "Rename Successfully!",
+      });
+    } catch (e) {
+      console.log("Error during renaming:", e);
+
+      // Thông báo lỗi
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem with your request.",
+        action: <ToastAction altText="Try again">Try again</ToastAction>,
+      });
+    } finally {
+      setRenameDocId("");
+    }
   };
 
-  const handleCloseRename = () => setIsRename(false)
+  const handleDelete = async (id: string) => {
+    setContextMenu({ ...contextMenu, show: false });
+    setIsLoadingDelete(true);
+    try {
+      let data;
 
-  const handleRenameDocument = async () => {
-
-  }
+      if (id.startsWith("doc-")) {
+        console.log(`Deleting document with id ${id}`);
+        data = await deleteDocument(id);
+        updatedDocuments();
+      } else if (id.startsWith("note-")) {
+        console.log(`Deleting note with id ${id}`);
+        data = await deleteNote(id);
+        updatedNotes();
+      } else if (id.startsWith("conv-")) {
+        console.log(`Deleting conversation with id ${id}`);
+        data = await deleteConversation(id);
+        updatedConversations();
+      }
+      toast({
+        title: "Delete successfully",
+        description: "Waiting for data loading",
+      });
+    } catch (e) {
+      console.log("Error during deletion:", e);
+      toast({
+        variant: "destructive",
+        title: "Delete failed!",
+        description: "Something went wrong!",
+      });
+    } finally {
+      setIsLoadingDelete(false);
+      handleOpenDeleteDocument();
+    }
+  };
 
   useEffect(() => {
-    if(projects.length === 0) {
-      handleGetProjects()
+    if(projects !== undefined) {
+      if (projects?.length === 0) {
+        handleGetProjects();
+      }
+      setSelectedProjectId(project_id as string);
+      if (projects?.length > 0) {
+        setIsLoadingProject(false);
+      }
     }
-    setSelectedProjectId(project_id as string)
-    if(projects.length > 0) {
-      setIsLoadingProject(false)
-    }
-  }, [project_id, projects])
+  }, [project_id, projects]);
 
   const handleOpenDeleteDocument = () => {
-    setIsDeleteDocument(!isDeleteDocument)
-  }
+    setIsDeleteDocument(!isDeleteDocument);
+  };
   const handleGetProjects = async () => {
     try {
-        const data = await getAllProjectsWithInfo()
-        console.log(data)
-        dispatch(setProjects(data.data))
-      } catch (e) {
-        console.log(e)
-      }
-};
+      const data = await getAllProjectsWithInfo();
 
+      console.log(data);
+      dispatch(setProjects(data.data));
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
-const handleCreateNewNote = async () => {
-  try {
-      const data = await createNewNote (project_id as string)
-      setSelectedNote(data.data.note_id)
-      console.log(data)
+  const handleCreateNewNote = async () => {
+    try {
+      const data = await createNewNote(project_id as string);
+
+      setSelectedNote(data.data.note_id);
+      console.log(data);
       toast({
         title: "New note created successfully",
         description: "Waiting for data loading",
-        action: (
-          <ToastAction altText="Goto schedule to undo">Undo</ToastAction>
-        ),
-      })
-  } catch (e) {
-      console.log(e)
-  }
-}
-
+      });
+      updatedNotes();
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const getProjectNameById = (projectId: string | null) => {
-    const project = projects.find(proj => proj.project_id === projectId);
+    const project = projects?.find((proj) => proj.project_id === projectId);
 
     return project ? project.name : "Loading...";
   };
 
   const handleBackHome = () => {
-    router.push('/home')
-  }
-  
+    router.push("/home");
+  };
 
   const toggleExpand = (section: string) => {
     setExpandedSections((prev) =>
       prev.includes(section)
         ? prev.filter((item) => item !== section)
-        : [...prev, section]
+        : [...prev, section],
     );
   };
 
   const handleContextMenu = (e: React.MouseEvent, id: string, name: string) => {
     e.preventDefault();
     setContextMenu({ show: true, x: e.pageX, y: e.pageY, id });
-    setSelectedId(id)
-    setSelectedName(name)
+    setSelectedId(id);
+    setSelectedName(name);
   };
-  
+
   const handleClick = (e: React.MouseEvent, id: string, name: string) => {
-    setSelectedId(id)
-    setSelectedName(name)
+    setSelectedId(id);
+    setSelectedName(name);
     e.stopPropagation();
-    e.preventDefault()
+    e.preventDefault();
     if (contextMenu.show && contextMenu.id === id) {
       setContextMenu({ ...contextMenu, show: false }); // Đóng menu nếu đã mở
     } else {
@@ -193,64 +280,71 @@ const handleCreateNewNote = async () => {
   };
   const handleClickOutside = (event: MouseEvent) => {
     const target = event.target as HTMLElement | null;
-    if (target && !target.closest('.context-menu')) {
-        setContextMenu({ ...contextMenu, show: false });
-    }
-};
 
-const handleRouterDocument = (doc: Document) => {
-  const url = `/project/${project_id}/document/${doc.document_id}`
-  window.open(url, '_blank');
-}
+    if (target && !target.closest(".context-menu")) {
+      setContextMenu({ ...contextMenu, show: false });
+    }
+  };
+
+  const handleRouterDocument = (docId: string) => {
+    const url = `/project/${project_id}/document/${docId}`;
+
+    window.open(url, "_blank");
+  };
+
+  const handleRouterConversation = (conversationId: string) => {
+    const url = `/project/${project_id}/workspace/${conversationId}`;
+
+    window.open(url, "_blank");
+  };
 
   useEffect(() => {
-    document.addEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
+
     return () => {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     };
   }, [contextMenu]);
 
   const handleProjectClick = (projectId: string) => {
     router.push(`/project/${projectId}`);
-    setLoading()
-    setSelectedNote('')
+    setLoading();
+    setSelectedNote("");
   };
-
 
   return (
     <div className="dark:bg-zinc-900 bg-zinc-50 overflow-auto select-none h-screen w-56 flex flex-col justify-between p-2">
       <div>
         <div className="rounded-lg mb-4 border-gray-400">
-        <Select 
-          disabled={isLoadingProject} 
-          defaultValue={getProjectNameById(selectedProjectId)} 
-          onValueChange={(projectId) => {
-            setSelectedProjectId(projectId);
-            handleProjectClick(projectId); // Gọi hàm xử lý sau khi chọn
-          }}
-        >
-          <SelectTrigger className="border-gray-400">
-            <SelectValue>{getProjectNameById(selectedProjectId)}</SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            {projects.map(project => (
-              <SelectItem 
-                className="cursor-pointer"
-                key={project.project_id} 
-                value={project.project_id} // Không cần onClick ở đây
-              >
-                {project.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
+          <Select
+            defaultValue={getProjectNameById(selectedProjectId)}
+            disabled={isLoadingProject}
+            onValueChange={(projectId) => {
+              setSelectedProjectId(projectId);
+              handleProjectClick(projectId); // Gọi hàm xử lý sau khi chọn
+            }}
+          >
+            <SelectTrigger className="border-gray-400">
+              <SelectValue>{getProjectNameById(selectedProjectId)}</SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {projects?.map((project) => (
+                <SelectItem
+                  key={project.project_id}
+                  className="cursor-pointer"
+                  value={project.project_id} // Không cần onClick ở đây
+                >
+                  {project.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div>
           <div
-            onClick={() => handleBackHome()} 
             className="flex dark:text-gray-400 text-gray-700 transition-all p-3 rounded-lg cursor-pointer my-2 hover:bg-zinc-200 dark:hover:bg-zinc-800"
+            onClick={() => handleBackHome()}
           >
             <div className="flex items-center space-x-3">
               <HomeIcon className="h-4 w-4 text-gray-300" />
@@ -259,108 +353,123 @@ const handleRouterDocument = (doc: Document) => {
           </div>
         </div>
 
-          <Button 
+        <Button
+          className="w-full mb-6"
+          size="sm"
+          startContent={<MagnifyingGlassIcon className="w-4 h-4" />}
+          variant="flat"
           onClick={openSearch}
-          size='sm'
-          variant='flat' 
-          className='w-full mb-6' startContent={<MagnifyingGlassIcon className='w-4 h-4' />}>
-            Search something...
-          </Button>
+        >
+          Search something...
+        </Button>
 
         {/* Tùy chỉnh các mục menu ở đây */}
         <div className="my-2">
           <div
             className={`flex group items-center justify-between text-sm font-semibold dark:text-gray-400 text-gray-700 transition-all rounded-lg px-2 p-1 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-800`}
-            onClick={() => toggleExpand('documents')}
-            onContextMenu={(e) => handleContextMenu(e, 'documents', 'none')}
+            onClick={() => toggleExpand("documents")}
+            onContextMenu={(e) => handleContextMenu(e, "documents", "none")}
           >
             <div className="flex justify-between items-center space-x-3">
               <span className="text-xs">Documents</span>
             </div>
-            <div className='flex items-center'>
-              <Tooltip content='New'>
-                <PlusIcon 
-                onClick={(e) => {
-                  openNewDocument()
-                  e.stopPropagation()
-                }}
-                className='mr-2 w-4 h-4 opacity-0 group-hover:opacity-100 transition-all' />
-
+            <div className="flex items-center">
+              <Tooltip content="New">
+                <PlusIcon
+                  className="mr-2 w-4 h-4 opacity-0 group-hover:opacity-100 transition-all"
+                  onClick={(e) => {
+                    openNewDocument();
+                    e.stopPropagation();
+                  }}
+                />
               </Tooltip>
-            <ChevronDownIcon
-              className={`w-4 h-4 transform transition-transform duration-300 ${expandedSections.includes('documents') ? 'rotate-180' : ''}`}
-            />
+              <ChevronDownIcon
+                className={`w-4 h-4 transform transition-transform duration-300 ${expandedSections.includes("documents") ? "rotate-180" : ""}`}
+              />
             </div>
           </div>
           {/* Các item con cho mục "Tài liệu" */}
-          <div className={`mt-2 overflow-hidden transition-max-height duration-300 ease-in-out ${expandedSections.includes('documents') ? 'max-h-96' : 'max-h-0'}`}>
-            {expandedSections.includes('documents') && (
+          <div
+            className={`mt-2 overflow-hidden transition-max-height duration-300 ease-in-out ${expandedSections.includes("documents") ? "max-h-96" : "max-h-0"}`}
+          >
+            {expandedSections.includes("documents") && (
               <div className="transition-all mt-1 space-y-1 border-gray-400">
-               {documents.map((doc) => (
+                {documents.map((doc) => (
                   <div
                     key={doc.document_id}
                     className="relative ml-2 group flex justify-between items-center space-x-2 text-xs cursor-pointer p-2 rounded-lg dark:text-gray-400 text-gray-700 dark:hover:bg-zinc-800 hover:bg-zinc-200"
-                    onClick={() => handleRouterDocument(doc)}
-                    onContextMenu={(e) => handleContextMenu(e, doc.document_id, doc.document_name)}
+                    onClick={() => handleRouterDocument(doc.document_id)}
+                    onContextMenu={(e) =>
+                      handleContextMenu(e, doc.document_id, doc.document_name)
+                    }
                   >
-                      <div className='truncate flex items-center w-40'>
-                        {renameDocId === doc.document_id ? (
-                          <input 
-                            type="text" 
-                            value={newDocumentName} 
-                            onChange={(e) => setNewDocumentName(e.target.value)} 
-                            onBlur={() => handleRename(doc.document_id)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleRename(doc.document_id)}
-                            className="absolute left-0 w-full p-1 text-sm bg-white rounded shadow-md dark:bg-zinc-900 dark:border-zinc-700" 
-                            autoFocus
-                            onClick={(e) => e.stopPropagation()}
-                          />
-                        ) : (
-                          <Tooltip content={doc.document_name}>
-                          <span>{doc.document_name}</span>
+                    <div className="truncate flex items-center w-40">
+                      {renameDocId === doc.document_id ? (
+                        <input
+                          autoFocus
+                          className="absolute left-0 w-full p-1 text-sm bg-white rounded shadow-md dark:bg-zinc-900 dark:border-zinc-700"
+                          type="text"
+                          value={newDocumentName}
+                          onBlur={() => handleRename(doc.document_id)}
+                          onChange={(e) => setNewDocumentName(e.target.value)}
+                          onClick={(e) => e.stopPropagation()}
+                          onKeyDown={(e) =>
+                            e.key === "Enter" && handleRename(doc.document_id)
+                          }
+                        />
+                      ) : (
+                        <Tooltip content={doc.document_name}>
+                          <div className="flex items-center w-full">
+                            <DocumentTextIcon className="w-4 h-4 mr-1" />
+                            <span className="truncate max-w-32">
+                              {doc.document_name}
+                            </span>
+                          </div>
                         </Tooltip>
-                        )}
-                      </div>
+                      )}
+                    </div>
                     <Tooltip content="Thêm">
-                      <EllipsisHorizontalIcon 
+                      <EllipsisHorizontalIcon
+                        className="transition-all w-4 h-4 opacity-0 group-hover:opacity-100"
                         onClick={(e) => {
-                          e.stopPropagation()
-                          handleClick(e, doc.document_id, doc.document_name)
+                          e.stopPropagation();
+                          handleClick(e, doc.document_id, doc.document_name);
                         }}
-                        className='transition-all w-4 h-4 opacity-0 group-hover:opacity-100' 
                       />
                     </Tooltip>
                   </div>
                 ))}
                 <div
-                  onClick={openNewDocument}
                   className="ml-2 transition-all flex items-center space-x-2 text-xs  hover:text-white cursor-pointer p-2 rounded-lg dark:text-gray-400 text-gray-700 dark:hover:bg-zinc-800 hover:bg-zinc-200 "
+                  onClick={openNewDocument}
                 >
-                  <PlusIcon className='w-4 h-4' />
+                  <PlusIcon className="w-4 h-4" />
                   <span>Thêm</span>
                 </div>
               </div>
             )}
           </div>
-      </div>
+        </div>
 
         <div className="my-2">
-          <div 
-            className={`flex items-center justify-between text-sm font-semibold dark:text-gray-400 text-gray-700 transition-all rounded-lg px-2 p-1 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-800`} 
-            onContextMenu={(e) => handleContextMenu(e, 'images', 'none')}
+          <div
+            className={`flex items-center justify-between text-sm font-semibold dark:text-gray-400 text-gray-700 transition-all rounded-lg px-2 p-1 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-800`}
+            onContextMenu={(e) => handleContextMenu(e, "images", "none")}
           >
             <Tooltip content="Chức năng hiện đang phát triển">
-            <div className="flex justify-between items-center space-x-3">
-              <span className="text-xs">Images</span>
-            </div>
+              <div className="flex justify-between items-center space-x-3">
+                <span className="text-xs">Images</span>
+              </div>
             </Tooltip>
             <ChevronDownIcon
-              className={`w-4 h-4 transform transition-transform duration-300 ${expandedSections.includes('images') ? 'rotate-180' : ''}`}
+              className={`w-4 h-4 transform transition-transform duration-300 ${expandedSections.includes("images") ? "rotate-180" : ""}`}
             />
           </div>
-          <div className={`mt-2 overflow-hidden transition-max-height duration-300 ease-in-out ${expandedSections.includes('images') ? 'max-h-96' : 'max-h-0'}`}>
-          {/* Các item con cho mục "Hình ảnh" */}
-          {expandedSections.includes('images') && (
+          <div
+            className={`mt-2 overflow-hidden transition-max-height duration-300 ease-in-out ${expandedSections.includes("images") ? "max-h-96" : "max-h-0"}`}
+          >
+            {/* Các item con cho mục "Hình ảnh" */}
+            {/* {expandedSections.includes('images') && (
             <div className="transition-all mt-1 space-y-1 border-gray-400">
               {images.map((img, index) => (
                 <div
@@ -371,7 +480,7 @@ const handleRouterDocument = (doc: Document) => {
                   <div className='flex justify-center items-center '>
                     <DocumentTextIcon className='w-4 h-4 pr-1' />
                     <Tooltip content={img.caption}>
-                      <span className='truncate max-w-40'>{img.caption}</span>
+                      <span className='truncate max-w-32'>{img.caption}</span>
                     </Tooltip>
                   </div>
                   <Tooltip content="Thêm">
@@ -382,224 +491,248 @@ const handleRouterDocument = (doc: Document) => {
                 </div>
               ))}
             </div>
-          )}
+          )} */}
           </div>
         </div>
 
         {/* Conversation */}
         <div className="my-2">
-          <div 
-            className={`group flex items-center justify-between text-sm font-semibold dark:text-gray-400 text-gray-700 transition-all rounded-lg px-2 p-1 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-800`} 
-            onClick={() => toggleExpand('conversation')}
-            onContextMenu={(e) => handleContextMenu(e, 'conversation', 'none')}
+          <div
+            className={`group flex items-center justify-between text-sm font-semibold dark:text-gray-400 text-gray-700 transition-all rounded-lg px-2 p-1 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-800`}
+            onClick={() => toggleExpand("conversation")}
+            onContextMenu={(e) => handleContextMenu(e, "conversation", "none")}
           >
-           <div className="flex justify-between items-center space-x-3">
+            <div className="flex justify-between items-center space-x-3">
               <span className="text-xs">Conversations</span>
             </div>
-            <div className='flex items-center'>
-              <Tooltip content='New'>
-                <PlusIcon 
-                onClick={(e) => {
-                  onOpenDialog()
-                  e.stopPropagation()
-                }}
-                className='mr-2 w-4 h-4 opacity-0 group-hover:opacity-100 transition-all' />
-
+            <div className="flex items-center">
+              <Tooltip content="New">
+                <PlusIcon
+                  className="mr-2 w-4 h-4 opacity-0 group-hover:opacity-100 transition-all"
+                  onClick={(e) => {
+                    onOpenDialog();
+                    e.stopPropagation();
+                  }}
+                />
               </Tooltip>
-            <ChevronDownIcon
-              className={`w-4 h-4 transform transition-transform duration-300 ${expandedSections.includes('conversation') ? 'rotate-180' : ''}`}
-            />
+              <ChevronDownIcon
+                className={`w-4 h-4 transform transition-transform duration-300 ${expandedSections.includes("conversation") ? "rotate-180" : ""}`}
+              />
             </div>
           </div>
-          <div className={`mt-2 overflow-hidden transition-max-height duration-300 ease-in-out ${expandedSections.includes('conversation') ? 'max-h-96' : 'max-h-0'}`}>
-          {expandedSections.includes('conversation') && (
-            <div className="transition-all mt-1 space-y-1 border-gray-400">
-              {conversations.map((conversation, index) => (
-                <div
-                  key={index}
-                  className="relative ml-2 group flex justify-between items-center space-x-2 text-xs  cursor-pointer p-2 rounded-lg dark:text-gray-400 text-gray-700 dark:hover:bg-zinc-800 hover:bg-zinc-200 "
-                  onContextMenu={(e) => handleContextMenu(e, conversation.conversation_id, conversation.conversation_name)}
-                >
-                  <div className='truncate flex items-center w-40'>
+          <div
+            className={`mt-2 overflow-hidden transition-max-height duration-300 ease-in-out ${expandedSections.includes("conversation") ? "max-h-96" : "max-h-0"}`}
+          >
+            {expandedSections.includes("conversation") && (
+              <div className="transition-all mt-1 space-y-1 border-gray-400">
+                {conversations.map((conversation, index) => (
+                  <div
+                    key={index}
+                    className="relative ml-2 group flex justify-between items-center space-x-2 text-xs  cursor-pointer p-2 rounded-lg dark:text-gray-400 text-gray-700 dark:hover:bg-zinc-800 hover:bg-zinc-200 "
+                    onClick={() =>
+                      handleRouterConversation(conversation.conversation_id)
+                    }
+                    onContextMenu={(e) =>
+                      handleContextMenu(
+                        e,
+                        conversation.conversation_id,
+                        conversation.conversation_name,
+                      )
+                    }
+                  >
+                    <div className="truncate flex items-center w-40">
                       {renameDocId === conversation.conversation_id ? (
-                        <input 
-                          type="text" 
-                          value={newDocumentName} 
-                          onChange={(e) => setNewDocumentName(e.target.value)} 
-                          onBlur={() => handleRename(conversation.conversation_id)}
-                          onKeyDown={(e) => e.key === 'Enter' && handleRename(conversation.conversation_id)}
-                          className="absolute left-0 w-full p-1 text-sm bg-white rounded shadow-md dark:bg-zinc-900 dark:border-zinc-700" 
+                        <input
                           autoFocus
+                          className="absolute left-0 w-full p-1 text-sm bg-white rounded shadow-md dark:bg-zinc-900 dark:border-zinc-700"
+                          type="text"
+                          value={newDocumentName}
+                          onBlur={() =>
+                            handleRename(conversation.conversation_id)
+                          }
+                          onChange={(e) => setNewDocumentName(e.target.value)}
                           onClick={(e) => e.stopPropagation()}
+                          onKeyDown={(e) =>
+                            e.key === "Enter" &&
+                            handleRename(conversation.conversation_id)
+                          }
                         />
                       ) : (
                         <Tooltip content={conversation.conversation_name}>
-                          <span className='truncate max-w-40'>{conversation.conversation_name}</span>
-
-                      </Tooltip>
+                          <div className="flex items-center w-full">
+                            <ChatBubbleBottomCenterIcon className="w-4 h-4 mr-1" />
+                            <span className="truncate max-w-32">
+                              {conversation.conversation_name}
+                            </span>
+                          </div>
+                        </Tooltip>
                       )}
                     </div>
-                  <Tooltip content="Thêm">
-                    <EllipsisHorizontalIcon 
-                   onClick={(e) => handleClick(e, conversation.conversation_id, conversation.conversation_name)}
-                    className='transition-all w-4 h-4 opacity-0 group-hover:opacity-100' />
-                  </Tooltip>
-                </div>
-              ))}
-              <div
-                  onClick={onOpenDialog}
+                    <Tooltip content="Thêm">
+                      <EllipsisHorizontalIcon
+                        className="transition-all w-4 h-4 opacity-0 group-hover:opacity-100"
+                        onClick={(e) =>
+                          handleClick(
+                            e,
+                            conversation.conversation_id,
+                            conversation.conversation_name,
+                          )
+                        }
+                      />
+                    </Tooltip>
+                  </div>
+                ))}
+                <div
                   className="ml-2 transition-all flex items-center space-x-2 text-xs  hover:text-white cursor-pointer p-2 rounded-lg dark:text-gray-400 text-gray-700 dark:hover:bg-zinc-800 hover:bg-zinc-200 "
+                  onClick={onOpenDialog}
                 >
-                  <PlusIcon className='w-4 h-4' />
+                  <PlusIcon className="w-4 h-4" />
                   <span>Thêm</span>
                 </div>
-            </div>
-          )}
+              </div>
+            )}
           </div>
         </div>
 
         <div className="my-2">
-          <div 
-            className={`group flex items-center justify-between text-sm font-semibold dark:text-gray-400 text-gray-700 transition-all rounded-lg px-2 p-1 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-800`} 
-            onClick={() => toggleExpand('note')}
-            onContextMenu={(e) => handleContextMenu(e, 'Note', 'none')}
+          <div
+            className={`group flex items-center justify-between text-sm font-semibold dark:text-gray-400 text-gray-700 transition-all rounded-lg px-2 p-1 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-800`}
+            onClick={() => toggleExpand("note")}
+            onContextMenu={(e) => handleContextMenu(e, "Note", "none")}
           >
-           <div className="flex justify-between items-center space-x-3">
+            <div className="flex justify-between items-center space-x-3">
               <span className="text-xs">Notes</span>
             </div>
-            <div className='flex items-center'>
-              <Tooltip content='New'>
-                <PlusIcon className='mr-2 w-4 h-4 opacity-0 group-hover:opacity-100 transition-all' />
-
+            <div className="flex items-center">
+              <Tooltip content="New">
+                <PlusIcon className="mr-2 w-4 h-4 opacity-0 group-hover:opacity-100 transition-all" />
               </Tooltip>
-            <ChevronDownIcon
-              className={`w-4 h-4 transform transition-transform duration-300 ${expandedSections.includes('note') ? 'rotate-180' : ''}`}
-            />
+              <ChevronDownIcon
+                className={`w-4 h-4 transform transition-transform duration-300 ${expandedSections.includes("note") ? "rotate-180" : ""}`}
+              />
             </div>
           </div>
-          <div className={`mt-2 overflow-hidden transition-max-height duration-300 ease-in-out ${expandedSections.includes('note') ? 'max-h-96' : 'max-h-0'}`}>
-          {expandedSections.includes('note') && (
-            <div className="transition-all mt-1 space-y-1 border-gray-400">
-              {notes.map((note, index) => (
-                <div
-                  onClick={() => setSelectedNote(note.note_id)}
-                  key={index}
-                  className="relative ml-2 group flex justify-between items-center space-x-2 text-xs  cursor-pointer p-2 rounded-lg dark:text-gray-400 text-gray-700 dark:hover:bg-zinc-800 hover:bg-zinc-200 "
-                  onContextMenu={(e) => handleContextMenu(e, note.note_id, note.title)}
-                >
-                  <div className='flex justify-center items-center '>
-                    {renameDocId === note.note_id ? (
-                      <input 
-                        type="text" 
-                        value={newDocumentName} 
-                        onChange={(e) => setNewDocumentName(e.target.value)} 
-                        onBlur={() => handleRename(note.note_id)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleRename(note.note_id)}
-                        className="absolute left-0 w-full p-1 text-sm bg-white rounded shadow-md dark:bg-zinc-900 dark:border-zinc-700" 
-                        autoFocus
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    ) : (
-                      <Tooltip content={note.title}>
-                      {
-                        note.title === null ? (
-                          <span className='truncate max-w-40'>No Name</span>
-                        ) : (
-                          <span className='truncate max-w-40'>{note.title}</span>
-                        )
+          <div
+            className={`mt-2 overflow-hidden transition-max-height duration-300 ease-in-out ${expandedSections.includes("note") ? "max-h-96" : "max-h-0"}`}
+          >
+            {expandedSections.includes("note") && (
+              <div className="transition-all mt-1 space-y-1 border-gray-400">
+                {notes.map((note, index) => {
+                  const isSelected = note.note_id === selectedNote; // Kiểm tra xem note có được chọn hay không
+
+                  return (
+                    <div
+                      key={index}
+                      className={`relative ml-2 group flex justify-between items-center space-x-2 text-xs cursor-pointer p-2 rounded-lg 
+                      ${isSelected ? "bg-blue-200 dark:bg-blue-600" : "dark:text-gray-400 text-gray-700"} 
+                      dark:hover:bg-zinc-800 hover:bg-zinc-200`}
+                      onClick={() => setSelectedNote(note.note_id)}
+                      onContextMenu={(e) =>
+                        handleContextMenu(e, note.note_id, note.title)
                       }
-                    </Tooltip>
-                    )}
-                  </div>
-                  <Tooltip content="Thêm">
-                    <EllipsisHorizontalIcon 
-                   onClick={(e) => handleClick(e, note.note_id, note.title)}
-                    className='transition-all w-4 h-4 opacity-0 group-hover:opacity-100' />
-                  </Tooltip>
-                </div>
-              ))}
-              <div
-              onClick={handleCreateNewNote}
+                    >
+                      <div className="flex justify-center items-center">
+                        {renameDocId === note.note_id ? (
+                          <input
+                            autoFocus
+                            className="absolute left-0 w-full p-1 text-sm bg-white rounded shadow-md dark:bg-zinc-900 dark:border-zinc-700"
+                            type="text"
+                            value={newDocumentName}
+                            onBlur={() => handleRename(note.note_id)}
+                            onChange={(e) => setNewDocumentName(e.target.value)}
+                            onClick={(e) => e.stopPropagation()}
+                            onKeyDown={(e) =>
+                              e.key === "Enter" && handleRename(note.note_id)
+                            }
+                          />
+                        ) : (
+                          <Tooltip content={note.title}>
+                            <div className="flex items-center w-full">
+                              <WindowIcon className="w-4 h-4 mr-1" />
+                              {note.title === null ? (
+                                <span className="truncate max-w-32">
+                                  No Name
+                                </span>
+                              ) : (
+                                <span className="truncate max-w-32">
+                                  {note.title}
+                                </span>
+                              )}
+                            </div>
+                          </Tooltip>
+                        )}
+                      </div>
+                      <Tooltip content="Thêm">
+                        <EllipsisHorizontalIcon
+                          className="transition-all w-4 h-4 opacity-0 group-hover:opacity-100"
+                          onClick={(e) =>
+                            handleClick(e, note.note_id, note.title)
+                          }
+                        />
+                      </Tooltip>
+                    </div>
+                  );
+                })}
+
+                <div
                   className="ml-2 transition-all flex items-center space-x-2 text-xs  hover:text-white cursor-pointer p-2 rounded-lg dark:text-gray-400 text-gray-700 dark:hover:bg-zinc-800 hover:bg-zinc-200 "
+                  onClick={handleCreateNewNote}
                 >
-                  <PlusIcon className='w-4 h-4' />
+                  <PlusIcon className="w-4 h-4" />
                   <span>Thêm</span>
                 </div>
-            </div>
-          )}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Có thể thêm các mục khác tương tự */}
       </div>
 
-      
-
-      <div className={`dark:bg-zinc-800 bg-zinc-200 transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith('doc-') ? 'visible opacity-100' : 'invisible opacity-0'} context-menu absolute rounded-lg shadow-lg w-48`} style={{ top: contextMenu.y, left: contextMenu.x }}>
+      <div
+        className={`dark:bg-zinc-800 bg-zinc-200 transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith("doc-") ? "visible opacity-100" : "invisible opacity-0"} context-menu absolute rounded-lg shadow-lg w-48`}
+        style={{ top: contextMenu.y, left: contextMenu.x }}
+      >
         <ListboxWrapper>
-          <Listbox aria-label="Actions" >
-            <ListboxItem key="new" textValue="New file">
-              <div className='flex items-center'>
+          <Listbox aria-label="Actions">
+            <ListboxItem
+              key="new"
+              textValue="New file"
+              onClick={() => openNewDocument()}
+            >
+              <div className="flex items-center">
                 <PlusIcon className="h-4 w-4 mr-2" />
                 Add Document
               </div>
             </ListboxItem>
-            <ListboxItem key="create" textValue="Pop Up">
-              <div className='flex items-center'>
-                <ChatBubbleLeftIcon className="h-4 w-4 mr-2" />
-                Create Conversation
-              </div>
-            </ListboxItem>
-            <ListboxItem key="popup" textValue="Pop Up">
-              <div className='flex items-center'>
-                <ArrowTopRightOnSquareIcon className="h-4 w-4 mr-2" />
-                Detail
-              </div>
-            </ListboxItem>
-            <ListboxItem 
-            onClick={() => handleOpenRename(selectedId)}
-            key="rename" textValue="Pop Up">
-              <div className='flex items-center'
-              
-              >
-                <PencilSquareIcon className="h-4 w-4 mr-2" />
-                Rename
-              </div>
-            </ListboxItem>
-            <ListboxItem key="delete" textValue="Pop Up" className="text-danger" color="danger">
-              <div className='flex items-center'>
-                <TrashIcon className="h-4 w-4 mr-2" />
-                Delete
-              </div>
-            </ListboxItem>
-          </Listbox>
-        </ListboxWrapper>
-      </div>
-      <div className={`dark:bg-zinc-800 bg-zinc-200 transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith('conv-') ? 'visible opacity-100' : 'invisible opacity-0'} context-menu absolute rounded-lg shadow-lg w-48`} style={{ top: contextMenu.y, left: contextMenu.x }}>
-        <ListboxWrapper>
-          <Listbox aria-label="Actions" >
-            <ListboxItem key="create" textValue="Pop Up">
-              <div className='flex items-center'>
-                <ChatBubbleLeftIcon className="h-4 w-4 mr-2" />
-                Create Conversation
-              </div>
-            </ListboxItem>
-            <ListboxItem key="popup" textValue="Pop Up">
-              <div className='flex items-center'>
-                <ArrowTopRightOnSquareIcon className="h-4 w-4 mr-2" />
-                Detail
-              </div>
-            </ListboxItem>
-            <ListboxItem key="rename" textValue="Pop Up"
-            onClick={() => handleOpenRename(selectedId)}
+            <ListboxItem
+              key="popup"
+              textValue="Pop Up"
+              onClick={() => handleRouterDocument(selectedId)}
             >
-              <div className='flex items-center'>
+              <div className="flex items-center">
+                <ArrowTopRightOnSquareIcon className="h-4 w-4 mr-2" />
+                Detail
+              </div>
+            </ListboxItem>
+            <ListboxItem
+              key="rename"
+              textValue="Pop Up"
+              onClick={() => handleOpenRename(selectedId)}
+            >
+              <div className="flex items-center">
                 <PencilSquareIcon className="h-4 w-4 mr-2" />
                 Rename
               </div>
             </ListboxItem>
-            <ListboxItem key="delete" textValue="Pop Up" className="text-danger" color="danger">
-              <div className='flex items-center'>
+            <ListboxItem
+              key="delete"
+              className="text-danger"
+              color="danger"
+              textValue="Pop Up"
+              onClick={() => handleOpenDeleteDocument()}
+            >
+              <div className="flex items-center">
                 <TrashIcon className="h-4 w-4 mr-2" />
                 Delete
               </div>
@@ -607,55 +740,102 @@ const handleRouterDocument = (doc: Document) => {
           </Listbox>
         </ListboxWrapper>
       </div>
-      <div className={`dark:bg-zinc-800 bg-zinc-200 transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith('note-') ? 'visible opacity-100' : 'invisible opacity-0'} context-menu absolute rounded-lg shadow-lg w-48`} style={{ top: contextMenu.y, left: contextMenu.x }}>
+      <div
+        className={`dark:bg-zinc-800 bg-zinc-200 transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith("conv-") ? "visible opacity-100" : "invisible opacity-0"} context-menu absolute rounded-lg shadow-lg w-48`}
+        style={{ top: contextMenu.y, left: contextMenu.x }}
+      >
         <ListboxWrapper>
-          <Listbox aria-label="Actions" >
-            <ListboxItem key="create" textValue="Pop Up">
-              <div className='flex items-center'>
+          <Listbox aria-label="Actions">
+            <ListboxItem key="create" textValue="Pop Up" onClick={onOpenDialog}>
+              <div className="flex items-center">
+                <ChatBubbleLeftIcon className="h-4 w-4 mr-2" />
+                Create Conversation
+              </div>
+            </ListboxItem>
+            <ListboxItem key="popup" textValue="Pop Up">
+              <div
+                className="flex items-center"
+                onClick={() => handleRouterConversation(selectedId)}
+              >
+                <ArrowTopRightOnSquareIcon className="h-4 w-4 mr-2" />
+                Detail
+              </div>
+            </ListboxItem>
+            <ListboxItem
+              key="rename"
+              textValue="Pop Up"
+              onClick={() => handleOpenRename(selectedId)}
+            >
+              <div className="flex items-center">
+                <PencilSquareIcon className="h-4 w-4 mr-2" />
+                Rename
+              </div>
+            </ListboxItem>
+            <ListboxItem
+              key="delete"
+              className="text-danger"
+              color="danger"
+              textValue="Pop Up"
+              onClick={() => handleOpenDeleteDocument()}
+            >
+              <div className="flex items-center">
+                <TrashIcon className="h-4 w-4 mr-2" />
+                Delete
+              </div>
+            </ListboxItem>
+          </Listbox>
+        </ListboxWrapper>
+      </div>
+      <div
+        className={`dark:bg-zinc-800 bg-zinc-200 transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith("note-") ? "visible opacity-100" : "invisible opacity-0"} context-menu absolute rounded-lg shadow-lg w-48`}
+        style={{ top: contextMenu.y, left: contextMenu.x }}
+      >
+        <ListboxWrapper>
+          <Listbox aria-label="Actions">
+            <ListboxItem
+              key="create"
+              textValue="Pop Up"
+              onClick={() => {
+                setContextMenu({ ...contextMenu, show: false });
+                handleCreateNewNote();
+              }}
+            >
+              <div className="flex items-center">
                 <ChatBubbleLeftIcon className="h-4 w-4 mr-2" />
                 Create Note
               </div>
             </ListboxItem>
-            <ListboxItem key="popup" textValue="Pop Up">
-              <div className='flex items-center'>
+            <ListboxItem
+              key="popup"
+              textValue="Pop Up"
+              onClick={() => {
+                setContextMenu({ ...contextMenu, show: false });
+                setSelectedNote(selectedId);
+              }}
+            >
+              <div className="flex items-center">
                 <ArrowTopRightOnSquareIcon className="h-4 w-4 mr-2" />
                 Open
               </div>
             </ListboxItem>
-            <ListboxItem key="rename" textValue="Pop Up"
-            onClick={() => handleOpenRename(selectedId)}
+            <ListboxItem
+              key="rename"
+              textValue="Pop Up"
+              onClick={() => handleOpenRename(selectedId)}
             >
-              <div className='flex items-center'>
+              <div className="flex items-center">
                 <PencilSquareIcon className="h-4 w-4 mr-2" />
                 Rename
               </div>
             </ListboxItem>
-            <ListboxItem key="delete" textValue="Pop Up" className="text-danger" color="danger">
-              <div className='flex items-center'>
-                <TrashIcon className="h-4 w-4 mr-2" />
-                Delete
-              </div>
-            </ListboxItem>
-          </Listbox>
-        </ListboxWrapper>
-      </div>
-      <div className={`dark:bg-zinc-800 bg-zinc-200 transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith('img-') ? 'visible opacity-100' : 'invisible opacity-0'} context-menu absolute rounded-lg shadow-lg w-48`} style={{ top: contextMenu.y, left: contextMenu.x }}>
-        <ListboxWrapper>
-          <Listbox aria-label="Actions" >
-            <ListboxItem key="popup" textValue="Pop Up">
-              <div className='flex items-center'>
-                <ArrowTopRightOnSquareIcon className="h-4 w-4 mr-2" />
-                Detail
-              </div>
-            </ListboxItem>
-            <ListboxItem key="rename" textValue="Pop Up">
-              <div className='flex items-center'>
-                <PencilSquareIcon className="h-4 w-4 mr-2" />
-                Rename
-              </div>
-            </ListboxItem>
-            <ListboxItem key="delete" textValue="Pop Up" className="text-danger" color="danger">
-              <div className='flex items-center'>
+            <ListboxItem
+              key="delete"
+              className="text-danger"
+              color="danger"
+              textValue="Pop Up"
+              onClick={() => handleOpenDeleteDocument()}
+            >
+              <div className="flex items-center">
                 <TrashIcon className="h-4 w-4 mr-2" />
                 Delete
               </div>
@@ -664,20 +844,31 @@ const handleRouterDocument = (doc: Document) => {
         </ListboxWrapper>
       </div>
 
-      <AlertDialog open={isDeleteDocument} onOpenChange={() => handleOpenDeleteDocument()}>
-        <AlertDialogContent className="bg-zinc-800 border-none">
+      <AlertDialog
+        open={isDeleteDocument}
+        onOpenChange={() => handleOpenDeleteDocument()}
+      >
+        <AlertDialogContent className="dark:bg-zinc-800 border-none">
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center">
               <ExclamationCircleIcon className="w-6 h-6 mr-2" />
               Do you really want to delete
             </AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. Project cannot be restored.
+              This action cannot be undone.{" "}
+              <span className="font-bold">{selectedName}</span> cannot be
+              restored.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <Button>Cancel</Button>
-            <Button color="danger">Delete</Button>
+            <Button onClick={() => handleOpenDeleteDocument()}>Cancel</Button>
+            <Button
+              color="danger"
+              isLoading={isLoadingDelete}
+              onClick={() => handleDelete(selectedId)}
+            >
+              Delete
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -686,13 +877,12 @@ const handleRouterDocument = (doc: Document) => {
         <DialogContent>
           <div className="grid w-full max-w-sm items-center gap-1.5">
             <label htmlFor="picture">Upload Your Documents</label>
-            <Input id="picture" type="file" />  
+            <Input id="picture" type="file" />
           </div>
         </DialogContent>
       </Dialog>
     </div>
   );
-}
-
+};
 
 export default Sidebar;

@@ -1,107 +1,135 @@
-import React, { useEffect } from "react";
-import { Select, SelectItem, Avatar, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Switch } from "@nextui-org/react";
-import { MoonIcon } from "../icon/MoonIcon";
-import { SunIcon } from "../icon/SunIcon";
-import { useTheme } from "next-themes";
-import useDarkMode from "@/src/hook/useDarkMode";
-import { Logout, getUser, refreshToken } from "@/service/apis";
+import React, { useEffect, useState } from "react";
+import {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Avatar,
+} from "@nextui-org/react";
 import { useRouter } from "next/router";
-import { User } from "@/src/types/types";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/src/store";
-import { setUser } from "@/src/userSlice";
+import { Modal, ModalContent, ModalHeader, ModalBody } from "@nextui-org/react";
+import dynamic from "next/dynamic";
 
+import { Logout, getUser } from "@/service/apis";
+import { RootState } from "@/src/store/store";
+import { setUser, clearUser } from "@/src/store/userSlice";
+import { clearProjects } from "@/src/store/projectsSlice";
 
+import AccountSettings from "./UserProfile";
 
-const languages = [
-  { key: "Vietnamese", label: "Tiếng Việt" },
-  { key: "English", label: "English" },
-];
+const Feedback = dynamic(() => import("./Feedback"), {
+  loading: () => <p>Loading...</p>,
+  ssr: false, 
+});
 
 const UserDropdown = () => {
-  const { theme, setTheme } = useTheme();
-  const [isDarkMode, toggleDarkMode] = useDarkMode();
   const router = useRouter();
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user);
+  const [openSetting, setOpenSetting] = useState<boolean>(false);
+  const [isFeedbackOpen, setFeedbackOpen] = useState<boolean>(false);
+
+  const handleToggleSetting = () => setOpenSetting(!openSetting);
+  const handleToggleFeedback = () => setFeedbackOpen(!isFeedbackOpen);
+  const handleOpenFeedback = () => {
+    setFeedbackOpen(true);
+    // Đóng dropdown khi mở modal feedback
+    document.body.click();
+  };
 
   useEffect(() => {
-    if(!user.user_id) {
+    if (!user.user_id) {
       handleGetUser();
     }
-  }, [])
+  }, [user.user_id]);
 
   const handleGetUser = async () => {
     try {
-      const data = await getUser()
-      dispatch(setUser(data.data.msg));
-    } catch (e) {
-        console.log(e)
-    }
-  }
+      const data = await getUser();
 
-  const handleTheme = () => {
-    toggleDarkMode();
-    if (isDarkMode) {
-      setTheme('light');
-    } else {
-      setTheme('dark');
+      if (data && data.data && data.data.msg) {
+        dispatch(setUser(data.data.msg));
+      } else {
+        console.error("Invalid user data received");
+      }
+    } catch (e) {
+      console.error("Error fetching user:", e);
     }
   };
 
   const handleLogout = async () => {
     try {
-      const data = await Logout();
-      console.log(data);
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
-      router.push('/');
+      await Logout();
+      dispatch(clearUser())
+      dispatch(clearProjects())
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      router.push("/");
     } catch (e) {
-      console.log(e);
+      console.error("Error during logout:", e);
     }
   };
 
+  const handleFeedbackSubmit = (feedback: string) => {
+    console.log("Feedback submitted:", feedback);
+    // Xử lý gửi feedback ở đây
+  };
+
   return (
-    <Dropdown placement="bottom-end">
-      <DropdownTrigger>
-        <Avatar
-          isBordered
-          as="button"
-          className="transition-transform"
-          name={user?.last_name}
-          size="sm"
-          showFallback
+    <>
+      <Dropdown placement="bottom-end">
+        <DropdownTrigger>
+          <Avatar
+            isBordered
+            showFallback
+            as="button"
+            className="transition-transform"
+            name={user?.last_name}
+            size="sm"
+          />
+        </DropdownTrigger>
+        <DropdownMenu aria-label="Profile Actions" variant="flat">
+          <DropdownItem key="profile" className="h-14 gap-2">
+            <p className="font-semibold">Signed in as</p>
+            <p className="font-semibold">{user?.email}</p>
+          </DropdownItem>
+          <DropdownItem key="settings" onPress={handleToggleSetting}>
+            Settings
+          </DropdownItem>
+          <DropdownItem key="analytics">Analytics</DropdownItem>
+          <DropdownItem key="help_and_feedback" onPress={handleOpenFeedback}>
+            Help & Feedback
+          </DropdownItem>
+          <DropdownItem key="logout" color="danger" onPress={handleLogout}>
+            Log Out
+          </DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
+
+      <Modal isOpen={openSetting} size="5xl" onOpenChange={handleToggleSetting}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                User Setting
+              </ModalHeader>
+              <ModalBody className="max-w-none">
+                <AccountSettings updateData={handleGetUser} user={user} />
+              </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
+      {isFeedbackOpen && (
+        <Feedback
+          open={isFeedbackOpen}
+          onClose={handleToggleFeedback}
+          onSubmit={handleFeedbackSubmit}
         />
-      </DropdownTrigger>
-      <DropdownMenu closeOnSelect={false} aria-label="Profile Actions" variant="flat">
-        <DropdownItem key="profile" className="h-14 gap-2" aria-label="Profile Info">
-          <p className="font-semibold">Signed in as</p>
-          <p className="font-semibold">{user?.email}</p>
-        </DropdownItem>
-        <DropdownItem key="settings" aria-label="My Settings">My Settings</DropdownItem>
-        <DropdownItem key="team_settings" aria-label="Team Settings">Team Settings</DropdownItem>
-        <DropdownItem key="theme" aria-label="Theme Settings">
-          <div className="flex justify-between items-center">
-            Theme
-            <Switch
-              isSelected={!isDarkMode}
-              size="sm"
-              startContent={<SunIcon />}
-              endContent={<MoonIcon />}
-              onClick={handleTheme}
-            />
-          </div>
-        </DropdownItem>
-        <DropdownItem key="analytics" aria-label="Analytics">Analytics</DropdownItem>
-        <DropdownItem key="system" aria-label="System Settings">System</DropdownItem>
-        <DropdownItem key="configurations" aria-label="Configurations">Configurations</DropdownItem>
-        <DropdownItem key="help_and_feedback" aria-label="Help & Feedback">Help & Feedback</DropdownItem>
-        <DropdownItem onClick={handleLogout} key="logout" color="danger" aria-label="Log Out">
-          Log Out
-        </DropdownItem>
-      </DropdownMenu>
-    </Dropdown>
-  
+      )}
+    </>
   );
 };
 

@@ -1,80 +1,100 @@
 import React, { useEffect, useState } from "react";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 import { useSelector, useDispatch } from "react-redux";
+
 import SidebarHome from "@/components/global/SidebarHome";
 import NavbarHome from "@/components/global/NavbarHome";
 import HomeMain from "@/components/global/MainHome";
-import { RootState } from "@/src/store";
-import { getAllProjectsWithInfo, refreshToken, getAllDocumentByUser, getAllConversationByUser } from "@/service/apis";
-import { setProjects } from "@/src/projectsSlice";
-import { Project, User, Document, Conversation } from "@/src/types/types";
-
+import { RootState } from "@/src/store/store";
+import {
+  getAllProjectsWithInfo,
+  getAllDocumentByUser,
+  getAllConversationByUser,
+} from "@/service/apis";
+import { setProjects } from "@/src/store/projectsSlice";
+import { Project, Document, Conversation } from "@/src/types/types";
+import SearchComponent from "@/components/project/SearchComponent";
 
 const Home = () => {
-    const router = useRouter();
-    const dispatch = useDispatch();
-    const user = useSelector((state: RootState) => state.user);
-    const projects = useSelector((state: RootState) => state.projects.projects);
-    const [documents, setDocuments] = useState<Document[]>([])
-    const [conversations, setConversations] = useState<Conversation[]>([])
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.user);
+  const projects = useSelector((state: RootState) => state.projects.projects);
+  const [documents, setDocuments] = useState<Document[]>();
+  const [conversations, setConversations] = useState<Conversation[]>();
+  const [isOpenSearch, setIsOpenSearch] = useState<boolean>(false);
 
-    useEffect(() => {
-        // Gọi API để lấy danh sách dự án
-        handleGetProjects();
-        handleGetConversations()
-        handleGetDocuments()
-    }, []);
+  const handleToogleSearch = () => setIsOpenSearch(!isOpenSearch);
 
-    const handleGetDocuments = async () => {
-        try {
-            const data = await getAllDocumentByUser()
-            setDocuments(data.data)
-        } catch(e) {
-            console.log(e)
-        }
+  useEffect(() => {
+    // Gọi API để lấy danh sách dự án
+    handleGetProjects();
+    handleGetConversations();
+    handleGetDocuments();
+  }, []);
+
+  const handleGetDocuments = async () => {
+    try {
+      const data = await getAllDocumentByUser();
+
+      setDocuments(data.data);
+    } catch (e) {
+      console.log(e);
     }
+  };
 
-    const handleGetConversations = async () => {
-        try {
-            const data = await getAllConversationByUser()
-            setConversations(data.data)
-        } catch (e) {
-            console.log(e)
-        }
+  const handleGetConversations = async () => {
+    try {
+      const data = await getAllConversationByUser();
+
+      setConversations(data.data);
+    } catch (e) {
+      console.log(e);
     }
+  };
 
-    const handleGetProjects = async () => {
-        try {
-            const data = await getAllProjectsWithInfo();
-            dispatch(setProjects(data.data)); 
-        } catch (e) {
-           console.log(e)
-        }
-    };
+  const handleGetProjects = async () => {
+    try {
+      const data = await getAllProjectsWithInfo();
 
-    const handleProjectsUpdate = (updatedProjects: Project[]) => {
-        dispatch(setProjects(updatedProjects));
-    };
+      dispatch(setProjects(data.data));
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
-    return (
-        <div className="flex">
-            <SidebarHome 
-            projects={projects} 
-            documents={documents} 
-            conversations={conversations}
-            />
-            <div className="flex flex-col w-full">
-                <NavbarHome 
-                updatedProject={handleGetProjects}
-                user={user}/>
-                <HomeMain 
-                documents={documents}
-                conversations={conversations}
-                userName={`${user?.first_name ?? ''} ${user?.last_name ?? ''}`.trim()}  
-                projects={projects} onProjectsUpdate={handleProjectsUpdate} />
-            </div>
-        </div>
-    );
+  const handleProjectsUpdate = (updatedProjects: Project[]) => {
+    dispatch(setProjects(updatedProjects));
+  };
+
+  return (
+    <div className="flex">
+      <SidebarHome
+        conversations={conversations as Conversation[]}
+        documents={documents as Document[]}
+        openSearch={handleToogleSearch}
+        projects={projects as Project[]}
+      />
+      <div className="flex flex-col w-full">
+        <NavbarHome updatedProject={handleGetProjects} user={user} />
+        <HomeMain
+          conversations={conversations as Conversation[]}
+          documents={documents as Document[]}
+          projects={projects as Project[]}
+          userName={`${user?.first_name ?? ""} ${user?.last_name ?? ""}`.trim()}
+          onProjectsUpdate={handleProjectsUpdate}
+        />
+      </div>
+      <SearchComponent
+        conversations={conversations as Conversation[]}
+        documents={documents as Document[]}
+        isOpen={isOpenSearch}
+        notes={[]}
+        projects={projects as Project[]}
+        onClose={handleToogleSearch}
+      />
+    </div>
+  );
 };
 
 export default Home;

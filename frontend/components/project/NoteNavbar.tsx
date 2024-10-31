@@ -1,5 +1,5 @@
-import { FC } from 'react';
-import { Share1Icon, TrashIcon } from '@radix-ui/react-icons';
+import { FC } from "react";
+import { Share1Icon, TrashIcon } from "@radix-ui/react-icons";
 
 interface NoteNavbarProps {
   title: string;

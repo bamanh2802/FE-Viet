@@ -1,126 +1,179 @@
-// components/project/NewWorkspace.tsx
-import { Dialog, DialogTrigger, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { ListboxWrapper } from '@/components/ListboxWrapper';
-import { Listbox, ListboxItem, Button } from '@nextui-org/react';
-import { PlusIcon } from '@heroicons/react/24/outline';
-import '@/components/project/config.css'
-import { Document } from '@/src/types/types';
-import React, { useState, useEffect, FC } from 'react';
-import { createNewConversation } from '@/service/projectApi';
-import { useRouter } from 'next/router';
+import { Listbox, ListboxItem, Button, Selection } from "@nextui-org/react";
+import {
+  PlusIcon,
+  DocumentTextIcon,
+  PresentationChartBarIcon,
+  GlobeAltIcon,
+  NewspaperIcon,
+} from "@heroicons/react/24/outline";
+
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { ListboxWrapper } from "@/components/ListboxWrapper";
+
+import { Document } from "@/src/types/types";
+
+import React, { useState, useEffect, FC } from "react";
+
+import { createNewConversation } from "@/service/projectApi";
+
+import { useRouter } from "next/router";
+
 interface NewWorkspaceProps {
-    isOpen: boolean;
-    onClose: () => void;
-    documents: Document[]
-    projectId: string
-    updateConversation: () => void
+  isOpen: boolean;
+  onClose: () => void;
+  documents: Document[];
+  projectId: string;
+  updateConversation: () => void;
+  from: string;
 }
 
+const NewWorkspace: FC<NewWorkspaceProps> = ({
+  from,
+  updateConversation,
+  projectId,
+  isOpen,
+  onClose,
+  documents,
+}) => {
+  const router = useRouter();
+  const [selectedKeys, setSelectedKeys] = React.useState(new Set([""]));
+  const [conversationName, setConversationName] = useState<string>("");
+  const [isDisable, setIsDisable] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-const NewWorkspace: FC<NewWorkspaceProps> = ({ updateConversation, projectId, isOpen, onClose, documents }) => {
-    const router = useRouter()
-    const [selectedKeys, setSelectedKeys] = React.useState<Set<string>>(new Set());
-    const [conversationName, setConversationName] = useState<string>('');
-    const [isDisable, setIsDisable] = useState<boolean>(true)
-    const [isLoading, setIsLoading] = useState<boolean>(false)
-    const handleSelectionChange = (keys: Set<string>) => {
-        setSelectedKeys(keys);
-    };
+  const handleSelectionChange = (keys: Selection) => {
+    setSelectedKeys(keys as Set<string>);
+  };
+  const handleCreateNewConversation = async () => {
+    const selectedDocsArray = Array.from(selectedKeys).filter(key => key !== '');
+    setIsLoading(true);
+    try {
+      const data = await createNewConversation(
+        conversationName,
+        projectId,
+        selectedDocsArray,
+      );
 
-    const handleCreateNewConversation = async () => {
-        console.log(Array.from(selectedKeys), projectId)
-        setIsLoading(true)
-        try {
-            const data = await createNewConversation(conversationName, projectId, Array.from(selectedKeys))
-            setIsLoading(false)
-            handleRouterWorkspace(data.data.conversation_id)
-        } catch(e) {
-            console.log(e)
-            setIsLoading(false)
-        }
-        onClose()
+      setIsLoading(false);
+      handleRouterWorkspace(data.data.conversation_id);
+    } catch (e) {
+      console.log(e);
+      setIsLoading(false);
     }
+    onClose();
+  };
 
-    const handleRouterWorkspace = (conversationId: string) => {
-        updateConversation()
-        const url = `/project/${projectId}/workspace/${conversationId}`
-        window.open(url, '_blank');
+  const handleRouterWorkspace = (conversationId: string) => {
+    updateConversation();
+    if (from === "project") {
+      const url = `/project/${projectId}/workspace/${conversationId}`;
+
+      window.open(url, "_blank");
+    } else if (from === "conversation") {
+      router.push(`/project/${projectId}/workspace/${conversationId}`);
     }
+  };
 
-    useEffect(() => {
-        if(documents !== undefined) {
-            if(documents.length !== 0 && Array.from(selectedKeys).length !== 0 && conversationName !== '' ) {
-                setIsDisable(false)
-            }
-        }
+  useEffect(() => {
+    if (documents !== undefined) {
+      if (
+        documents.length !== 0 &&
+        Array.from(selectedKeys).length !== 0 &&
+        conversationName !== ""
+      ) {
+        setIsDisable(false);
+      }
+    }
+  }, [documents, conversationName, selectedKeys]);
 
-    }, [documents, conversationName, selectedKeys])
+  const selectedValue = React.useMemo(
+    () =>
+      Array.from(selectedKeys)
+        .map((key) => {
+          const doc = documents?.find((doc) => doc.document_id === key);
 
+          return doc ? doc.document_name : "";
+        })
+        .join(", "),
+    [selectedKeys],
+  );
 
-    const selectedValue = React.useMemo(
-        () => Array.from(selectedKeys).map(key => {
-            const doc = documents.find(doc => doc.document_id === key);
-            return doc ? doc.document_name : '';
-        }).join(", "),
-        [selectedKeys]
-    );
+  // Function to get the icon based on document type
+  const getDocumentIcon = (type: string) => {
+    switch (type) {
+      case "pdf":
+        return <DocumentTextIcon className="w-5 h-5 inline-block mr-1" />;
+      case "pptx":
+        return (
+          <PresentationChartBarIcon className="w-5 h-5 inline-block mr-1" />
+        );
+      case "web":
+        return <GlobeAltIcon className="w-5 h-5 inline-block mr-1" />;
+      case "word":
+        return <NewspaperIcon className="w-5 h-5 inline-block mr-1" />;
+      default:
+        return null; // Default case if type doesn't match
+    }
+  };
 
-    return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogTrigger asChild>
-                {/* Trigger button or component can be added here */}
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[827px] bg-zinc-200 dark:bg-zinc-900 border-none">
-                <DialogTitle>Select Files</DialogTitle>
-                
-                {/* Thêm trường input cho tên */}
-                <div className="mt-4">
-                    <label className="block text-sm font-medium text-white">Conversation Name</label>
-                    <input
-                        type="text"
-                        value={conversationName}
-                        onChange={(e) => setConversationName(e.target.value)}
-                        className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-zinc-700 text-white"
-                        placeholder="Enter conversation name"
-                    />
-                </div>
-        
-                <div className="custom-width mt-4">
-                    <ListboxWrapper>
-                        <Listbox
-                            className="max-w-none"
-                            aria-label="File selection"
-                            variant="flat"
-                            disallowEmptySelection
-                            selectionMode="multiple"
-                            selectedKeys={selectedKeys}
-                            onSelectionChange={(key) => handleSelectionChange(key)}
-                        >
-                            {documents?.map((doc) => (
-                                <ListboxItem textValue="Add" key={doc.document_id} value={doc.document_id}>
-                                    {doc.document_name} ({doc.type})
-                                </ListboxItem>
-                            ))}
-                        </Listbox>
-                    </ListboxWrapper>
-                </div>
-        
-                <p className="text-small text-default-500 mt-2">Selected files: {selectedValue}</p>
-        
-                <Button
-                    isLoading={isLoading}
-                    isDisabled={isDisable}
-                    color="default"
-                    onClick={() => handleCreateNewConversation()}
-                    startContent={!isLoading && <PlusIcon className="w-5 h-5" />}
-                    className="mt-4"
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[827px] bg-zinc-50 dark:bg-zinc-900 border-none">
+        <DialogTitle>Select Files</DialogTitle>
+
+        <div className="mt-4">
+          <span className="block text-sm font-medium">Conversation Name</span>
+          <input
+            className="w-full mt-2 p-2 border border-gray-300 rounded-md"
+            placeholder="Enter conversation name"
+            type="text"
+            value={conversationName}
+            onChange={(e) => setConversationName(e.target.value)}
+          />
+        </div>
+
+        <div className="custom-width mt-4">
+          <ListboxWrapper>
+            <Listbox
+              disallowEmptySelection
+              aria-label="File selection"
+              className="max-w-none"
+              selectionMode="multiple"
+              variant="flat"
+              selectedKeys={selectedKeys}
+              onSelectionChange={handleSelectionChange}
+            >
+              {documents?.map((doc) => (
+                <ListboxItem
+                  key={doc.document_id}
+                  textValue="Add"
+                  value={doc.document_id}
                 >
-                    Create
-                </Button>
-            </DialogContent>
-        </Dialog>
-    
-    );
+                  {getDocumentIcon(doc.type)} {/* Add the icon here */}
+                  {doc.document_name} ({doc.type})
+                </ListboxItem>
+              ))}
+            </Listbox>
+          </ListboxWrapper>
+        </div>
+
+        <p className="text-small text-default-500 mt-2">
+          Selected files: {selectedValue}
+        </p>
+
+        <Button
+          className="mt-4"
+          color="default"
+          isDisabled={isDisable}
+          isLoading={isLoading}
+          startContent={!isLoading && <PlusIcon className="w-5 h-5" />}
+          onClick={() => handleCreateNewConversation()}
+        >
+          Create
+        </Button>
+      </DialogContent>
+    </Dialog>
+  );
 };
 
 export default NewWorkspace;

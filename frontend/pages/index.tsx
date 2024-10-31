@@ -1,419 +1,403 @@
-import { Button,Input } from "@nextui-org/react"
-import { CheckIcon, SearchIcon, ShareIcon, UsersIcon } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
-import { useState, useRef, useEffect } from 'react'
-import { motion, useAnimation, useInView } from 'framer-motion'
-import SignInForm from "@/components/global/SignInForm"
+import { useState, useEffect } from 'react'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import {Tabs, Tab} from "@nextui-org/react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { BookOpen, Brain, FileText, Image, Search, Share2, Users, Moon, Sun } from 'lucide-react'
+import Link from 'next/link'
+import SignInForm from '@/components/global/SignInForm';
 
-export default function VietLandingPage() {
-  const fadeInUp = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
-  }
+export default function LandingPage() {
+  const [email, setEmail] = useState('')
+  const [darkMode, setDarkMode] = useState(false)
+  const [isOpenSignIn, setIsOpenSign] = useState<boolean>(false)
 
-  const staggerChildren = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
+  const handleToggleSignIn = () => setIsOpenSign(!isOpenSignIn)
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
     }
+  }, [darkMode])
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode)
   }
-
-  const scaleIn = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: { opacity: 1, scale: 1, transition: { duration: 0.5 } }
-  }
-
-
-  const [isOpenSignIn, setIsOpenSignIn] = useState<boolean>(false)
-
-  const handleToggleSignIn = () => {
-    setIsOpenSignIn(!isOpenSignIn)
-    console.log('hello')
-  }
-
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-300 text-zinc-900 overflow-y-scroll">
-      <motion.header
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="px-4 lg:px-6 h-14 flex items-center fixed w-screen"
-      >
+    <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+      <header className="px-4 lg:px-6 h-14 flex items-center border-b border-gray-200 dark:border-gray-700">
         <Link className="flex items-center justify-center" href="#">
+          <Brain className="h-6 w-6" />
           <span className="ml-2 text-2xl font-bold">Viet</span>
         </Link>
         <nav className="ml-auto flex gap-4 sm:gap-6">
           <Link className="text-sm font-medium hover:underline underline-offset-4" href="#features">
-            Tính năng
+            Features
           </Link>
-          <Link className="text-sm font-medium hover:underline underline-offset-4" href="#knowledge-management">
-            Quản lý tri thức
+          <Link className="text-sm font-medium hover:underline underline-offset-4" href="#community">
+            Community
           </Link>
-          <Link className="text-sm font-medium hover:underline underline-offset-4" href="#llm-interaction">
-            Tương tác LLM
-          </Link>
-          <Link className="text-sm font-medium hover:underline underline-offset-4" href="#search">
-            Tìm kiếm
+          <Link className="text-sm font-medium hover:underline underline-offset-4" href="#pricing">
+            Pricing
           </Link>
         </nav>
-      </motion.header>
-      <main className="flex-1 h-screen w-screen snap-y snap-mandatory overflow-y-auto flex flex-col items-center justify-center">
-        <div className="h-screen w-screen snap-start">
-            <motion.section
-            initial="hidden"
-            viewport={{ margin: '-500px' }}
-            whileInView="visible"
-            variants={staggerChildren}
-            className=" h-screen w-screen py-12 md:py-24 lg:py-32 xl:py-48 flex justify-center items-center"
-            >
-            <div className="container px-4 md:px-6">
-                <div className="flex flex-col items-center space-y-4 text-center">
-                  <motion.div variants={fadeInUp} className="space-y-2">
-                      <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
-                      Viet – Trợ lý AI hỗ trợ quản lý và nghiên cứu tri thức hiệu quả
-                      </h1>
-                      <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
-                      Giúp bạn quản lý tri thức, tương tác với các mô hình ngôn ngữ lớn (LLMs), tìm kiếm và chia sẻ kiến thức một cách thông minh và tiện lợi.
-                      </p>
-                  </motion.div>
-                  <motion.div variants={fadeInUp} className="space-x-4">
-                      <Button
-                          onClick={() => (handleToggleSignIn())}
-                      >Khám phá ngay</Button>
-                      <Button variant="bordered" className="text-slate-800">
-                      <Link className="flex items-center justify-center" href="#features">
-                      Tìm hiểu thêm
-                      </Link>
-                      </Button>
-                  </motion.div>
-                </div>
-            </div>
-            </motion.section>
-            
-        </div>
-        <div className="h-screen w-screen snap-start">
-            <motion.section
-            initial="hidden"
-            viewport={{ margin: '-500px' }}
-            whileInView="visible"
-            variants={staggerChildren}
-            id="features"
-            className="h-screen w-screen flex justify-center items-center py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800 snap-start"
-            >
-            <div className="container px-4 md:px-6 max-w-6xl">
-                <motion.h2 variants={fadeInUp} className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center mb-24">Tính năng nổi bật</motion.h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <motion.div variants={fadeInUp} className="flex flex-col items-center text-center">
-                    <CheckIcon className="h-12 w-12 mb-4 text-primary" />
-                    <h3 className="text-xl font-bold mb-2">Quản lý tri thức thông minh</h3>
-                    <p className="text-gray-500 dark:text-gray-400">Quản lý tài liệu, hình ảnh, bảng biểu theo tags và metadata một cách linh hoạt.</p>
-                </motion.div>
-                <motion.div variants={fadeInUp} className="flex flex-col items-center text-center">
-                    <UsersIcon className="h-12 w-12 mb-4 text-primary" />
-                    <h3 className="text-xl font-bold mb-2">Tương tác với LLMs</h3>
-                    <p className="text-gray-500 dark:text-gray-400">Tạo cuộc trò chuyện nhóm hoặc cá nhân với LLMs, hỗ trợ tóm tắt, hỏi đáp và trích xuất ý chính từ tài liệu.</p>
-                </motion.div>
-                <motion.div variants={fadeInUp} className="flex flex-col items-center text-center">
-                    <SearchIcon className="h-12 w-12 mb-4 text-primary" />
-                    <h3 className="text-xl font-bold mb-2">Tìm kiếm mạnh mẽ</h3>
-                    <p className="text-gray-500 dark:text-gray-400">Tìm kiếm theo từ khóa và ngữ nghĩa trong toàn bộ hệ thống, từ tài liệu đến hình ảnh và bảng biểu.</p>
-                </motion.div>
-                <motion.div variants={fadeInUp} className="flex flex-col items-center text-center">
-                    <ShareIcon className="h-12 w-12 mb-4 text-primary" />
-                    <h3 className="text-xl font-bold mb-2">Tính năng cộng đồng</h3>
-                    <p className="text-gray-500 dark:text-gray-400">Chia sẻ cuộc trò chuyện, tài liệu, và dự án dễ dàng với đồng nghiệp và đối tác qua URL.</p>
-                </motion.div>
-                </div>
-            </div>
-            </motion.section>
-        </div>
-       <div className="h-screen w-screen snap-start">
-        <motion.section
-            initial="hidden"
-            viewport={{ margin: '-500px' }}
-            whileInView="visible"
-            variants={staggerChildren}
-            id="knowledge-management"
-            className="h-screen w-screen py-12 md:py-24 lg:py-32 flex justify-center items-center snap-start"
-            >
-            <div className="container px-4 md:px-6 flex items-center justify-center">
-                <div className="max-w-6xl grid items-center gap-6 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_550px]">
-                <motion.div variants={fadeInUp} className="flex flex-col justify-center space-y-4">
-                    <div className="space-y-2">
-                    <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Quản lý tri thức dễ dàng, hiệu quả</h2>
-                    <p className="max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-                        Tổ chức và quản lý tài liệu, hình ảnh, bảng biểu theo cách của bạn với tags và metadata do bạn định nghĩa.
-                    </p>
-                    </div>
-                    <ul className="grid gap-2 py-4">
-                    <motion.li variants={fadeInUp} className="flex items-center">
-                        <CheckIcon className="mr-2 h-5 w-5" />
-                        Quản lý dự án với tài liệu, hình ảnh, và bảng biểu
-                    </motion.li>
-                    <motion.li variants={fadeInUp} className="flex items-center">
-                        <CheckIcon className="mr-2 h-5 w-5" />
-                        Tự động bóc tách tiêu đề và thông tin từ tài liệu
-                    </motion.li>
-                    <motion.li variants={fadeInUp} className="flex items-center">
-                        <CheckIcon className="mr-2 h-5 w-5" />
-                        Thêm ghi chú từ câu trả lời của LLM hoặc ghi chú cá nhân
-                    </motion.li>
-                    </ul>
-                </motion.div>
-                <motion.div variants={scaleIn}>
-                    <Image
-                    src="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-                    width={550}
-                    height={400}
-                    alt="Quản lý tri thức với Viet"
-                    className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full lg:order-last"
-                    />
-                </motion.div>
-                </div>
-            </div>
-            </motion.section>
-       </div>
-        <div className="h-screen w-screen snap-start">
-            <motion.section
-            initial="hidden"
-            viewport={{ margin: '-500px' }}
-            whileInView="visible"
-            variants={staggerChildren}
-            id="llm-interaction"
-            className="h-screen w-screen py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800 flex justify-center items-center snap-start"
-            >
-            <div className="container px-4 md:px-6 flex items-center justify-center">
-                <div className="max-w-6xl grid items-center gap-6 lg:grid-cols-[500px_1fr] lg:gap-12 xl:grid-cols-[550px_1fr]">
-                <motion.div variants={scaleIn}>
-                    <Image
-                    src="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-                    width={550}
-                    height={400}
-                    alt="Tương tác với LLMs trong Viet"
-                    className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full"
-                    />
-                </motion.div>
-                <motion.div variants={fadeInUp} className="flex flex-col justify-center space-y-4">
-                    <div className="space-y-2">
-                    <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Tương tác thông minh với LLMs</h2>
-                    <p className="max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-                        Tạo cuộc trò chuyện với LLMs trong dự án của bạn để hỏi đáp, tóm tắt và trích xuất ý chính từ tài liệu. Chia sẻ kết quả với nhóm của bạn dễ dàng.
-                    </p>
-                    </div>
-                    <ul className="grid gap-2 py-4">
-                    <motion.li variants={fadeInUp} className="flex items-center">
-                        <CheckIcon className="mr-2 h-5 w-5" />
-                        Tạo cuộc trò chuyện nhóm với nhiều người dùng và một LLM
-                    </motion.li>
-                    <motion.li variants={fadeInUp} className="flex items-center">
-                        <CheckIcon className="mr-2 h-5 w-5" />
-                        Tóm tắt, hỏi đáp, trích xuất sơ đồ tư duy, và định nghĩa từ khóa
-                    </motion.li>
-                    </ul>
-                </motion.div>
-                </div>
-            </div>
-            </motion.section>
-        </div>
-        <div className="h-screen w-screen snap-start">
-        <motion.section
-          initial="hidden"
-          viewport={{ margin: '-500px' }}
-          whileInView="visible"
-          variants={staggerChildren}
-          id="search"
-          className="w-full py-12 md:py-24 lg:py-32 flex justify-center items-center snap-start"
+        <Button
+          variant="ghost"
+          size="icon"
+          className="ml-4"
+          onClick={toggleDarkMode}
+          aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
         >
-          <div className="container px-4 md:px-6 flex items-center justify-center">
-            <div className="max-w-6xl grid items-center gap-6 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_550px]">
-              <motion.div variants={fadeInUp} className="flex flex-col justify-center space-y-4">
-                <div className="space-y-2">
-                  <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Tìm kiếm tri thức thông minh</h2>
-                  <p className="max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-                    Tìm kiếm thông tin nhanh chóng và chính xác từ tài liệu, hình ảnh và bảng biểu bằng công nghệ tìm kiếm ngữ nghĩa tiên tiến.
-                  </p>
-                </div>
-                <ul className="grid gap-2 py-4">
-                  <motion.li variants={fadeInUp}  className="flex items-center">
-                    <CheckIcon className="mr-2 h-5 w-5" />
-                    Tìm kiếm theo từ khóa và ngữ nghĩa
-                  </motion.li>
-                  <motion.li variants={fadeInUp} className="flex items-center">
-                    <CheckIcon className="mr-2 h-5 w-5" />
-                    Tìm kiếm theo tags, tiêu đề và nội dung trong từng dự án hoặc toàn bộ tri thức
-                  </motion.li>
-                  <motion.li variants={fadeInUp} className="flex items-center">
-                    <CheckIcon className="mr-2 h-5 w-5" />
-                    Tìm kiếm thông tin trong hình ảnh, bảng biểu và đoạn thông tin
-                  </motion.li>
-                </ul>
-              </motion.div>
-              <motion.div variants={scaleIn}>
-                <Image
-                  src="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-                  width={550}
-                  height={400}
-                  alt="Tìm kiếm tri thức với Viet"
-                  className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full lg:order-last"
-                />
-              </motion.div>
-            </div>
-          </div>
-        </motion.section>
-
-        </div>
-        <div className="h-screen w-screen snap-start">
-        <motion.section
-          initial="hidden"
-          viewport={{ margin: '-500px' }}
-          whileInView="visible"
-          variants={staggerChildren}
-          className="snap-start h-screen w-screen py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800 flex justify-center items-center"
-        >
-          <div className="container px-4 md:px-6 flex items-center justify-center">
-            <motion.div variants={fadeInUp} className="flex flex-col items-center justify-center space-y-4 text-center max-w-6xl">
+          {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+        </Button>
+      </header>
+      <main className="flex-1">
+        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center space-y-4 text-center">
               <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Chia sẻ và hợp tác dễ dàng</h2>
-                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-                  Chia sẻ cuộc trò chuyện, tài liệu, và dự án qua URL để cùng cộng tác với nhóm của bạn.
+                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
+                  Your AI Assistant for Knowledge Management and Research
+                </h1>
+                <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
+                  Organize, analyze, and collaborate on your knowledge with the power of AI.
                 </p>
               </div>
               <div className="w-full max-w-sm space-y-2">
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Button className="w-full" size="lg">
-                    Bắt đầu chia sẻ ngay
-                  </Button>
-                </motion.div>
-              </div>
-            </motion.div>
-          </div>
-        </motion.section>
-
-        </div>
-        <div className="h-screen w-screen snap-start">
-        <motion.section
-          initial="hidden"
-          viewport={{ margin: '-500px' }}
-          whileInView="visible"
-          variants={staggerChildren}
-          className="snap-start h-screen w-screen py-12 md:py-24 lg:py-32 flex justify-center items-center"
-        >
-          <div className="container px-4 md:px-6 flex items-center justify-center">
-            <motion.div variants={fadeInUp} className="flex flex-col items-center justify-center space-y-4 text-center max-w-6xl">
-              <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Khám phá Viet ngay hôm nay</h2>
-                <p className="max-w-[900px] text-gray-500 m-auto md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-                  Đơn giản hóa việc quản lý tri thức và hợp tác hiệu quả hơn với Viet.
-                </p>
-              </div>
-              <div className="w-full max-w-sm space-y-2">
-                <form className="flex space-x-2">
-                  <Input className="max-w-lg flex-1" placeholder="Nhập email của bạn" type="email" />
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Button type="submit">Đăng ký ngay</Button>
-                  </motion.div>
-                </form>
+                  <Button onClick={handleToggleSignIn}>Get Started</Button>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Bằng cách đăng ký, bạn đồng ý với{" "}
-                  <Link className="underline underline-offset-2" href="#">
-                    Điều khoản dịch vụ
-                  </Link>{" "}
-                  và{" "}
-                  <Link className="underline underline-offset-2" href="#">
-                    Chính sách bảo mật
-                  </Link>{" "}
-                  của chúng tôi.
+                  Start your free trial. No credit card required.
                 </p>
               </div>
-            </motion.div>
-          </div>
-        </motion.section>
-
-        </div>
-        <div className="h-screen w-screen snap-start">
-        <motion.section
-          initial="hidden"
-          viewport={{ margin: '-500px' }}
-          whileInView="visible"
-          variants={staggerChildren}
-          className="snap-start h-screen w-screen py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800 flex justify-center items-center"
-        >
-          <div className="container px-4 md:px-6 flex flex-col items-center justify-center">
-            <motion.h2 variants={fadeInUp} className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-8">Người dùng nói gì về Viet?</motion.h2>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl">
-              <motion.div variants={fadeInUp} className="flex flex-col items-center space-y-2 border rounded-lg p-4 bg-white dark:bg-gray-950">
-                <Image
-                  src="/placeholder.svg?height=100&width=100"
-                  width={100}
-                  height={100}
-                  alt="Avatar"
-                  className="rounded-full"
-                />
-                <h3 className="text-lg font-bold">Nguyễn Văn A</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Giám đốc Công ty XYZ</p>
-                <p className="text-sm text-center">"Viet đã giúp chúng tôi tăng hiệu suất làm việc lên 30% trong vòng 3 tháng!"</p>
-              </motion.div>
-              <motion.div variants={fadeInUp} className="flex flex-col items-center space-y-2 border rounded-lg p-4 bg-white dark:bg-gray-950">
-                <Image
-                  src="/placeholder.svg?height=100&width=100"
-                  width={100}
-                  height={100}
-                  alt="Avatar"
-                  className="rounded-full"
-                />
-                <h3 className="text-lg font-bold">Trần Thị B</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Nhà nghiên cứu</p>
-                <p className="text-sm text-center">"Khả năng tìm kiếm và tổng hợp thông tin của Viet thực sự ấn tượng. Nó đã tiết kiệm cho tôi rất nhiều thời gian."</p>
-              </motion.div>
-              <motion.div variants={fadeInUp} className="flex flex-col items-center space-y-2 border rounded-lg p-4 bg-white dark:bg-gray-950">
-                <Image
-                  src="/placeholder.svg?height=100&width=100"
-                  width={100}
-                  height={100}
-                  alt="Avatar"
-                  className="rounded-full"
-                />
-                <h3 className="text-lg font-bold">Lê Văn C</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Sinh viên</p>
-                <p className="text-sm text-center">"Viet giúp tôi quản lý tài liệu học tập hiệu quả và dễ dàng tìm kiếm thông tin khi cần."</p>
-              </motion.div>
             </div>
           </div>
-        </motion.section>
-
-        </div>
+        </section>
+        <section className=" w-full py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800">
+          <div className="container px-4 md:px-6 flex flex-col items-center justify-center">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">Product Showcase</h2>
+            <div className="max-w-7xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <Card className="overflow-hidden">
+                <img src="/placeholder.svg?height=300&width=400" alt="Viet Dashboard" className="w-full h-48 object-cover" />
+                <CardHeader>
+                  <CardTitle>Intuitive Dashboard</CardTitle>
+                  <CardDescription>Manage your projects and knowledge base with ease</CardDescription>
+                </CardHeader>
+              </Card>
+              <Card className="overflow-hidden">
+                <img src="/placeholder.svg?height=300&width=400" alt="AI-Powered Insights" className="w-full h-48 object-cover" />
+                <CardHeader>
+                  <CardTitle>AI-Powered Insights</CardTitle>
+                  <CardDescription>Get intelligent summaries and recommendations</CardDescription>
+                </CardHeader>
+              </Card>
+              <Card className="overflow-hidden">
+                <img src="/placeholder.svg?height=300&width=400" alt="Collaborative Workspace" className="w-full h-48 object-cover" />
+                <CardHeader>
+                  <CardTitle>Collaborative Workspace</CardTitle>
+                  <CardDescription>Work together seamlessly with your team</CardDescription>
+                </CardHeader>
+              </Card>
+            </div>
+          </div>
+        </section>
+        <section id="features" className="w-full py-12 md:py-24 lg:py-32">
+          <div className="container px-4 md:px-6 flex flex-col items-center justify-center" >
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">Key Features</h2>
+            <Tabs aria-label="Options" className="w-full max-w-7xl mx-auto">
+              <Tab key="knowledge" title="Knowledge Management">
+                <Card className=''>
+                    <CardHeader>
+                      <CardTitle>Knowledge Management</CardTitle>
+                      <CardDescription>Organize and structure your information effectively.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <BookOpen className="h-4 w-4" />
+                        <span>Create projects with documents, images, tables, and notes</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <FileText className="h-4 w-4" />
+                        <span>Organize documents with tags and metadata</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Image className="h-4 w-4" />
+                        <span>Extract and organize images and tables</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+              </Tab>
+              <Tab key="llm" title="LLM Interaction">
+                <Card>
+                    <CardHeader>
+                      <CardTitle>LLM Interaction</CardTitle>
+                      <CardDescription>Leverage AI for deeper insights and analysis.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <Brain className="h-4 w-4" />
+                        <span>Conduct project-based conversations with LLMs</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <FileText className="h-4 w-4" />
+                        <span>Generate summaries, mind maps, and comparisons</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Search className="h-4 w-4" />
+                        <span>Get object definitions via search engine and LLM integration</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+              </Tab>
+              <Tab key="search" title="Search">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Advanced Search</CardTitle>
+                      <CardDescription>Find information quickly and efficiently.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <Search className="h-4 w-4" />
+                        <span>Keyword-based and semantic search capabilities</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <BookOpen className="h-4 w-4" />
+                        <span>Search within projects, documents, or entire knowledge base</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Image className="h-4 w-4" />
+                        <span>Locate documents, images, tables, or specific information chunks</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+              </Tab>
+              <Tab key="community" title="Community">
+              <Card>
+                  <CardHeader>
+                    <CardTitle>Community Features</CardTitle>
+                    <CardDescription>Collaborate and share knowledge effortlessly.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <Share2 className="h-4 w-4" />
+                      <span>Share conversations, projects, and documents via URL</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Users className="h-4 w-4" />
+                      <span>Collaborate on projects with team members</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Tab>
+             
+            </Tabs>
+          </div>
+        </section>
+        <section id="community" className="w-full py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800">
+          <div className="container px-4 md:px-6">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">Join Our Community</h2>
+            <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              <Card>
+                <CardHeader>
+                  <Users className="h-8 w-8 mb-2" />
+                  <CardTitle>Collaborative Projects</CardTitle>
+                  <CardDescription>Work together with your team on shared projects.</CardDescription>
+                </CardHeader>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <Share2 className="h-8 w-8 mb-2" />
+                  <CardTitle>Easy Sharing</CardTitle>
+                  <CardDescription>Share your work with others using simple links.</CardDescription>
+                </CardHeader>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <BookOpen className="h-8 w-8 mb-2" />
+                  <CardTitle>Knowledge Exchange</CardTitle>
+                  <CardDescription>Learn from others and contribute your expertise.</CardDescription>
+                </CardHeader>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <Brain className="h-8 w-8 mb-2" />
+                  <CardTitle>AI-Powered Insights</CardTitle>
+                  <CardDescription>Leverage collective intelligence with AI assistance.</CardDescription>
+                </CardHeader>
+              </Card>
+            </div>
+          </div>
+        </section>
+        <section id="pricing" className="w-full py-12 md:py-24 lg:py-32">
+          <div className="container px-4 md:px-6">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">Pricing Plans</h2>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl mx-auto">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Basic</CardTitle>
+                  <CardDescription>For individual researchers</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-4xl font-bold mb-2">$9.99</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">per month</div>
+                  <ul className="space-y-2 mb-4">
+                    <li className="flex items-center">
+                      <svg
+                        className=" w-4 h-4 mr-2 text-green-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                      5 Projects
+                    </li>
+                    <li className="flex items-center">
+                      <svg
+                        className=" w-4 h-4 mr-2 text-green-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                      Unlimited Documents
+                    </li>
+                    <li className="flex items-center">
+                      <svg
+                        className=" w-4 h-4 mr-2 text-green-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                      Basic LLM Features
+                    </li>
+                  </ul>
+                  
+                  <Button className="w-full">Get Started</Button>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Pro</CardTitle>
+                  <CardDescription>For professional researchers</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-4xl font-bold mb-2">$24.99</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">per month</div>
+                  <ul className="space-y-2 mb-4">
+                    <li className="flex items-center">
+                      <svg
+                        className=" w-4 h-4 mr-2 text-green-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                      Unlimited Projects
+                    </li>
+                    <li className="flex items-center">
+                      <svg
+                        className=" w-4 h-4 mr-2 text-green-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                      Advanced LLM Features
+                    </li>
+                    <li className="flex items-center">
+                      <svg
+                        className=" w-4 h-4 mr-2 text-green-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                      Team Collaboration
+                    </li>
+                  </ul>
+                  <Button className="w-full">Get Started</Button>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Enterprise</CardTitle>
+                  <CardDescription>For large organizations</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-4xl font-bold mb-2">Custom</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">Contact us for pricing</div>
+                  <ul className="space-y-2 mb-4">
+                    <li className="flex items-center">
+                      <svg
+                        className=" w-4 h-4 mr-2 text-green-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                      Custom Integration
+                    </li>
+                    <li className="flex items-center">
+                      <svg
+                        className="w-4 h-4 mr-2 text-green-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                      Dedicated Support
+                    </li>
+                    <li className="flex items-center">
+                      <svg
+                        className="w-4 h-4 mr-2 text-green-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                      Advanced Security
+                    </li>
+                  </ul>
+                  <Button className="w-full">Contact Sales</Button>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
       </main>
-      <motion.footer
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t"
-      >
-        <p className="text-xs text-gray-500 dark:text-gray-400">© 2024 Viet AI. All rights reserved.</p>
+      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t border-gray-200 dark:border-gray-700">
+        <p className="text-xs text-gray-500 dark:text-gray-400">© 2024 Viet. All rights reserved.</p>
         <nav className="sm:ml-auto flex gap-4 sm:gap-6">
           <Link className="text-xs hover:underline underline-offset-4" href="#">
-            Điều khoản dịch vụ
+            Terms of Service
           </Link>
           <Link className="text-xs hover:underline underline-offset-4" href="#">
-            Chính sách bảo mật
+            Privacy
           </Link>
         </nav>
-      </motion.footer>
-
+      </footer>
       <SignInForm isOpen={isOpenSignIn} closeForm={handleToggleSignIn}/>
     </div>
   )
 }
-
-

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
+import MarkdownRenderer from './CodeBlock';
 
 
 interface TypingMessageProps {
@@ -27,7 +27,8 @@ const TypingMessage: React.FC<TypingMessageProps> = ({ message }) => {
     }
   }, [message, displayedText]);
 
-  return <ReactMarkdown>{displayedText}</ReactMarkdown>
+  return  <MarkdownRenderer content={displayedText}/>
+
 };
 
 export default TypingMessage;

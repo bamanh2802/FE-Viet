@@ -1,20 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Document, Note } from '@/src/types/types';
+import React, { useState, useEffect } from "react";
+import {
+  ChevronDoubleRightIcon,
+  DocumentTextIcon,
+  ChatBubbleLeftIcon,
+  UserGroupIcon,
+} from "@heroicons/react/24/outline";
+import { useRouter } from "next/router";
+import { Listbox, ListboxItem } from "@nextui-org/react";
+import { Kbd } from "@nextui-org/kbd";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Document, Note, Conversation, Project } from "@/src/types/types";
 
 interface SearchComponentProps {
   documents: Document[];
+  conversations: Conversation[];
+  projects: Project[];
   notes: Note[];
   isOpen: boolean;
   onClose: () => void;
 }
 
-const SearchComponent: React.FC<SearchComponentProps> = ({ onClose, isOpen, documents, notes }) => {
-  const [searchTerm, setSearchTerm] = useState<string>('');
+const SearchComponent: React.FC<SearchComponentProps> = ({
+  onClose,
+  isOpen,
+  documents = [],
+  notes = [],
+  conversations = [],
+  projects = [],
+}) => {
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [filteredDocuments, setFilteredDocuments] = useState<Document[]>([]);
   const [filteredNotes, setFilteredNotes] = useState<Note[]>([]);
+  const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
+  const [filteredConversations, setFilteredConversations] = useState<
+    Conversation[]
+  >([]); // State for filtered conversations
+  const router = useRouter();
 
   useEffect(() => {
     if (searchTerm) {
@@ -22,50 +51,63 @@ const SearchComponent: React.FC<SearchComponentProps> = ({ onClose, isOpen, docu
     } else {
       setFilteredDocuments([]);
       setFilteredNotes([]);
+      setFilteredProjects([]);
+      setFilteredConversations([]); // Reset conversations when search term is empty
     }
   }, [searchTerm]);
 
+  const handleRouterToConversation = (conv: Conversation) => {
+    const url = `/project/${conv.project_id}/workspace/${conv.conversation_id}`;
+
+    window.open(url, "_blank");
+  };
+  const handleRouterToDocument = (document: Document) => {
+    const url = `/project/${document.project_id}/document/${document.document_id}`;
+
+    window.open(url, "_blank");
+  };
+
+  const handleRouterToProject = (project: Project) => {
+    router.push(`/project/${project.project_id}`);
+  };
+
   const handleSearch = () => {
     // Filter documents
-    const docs = documents.filter(doc =>
-      doc.document_name.toLowerCase().includes(searchTerm.toLowerCase())
+    const docs = documents.filter((doc) =>
+      doc.document_name.toLowerCase().includes(searchTerm.toLowerCase()),
     );
+
     setFilteredDocuments(docs);
 
     // Filter notes
-    const nts = notes.filter(note => {
-      const titleMatch = note.title.toLowerCase().includes(searchTerm.toLowerCase());
-      const contentMatch = note.content.toLowerCase().includes(searchTerm.toLowerCase());
+    const nts = notes.filter((note) => {
+      const titleMatch = note.title
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const contentMatch = note.content
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+
       return titleMatch || contentMatch;
     });
+
     setFilteredNotes(nts);
-  };
 
-  // Function to highlight matching text
-  const highlightText = (text: string) => {
-    if (!searchTerm) return text;
-    const regex = new RegExp(`(${searchTerm})`, 'gi'); // case insensitive
-    return text.split(regex).map((part, index) =>
-      part.toLowerCase() === searchTerm.toLowerCase() ? (
-        <span key={index} className="bg-yellow-300">{part}</span>
-      ) : part
+    // Filter projects
+    const prj = projects.filter((project) =>
+      project.name.toLowerCase().includes(searchTerm.toLowerCase()),
     );
-  };
 
-  // Function to get a portion of content with the search term highlighted
-  const getHighlightedContent = (content: string) => {
-    if (!searchTerm) return content;
-    const regex = new RegExp(`(.{0,30}${searchTerm}.?){0,1}`, 'gi'); // Show 30 characters before and after the term
-    const match = content.match(regex);
-    return match ? (
-      <span>
-        {match[0].slice(0, match[0].indexOf(searchTerm))}
-        <span className="bg-yellow-300">{match[0].slice(match[0].indexOf(searchTerm), match[0].indexOf(searchTerm) + searchTerm.length)}</span>
-        {match[0].slice(match[0].indexOf(searchTerm) + searchTerm.length)}
-      </span>
-    ) : (
-      content
+    setFilteredProjects(prj);
+
+    // Filter conversations
+    const convs = conversations.filter((conversation) =>
+      conversation.conversation_name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()),
     );
+
+    setFilteredConversations(convs);
   };
 
   return (
@@ -76,44 +118,123 @@ const SearchComponent: React.FC<SearchComponentProps> = ({ onClose, isOpen, docu
         </DialogHeader>
         <div className="relative">
           <Input
-            type="search"
+            className="w-full  placeholder-gray-400 border-none"
             placeholder="Search in project"
+            type="search"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-gray-800 text-gray-100 placeholder-gray-400 border-none focus:ring-2 focus:ring-blue-500"
           />
-          <kbd className="absolute right-2 top-2 pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-gray-700 px-1.5 font-mono text-[10px] font-medium text-gray-400 opacity-100">
-            <span className="text-xs">ESC</span>
-          </kbd>
+
+          <Kbd
+            className="absolute right-2 top-2 pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border font-mono"
+            keys={["escape"]}
+          >
+            ESC
+          </Kbd>
         </div>
         <ScrollArea className="h-[300px] mt-4">
-          {filteredDocuments.length > 0 || filteredNotes.length > 0 ? (
+          {filteredDocuments.length > 0 ||
+          filteredNotes.length > 0 ||
+          filteredProjects.length > 0 ||
+          filteredConversations.length > 0 ? (
             <div className="space-y-4">
               {/* Document section */}
               {filteredDocuments.length > 0 && (
                 <div>
-                  <h3 className="mb-2 text-sm font-semibold text-gray-400">Documents</h3>
-                  <ul className="space-y-2">
+                  <h3 className="mb-2 text-sm font-semibold text-gray-400">
+                    Documents
+                  </h3>
+                  <Listbox className="space-y-2">
                     {filteredDocuments.map((doc, index) => (
-                      <li key={index} className="p-2 rounded-md hover:bg-gray-800 transition duration-300 ease-in-out">
-                        {highlightText(doc.document_name)}
-                      </li>
+                      <ListboxItem
+                        key={index}
+                        className="group flex items-center justify-between "
+                        endContent={
+                          <ChevronDoubleRightIcon className="h-4 w-4 dark:text-gray-400 text-gray-700 opacity-0 group-hover:opacity-95 transition-all" />
+                        }
+                        onClick={() => handleRouterToDocument(doc)}
+                      >
+                        <span className="flex items-center">
+                          <DocumentTextIcon className="w-4 h-4 mr-2" />
+                          {doc.document_name}
+                        </span>
+                      </ListboxItem>
                     ))}
-                  </ul>
+                  </Listbox>
                 </div>
               )}
               {/* Notes section */}
               {filteredNotes.length > 0 && (
                 <div>
-                  <h3 className="mb-2 text-sm font-semibold text-gray-400">Notes</h3>
-                  <ul className="space-y-2">
+                  <h3 className="mb-2 text-sm font-semibold text-gray-400">
+                    Notes
+                  </h3>
+                  <Listbox className="space-y-2">
                     {filteredNotes.map((note, index) => (
-                      <li key={index} className="p-2 rounded-md hover:bg-gray-800 transition duration-300 ease-in-out">
-                        {highlightText(note.title)}
-                        <div className="mt-1 text-gray-300">{getHighlightedContent(note.content)}</div>
-                      </li>
+                      <ListboxItem
+                        key={index}
+                        className="group flex items-center justify-between"
+                        endContent={
+                          <ChevronDoubleRightIcon className="h-4 w-4 dark:text-gray-400 text-gray-700 opacity-0 group-hover:opacity-95 transition-all" />
+                        }
+                      >
+                        <span className="flex items-center">
+                          <DocumentTextIcon className="w-4 h-4 mr-2" />
+                          {note.title}
+                        </span>
+                      </ListboxItem>
                     ))}
-                  </ul>
+                  </Listbox>
+                </div>
+              )}
+              {/* Projects section */}
+              {filteredProjects.length > 0 && (
+                <div>
+                  <h3 className="mb-2 text-sm font-semibold text-gray-400">
+                    Projects
+                  </h3>
+                  <Listbox className="space-y-2">
+                    {filteredProjects.map((project, index) => (
+                      <ListboxItem
+                        key={index}
+                        className="group flex items-center justify-between"
+                        endContent={
+                          <ChevronDoubleRightIcon className="h-4 w-4 dark:text-gray-400 text-gray-700 opacity-0 group-hover:opacity-95 transition-all" />
+                        }
+                        onClick={() => handleRouterToProject(project)}
+                      >
+                        <span className="flex items-center">
+                          <UserGroupIcon className="w-4 h-4 mr-2" />
+                          {project.name}
+                        </span>
+                      </ListboxItem>
+                    ))}
+                  </Listbox>
+                </div>
+              )}
+              {/* Conversations section */}
+              {filteredConversations.length > 0 && (
+                <div>
+                  <h3 className="mb-2 text-sm font-semibold text-gray-400">
+                    Conversations
+                  </h3>
+                  <Listbox className="space-y-2">
+                    {filteredConversations.map((conversation, index) => (
+                      <ListboxItem
+                        key={index}
+                        className="group flex items-center justify-between"
+                        endContent={
+                          <ChevronDoubleRightIcon className="h-4 w-4 dark:text-gray-400 text-gray-700 opacity-0 group-hover:opacity-95 transition-all" />
+                        }
+                        onClick={() => handleRouterToConversation(conversation)}
+                      >
+                        <span className="flex items-center">
+                          <ChatBubbleLeftIcon className="w-4 h-4 mr-2" />
+                          {conversation.conversation_name}
+                        </span>
+                      </ListboxItem>
+                    ))}
+                  </Listbox>
                 </div>
               )}
             </div>
@@ -124,6 +245,6 @@ const SearchComponent: React.FC<SearchComponentProps> = ({ onClose, isOpen, docu
       </DialogContent>
     </Dialog>
   );
-}
+};
 
 export default SearchComponent;

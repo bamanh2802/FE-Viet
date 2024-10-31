@@ -1,64 +1,75 @@
-import { FC } from 'react';
-import { useRouter } from 'next/router';
+import { FC } from "react";
+import { useRouter } from "next/router";
 import React from "react";
-import {Navbar, 
+import {
+  Navbar,
   NavbarBrand,
-   NavbarContent, 
-   NavbarItem, 
-   Link, 
-   DropdownItem, 
-   DropdownTrigger, 
-   Dropdown, 
-   DropdownMenu, 
-   Avatar,
-   Button,
-   Breadcrumbs, 
-   BreadcrumbItem
-  } from "@nextui-org/react";
-  import { PlusIcon, UsersIcon } from "lucide-react";
-  import { HomeIcon } from '@heroicons/react/24/outline';
-import '../project/config.css'
-import { useSelector, useDispatch } from "react-redux";
-import UserDropdown from '../global/UserDropdown';
-import { Note } from '@/src/types/types';
+  NavbarContent,
+  NavbarItem,
+  Breadcrumbs,
+  BreadcrumbItem,
+} from "@nextui-org/react";
+import { UsersIcon } from "lucide-react";
+import { HomeIcon } from "@heroicons/react/24/outline";
+import { useSelector } from "react-redux";
 
+import { Note } from "@/src/types/types";
+
+import UserDropdown from "../global/UserDropdown";
+import { Button } from "../ui/button";
+
+import { RootState } from "@/src/store/store";
 
 interface NavbarProjectProps {
+  ignoreNote: () => void;
   onOpenDialog: () => void;
   onOpenShare: () => void;
-  setSelectedNote: (note: string) => void
-  note: Note
+  setSelectedNote: (note: string) => void;
+  note: Note;
 }
-const NavbarProject: FC<NavbarProjectProps> = ({ setSelectedNote, onOpenDialog, onOpenShare, note }) => {
+const NavbarProject: FC<NavbarProjectProps> = ({
+  ignoreNote,
+  setSelectedNote,
+  onOpenDialog,
+  onOpenShare,
+  note,
+}) => {
   const router = useRouter();
   const projects = useSelector((state: RootState) => state.projects.projects);
   const { project_id } = router.query;
-  
+
+  const handleBackHome = () => {
+    router.push("/home");
+  };
   const getProjectNameById = (projectId: string | null) => {
-    const project = projects.find(proj => proj.project_id === projectId);
+    const project = projects?.find((proj) => proj.project_id === projectId);
 
     return project ? project.name : "Loading...";
   };
-  
+
   const handleBackProject = () => {
-    setSelectedNote('')
-  }
-  
-  
+    setSelectedNote("");
+    ignoreNote();
+  };
+
   return (
-    <Navbar className="bg-zinc-200 dark:bg-zinc-800 navbar-custom h-14 max-w-none w-full">
+    <Navbar
+      className={`${note ? "dark:bg-[#1f1f1f] bg-[#ffffff]" : "dark:bg-zinc-800 bg-zinc-100"}   navbar-custom h-14 max-w-none w-full`}
+    >
       <NavbarBrand>
         <Breadcrumbs>
-        <BreadcrumbItem><HomeIcon className='w-4 h-4'/></BreadcrumbItem>
-        <BreadcrumbItem onClick={handleBackProject}>{getProjectNameById(project_id)}</BreadcrumbItem>
-        {note && (<BreadcrumbItem >{note.title}</BreadcrumbItem>)}
-      </Breadcrumbs>
+          <BreadcrumbItem onPress={handleBackHome}>
+            <HomeIcon className="w-4 h-4" />
+          </BreadcrumbItem>
+          <BreadcrumbItem onPress={handleBackProject}>
+            {getProjectNameById(project_id as string)}
+          </BreadcrumbItem>
+          {note && <BreadcrumbItem>{note.title}</BreadcrumbItem>}
+        </Breadcrumbs>
       </NavbarBrand>
 
-
-
-      <NavbarContent as="div" justify="end" className="max-w-none">
-      <NavbarItem>
+      <NavbarContent as="div" className="max-w-none" justify="end">
+        <NavbarItem>
           {/* <Button
            size="sm"
           onClick={onOpenDialog}
@@ -68,17 +79,19 @@ const NavbarProject: FC<NavbarProjectProps> = ({ setSelectedNote, onOpenDialog, 
         </NavbarItem>
         <NavbarItem>
           <Button
-           size="sm"
-          onClick={onOpenShare}
-          color="primary" variant="bordered" startContent={<UsersIcon className="w-5 h-5"/>}>
+            className="flex dark:bg-zinc-900"
+            size="sm"
+            variant="outline"
+            onClick={onOpenShare}
+          >
+            <UsersIcon className="w-4 h-4 mr-3 " />
             Share
-          </Button>  
+          </Button>
         </NavbarItem>
-       <UserDropdown />
+        <UserDropdown />
       </NavbarContent>
     </Navbar>
   );
-}
+};
 
-export default NavbarProject
-
+export default NavbarProject;
