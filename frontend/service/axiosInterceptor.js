@@ -34,7 +34,7 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config;
 
     // Nếu token hết hạn (mã 401)
-    if (error.response?.status === 421 && !originalRequest._retry) {
+    if (error.response?.status === 410 && !originalRequest._retry) {
       if (isRefreshing) {
         // Nếu đang refresh, hãy chờ cho đến khi có token mới
         return new Promise((resolve, reject) => {
@@ -56,7 +56,7 @@ axiosInstance.interceptors.response.use(
       try {
         const { data } = await refreshToken(); // Hàm làm mới token
 
-        localStorage.setItem("access_token", data.access_token); // Cập nhật token mới
+        localStorage.setItem("access_token", data.access_token); 
         console.log(data);
 
         // Xử lý các yêu cầu đã xếp hàng

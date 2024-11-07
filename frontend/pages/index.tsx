@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {Tabs, Tab} from "@nextui-org/react";
+import { AlertCircle, Search, Settings, Sparkles } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { BookOpen, Brain, FileText, Image, Search, Share2, Users, Moon, Sun } from 'lucide-react'
+import { BookOpen, Brain, FileText, Image, Share2, Users, Moon, Sun } from 'lucide-react'
 import Link from 'next/link'
 import SignInForm from '@/components/global/SignInForm';
 
@@ -27,7 +28,7 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+    <div className="flex flex-col min-h-screen bg-white dark:bg-zinc-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
       <header className="px-4 lg:px-6 h-14 flex items-center border-b border-gray-200 dark:border-gray-700">
         <Link className="flex items-center justify-center" href="#">
           <Brain className="h-6 w-6" />
@@ -55,7 +56,7 @@ export default function LandingPage() {
         </Button>
       </header>
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
+        <section className="w-full flex justify-center py-12 md:py-24 lg:py-32 xl:py-48">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center space-y-4 text-center">
               <div className="space-y-2">
@@ -75,7 +76,7 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        <section className=" w-full py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800">
+        <section className="flex justify-center w-full py-12 md:py-24 lg:py-32 bg-zinc-100 dark:bg-zinc-800">
           <div className="container px-4 md:px-6 flex flex-col items-center justify-center">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">Product Showcase</h2>
             <div className="max-w-7xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -103,99 +104,50 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        <section id="features" className="w-full py-12 md:py-24 lg:py-32">
-          <div className="container px-4 md:px-6 flex flex-col items-center justify-center" >
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">Key Features</h2>
-            <Tabs aria-label="Options" className="w-full max-w-7xl mx-auto">
-              <Tab key="knowledge" title="Knowledge Management">
-                <Card className=''>
-                    <CardHeader>
-                      <CardTitle>Knowledge Management</CardTitle>
-                      <CardDescription>Organize and structure your information effectively.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <BookOpen className="h-4 w-4" />
-                        <span>Create projects with documents, images, tables, and notes</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <FileText className="h-4 w-4" />
-                        <span>Organize documents with tags and metadata</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Image className="h-4 w-4" />
-                        <span>Extract and organize images and tables</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-              </Tab>
-              <Tab key="llm" title="LLM Interaction">
-                <Card>
-                    <CardHeader>
-                      <CardTitle>LLM Interaction</CardTitle>
-                      <CardDescription>Leverage AI for deeper insights and analysis.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <Brain className="h-4 w-4" />
-                        <span>Conduct project-based conversations with LLMs</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <FileText className="h-4 w-4" />
-                        <span>Generate summaries, mind maps, and comparisons</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Search className="h-4 w-4" />
-                        <span>Get object definitions via search engine and LLM integration</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-              </Tab>
-              <Tab key="search" title="Search">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Advanced Search</CardTitle>
-                      <CardDescription>Find information quickly and efficiently.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <Search className="h-4 w-4" />
-                        <span>Keyword-based and semantic search capabilities</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <BookOpen className="h-4 w-4" />
-                        <span>Search within projects, documents, or entire knowledge base</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Image className="h-4 w-4" />
-                        <span>Locate documents, images, tables, or specific information chunks</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-              </Tab>
-              <Tab key="community" title="Community">
-              <Card>
-                  <CardHeader>
-                    <CardTitle>Community Features</CardTitle>
-                    <CardDescription>Collaborate and share knowledge effortlessly.</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <Share2 className="h-4 w-4" />
-                      <span>Share conversations, projects, and documents via URL</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Users className="h-4 w-4" />
-                      <span>Collaborate on projects with team members</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Tab>
-             
-            </Tabs>
+        <section id="features" className="flex justify-center w-full py-12 md:py-24 lg:py-32">
+          <div>
+          <div className="space-y-4">
+            <h1 className="text-5xl font-bold">Get a brain boost.</h1>
+            <p className="text-xl text-muted-foreground">
+              Built right into your workspace, Notion AI is ready to brainstorm, summarize, help you write, and find what you're looking for.
+            </p>
+            <Button className="text-primary-foreground bg-blue-600 hover:bg-blue-700">
+              Try Viet →
+            </Button>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 mt-14">
+            <div className="space-y-2">
+              <div className="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
+                <AlertCircle className="w-6 h-6 text-yellow-600" />
+              </div>
+              <h3 className="font-semibold">Knowledge Management</h3>
+              <p className="text-sm text-muted-foreground">
+              Create projects with documents, images, tables, and notes.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+                <Settings className="w-6 h-6 text-purple-600" />
+              </div>
+              <h3 className="font-semibold">LLM Interaction</h3>
+              <p className="text-sm text-muted-foreground">
+              Generate summaries, mind maps, and comparisons.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                <Sparkles className="w-6 h-6 text-blue-600" />
+              </div>
+              <h3 className="font-semibold">Advanced Search</h3>
+              <p className="text-sm text-muted-foreground">
+              Search within projects, documents, or entire knowledge base.
+              </p>
+            </div>
+          </div>
           </div>
         </section>
-        <section id="community" className="w-full py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800">
+        <section id="community" className="flex justify-center w-full py-12 md:py-24 lg:py-32 bg-zinc-100 dark:bg-zinc-800">
           <div className="container px-4 md:px-6">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">Join Our Community</h2>
             <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -230,7 +182,7 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        <section id="pricing" className="w-full py-12 md:py-24 lg:py-32">
+        <section id="pricing" className="flex justify-center w-full py-12 md:py-24 lg:py-32">
           <div className="container px-4 md:px-6">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">Pricing Plans</h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl mx-auto">

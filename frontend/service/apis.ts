@@ -19,6 +19,7 @@ export async function SignIn(username: string, password: string) {
         "Content-Type": "application/x-www-form-urlencoded",
         accept: "application/json",
       },
+      // withCredentials: true
     },
   );
 
@@ -110,18 +111,6 @@ export async function createProject(name: string) {
       },
     },
   );
-
-  return response;
-}
-
-export async function getProjectById(projectId: string) {
-  const accessToken = localStorage.getItem("access_token");
-  const response = await axios.post(`${API_URL}/api/projects/${projectId}`, {
-    headers: {
-      accept: "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
 
   return response;
 }

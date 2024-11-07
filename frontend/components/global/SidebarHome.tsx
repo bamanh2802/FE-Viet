@@ -57,9 +57,22 @@ const SidebarHome: React.FC<SidebarHomeProps> = ({
     setIsOpenConversations(!isOpenConversations);
   };
 
-  useEffect(() => {
-    console.log(documents);
-  }, [documents]);
+  const recentDocuments = [...(documents ?? [])]
+  .sort(
+    (a, b) =>
+      new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+  )
+  .slice(0, 6);
+
+
+
+  // Lấy 4 conversation gần nhất
+  const recentConversations = [...(conversations ?? [])]
+    .sort(
+      (a, b) =>
+        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+    )
+    .slice(0, 6);
 
   return (
     <div className="overflow-auto w-56 min-w-56 p-4 h-screen dark:bg-zinc-900 bg-zinc-50">
@@ -164,7 +177,7 @@ const SidebarHome: React.FC<SidebarHomeProps> = ({
               </div>
             ) : (
               <>
-                {documents.map((doc: Document, index: number) => (
+                {recentDocuments.map((doc: Document, index: number) => (
                   <button
                     key={index}
                     className="w-full group transition-all cursor-pointer px-2 p-1 rounded-lg flex items-center justify-between text-sm space-x-1 dark:text-gray-400 text-gray-700 dark:hover:bg-zinc-800 hover:bg-zinc-200 "
@@ -215,7 +228,7 @@ const SidebarHome: React.FC<SidebarHomeProps> = ({
               </div>
             ) : (
               <>
-                {conversations.map((conv: Conversation, index: number) => (
+                {recentConversations.map((conv: Conversation, index: number) => (
                   <button
                     key={index}
                     className="w-full group transition-all cursor-pointer px-2 p-1 rounded-lg flex items-center justify-between text-sm space-x-1 dark:text-gray-400 text-gray-700 dark:hover:bg-zinc-800 hover:bg-zinc-200 "

@@ -39,15 +39,19 @@ const SignInForm: React.FC<SignInFormProps> = ({ isOpen, closeForm }) => {
     try {
       const data = await SignIn(userNameSignIn, passwordSignIn);
 
-      localStorage.setItem("access_token", data.data.access_token);
-      localStorage.setItem("refresh_token", data.data.refresh_token);
-      console.log(data);
-      setIsLoadingSignIn(false);
-      router.push("/home");
+      if(data !== undefined) {
+        localStorage.setItem("access_token", data?.data.access_token);
+        localStorage.setItem("refresh_token", data?.data.refresh_token);
+        console.log(data);
+        setIsLoadingSignIn(false);
+        router.push("/home");
+      }
     } catch (e: any) {
       setIsLoadingSignIn(false);
       console.log(e);
-      setErrorSignIn(e.response.data.msg);
+      if(e.response !== undefined) {
+        setErrorSignIn(e.response.data?.msg);
+      }
     }
   };
 

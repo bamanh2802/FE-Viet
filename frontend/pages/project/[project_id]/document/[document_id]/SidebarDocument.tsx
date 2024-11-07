@@ -219,7 +219,6 @@ const SidebarDocument: React.FC<SidebarDocumentProps> = ({
   return (
     <div className="w-64 h-screen dark:bg-zinc-900 bg-zinc-50 p-4 relative">
       <div className="text-left">
-        <h1 className="text-sm font-semibold">Document:</h1>
         <p className="text-lg font-bold">{documentName}</p>
       </div>
 
@@ -231,7 +230,7 @@ const SidebarDocument: React.FC<SidebarDocumentProps> = ({
         />
       </div>
 
-      <div className="mt-6">
+      {/* <div className="mt-6">
         <h2 className="text-sm font-semibold text-gray-500">Analysis</h2>
         <Listbox aria-label="SidebarDocument" className="mt-2 space-y-2">
           <ListboxItem
@@ -253,7 +252,7 @@ const SidebarDocument: React.FC<SidebarDocumentProps> = ({
             Translate
           </ListboxItem>
         </Listbox>
-      </div>
+      </div> */}
 
       <h2 className="text-sm font-semibold text-gray-500">Conversations</h2>
 

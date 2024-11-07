@@ -15,6 +15,9 @@ import { Document } from "@/src/types/types";
 import React, { useState, useEffect, FC } from "react";
 
 import { createNewConversation } from "@/service/projectApi";
+import { getAllConversationByUser } from "@/service/apis";
+import { setConversations } from "@/src/store/conversationSlice";
+import { useDispatch } from "react-redux";
 
 import { useRouter } from "next/router";
 
@@ -40,6 +43,7 @@ const NewWorkspace: FC<NewWorkspaceProps> = ({
   const [conversationName, setConversationName] = useState<string>("");
   const [isDisable, setIsDisable] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const dispatch = useDispatch()
 
   const handleSelectionChange = (keys: Selection) => {
     setSelectedKeys(keys as Set<string>);
@@ -61,6 +65,15 @@ const NewWorkspace: FC<NewWorkspaceProps> = ({
       setIsLoading(false);
     }
     onClose();
+  };
+
+  const handleGetConversations = async () => {
+    try {
+      const data = await getAllConversationByUser();
+      dispatch(setConversations(data.data))
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const handleRouterWorkspace = (conversationId: string) => {

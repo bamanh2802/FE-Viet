@@ -144,9 +144,12 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
                   <h3 className="mb-2 text-sm font-semibold text-gray-400">
                     Documents
                   </h3>
-                  <Listbox className="space-y-2">
+                  <Listbox
+                  aria-label="Actions"
+                  className="space-y-2">
                     {filteredDocuments.map((doc, index) => (
                       <ListboxItem
+                      textValue="items"
                         key={index}
                         className="group flex items-center justify-between "
                         endContent={
@@ -169,9 +172,13 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
                   <h3 className="mb-2 text-sm font-semibold text-gray-400">
                     Notes
                   </h3>
-                  <Listbox className="space-y-2">
+                  <Listbox
+                  aria-label="Actions"
+                  className="space-y-2">
                     {filteredNotes.map((note, index) => (
                       <ListboxItem
+                      textValue="items"
+
                         key={index}
                         className="group flex items-center justify-between"
                         endContent={
@@ -193,9 +200,13 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
                   <h3 className="mb-2 text-sm font-semibold text-gray-400">
                     Projects
                   </h3>
-                  <Listbox className="space-y-2">
+                  <Listbox
+                  aria-label="Actions"
+                  className="space-y-2">
                     {filteredProjects.map((project, index) => (
                       <ListboxItem
+                      textValue="items"
+
                         key={index}
                         className="group flex items-center justify-between"
                         endContent={
@@ -218,9 +229,13 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
                   <h3 className="mb-2 text-sm font-semibold text-gray-400">
                     Conversations
                   </h3>
-                  <Listbox className="space-y-2">
+                  <Listbox
+                  aria-label="Actions"
+                  className="space-y-2">
                     {filteredConversations.map((conversation, index) => (
                       <ListboxItem
+                      textValue="items"
+
                         key={index}
                         className="group flex items-center justify-between"
                         endContent={

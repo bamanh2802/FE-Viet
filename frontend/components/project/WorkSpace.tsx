@@ -226,7 +226,7 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({
                         imageSrc = "/img/word.png";
                       } else if (doc.type === "pptx") {
                         imageSrc = "/img/pptx.png";
-                      } else if (doc.type === "link") {
+                      } else if (doc.type === "url") {
                         imageSrc = "/img/website.png";
                       }
 
@@ -252,10 +252,6 @@ const WorkSpace: React.FC<WorkSpaceProps> = ({
                                 <h4 className="text-md">{doc.document_name}</h4>
                               </div>
                               <div className="flex justify-center">
-                                <Avatar
-                                  className="w-4 h-4 text-tiny"
-                                  src="https://i.pravatar.cc/150?u=a042581f4e29026024d"
-                                />
                                 <p className="text-xs opacity-80 pl-2 text-center">
                                   {convertDate(doc.created_at)}
                                 </p>

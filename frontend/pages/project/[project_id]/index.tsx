@@ -27,7 +27,7 @@ const Project: FC = () => {
   const [isOpenShare, setIsOpenShare] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true); // State cho loading
   const router = useRouter();
-  const { project_id } = router.query;
+  const { project_id, noteIdParam } = router.query;
   const [isOpenSearch, setIsOpenSearch] = useState<boolean>(false);
 
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -49,9 +49,18 @@ const Project: FC = () => {
     setIsOpenNewDocument(true);
   };
 
+
+  useEffect(() => {
+    console.log(noteIdParam)
+    if(noteIdParam !== undefined && noteIdParam !== selectedNote) {
+      setSelectedNote(noteIdParam as string)
+      handleGetNoteById(noteIdParam as string)
+    }
+  }, [noteIdParam])
   const handleSetSelectedNote = (noteId: string) => {
     setSelectedNote(noteId);
     console.log(noteId);
+    router.push(`/project/${project_id}?noteIdParam=${noteId}`, undefined, { shallow: true });
     if (noteId !== "") {
       handleGetNoteById(noteId);
     }
@@ -71,7 +80,6 @@ const Project: FC = () => {
   const handleEditNote = async (noteId: string, content: string) => {
     try {
       const data = await editNote(noteId, content);
-
       console.log(data);
     } catch (e) {
       console.log(e);
@@ -79,6 +87,7 @@ const Project: FC = () => {
   };
 
   const handleGetNoteById = async (noteId: string) => {
+    console.log(noteId)
     try {
       const data = await getNoteById(noteId);
 

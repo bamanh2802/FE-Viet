@@ -12,7 +12,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { ListboxWrapper } from "@/components/ListboxWrapper";
-import { getDocumentById, getDocumentInProject } from "@/service/projectApi";
+import { getDocumentById, getDocumentInProject, getProjectById } from "@/service/projectApi";
 import { getConversationByDocument } from "@/service/documentApi";
 import { getAllProjects } from "@/service/apis";
 import { Document, Project, Conversation } from "@/src/types/types";
@@ -41,6 +41,7 @@ const DocumentPage: React.FC = () => {
   const [projectName, setProjectName] = useState<string>("Loading...");
   const [documentName, setDocumentName] = useState<string>("Loading...");
   const [isLoadingCreate, setIsLoadingCreate] = useState<boolean>(false);
+  const [projectInfo, setProjectInfo] = useState<Project>()
   const [contextMenu, setContextMenu] = useState<{
     visible: boolean;
     x: number;
@@ -116,26 +117,6 @@ const DocumentPage: React.FC = () => {
       console.log(e);
     }
   };
-  const handleGetProjects = async () => {
-    try {
-      const data = await getAllProjects();
-
-      setProjects(data.data);
-      setProjectName(getProjectNameById(project_id ?? "", data.data));
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  useEffect(() => {
-    handleGetProjects();
-  }, [project_id]);
-
-  const getProjectNameById = (projectId: string, projects: Project[]) => {
-    const project = projects.find((proj) => proj.project_id === projectId);
-
-    return project ? project.name : "Loading...";
-  };
 
   const getDocumentNameById = (documentId: string, documents: Document[]) => {
     const document = documents.find((doc) => doc.document_id === documentId);
@@ -150,6 +131,15 @@ const DocumentPage: React.FC = () => {
 
         console.log(data);
       }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const handleGetProjectById = async () => {
+    try {
+      const data = await getProjectById(project_id as string);
+
+      setProjectInfo(data.data);
     } catch (e) {
       console.log(e);
     }
@@ -173,6 +163,7 @@ const DocumentPage: React.FC = () => {
       handleGetDocument();
       handleGetAllDocument();
       handleGetConversations();
+      handleGetProjectById()
     }
   }, [project_id, document_id]);
 
@@ -185,17 +176,6 @@ const DocumentPage: React.FC = () => {
     setSelectedConversation(conv.conversation_id);
   };
 
-  const handleContextMenu = (event: React.MouseEvent, tabId: string) => {
-    event.preventDefault();
-    const containerRect = containerRef.current?.getBoundingClientRect();
-
-    if (containerRect) {
-      const x = event.clientX - containerRect.left;
-      const y = event.clientY - containerRect.top;
-
-      setContextMenu({ visible: true, x, y, tabId });
-    }
-  };
 
   return (
     <ResizablePanelGroup className="w-screen h-screen" direction="horizontal">
@@ -212,7 +192,7 @@ const DocumentPage: React.FC = () => {
         <div className="flex flex-col w-full">
           <NavbarDocument
             documentName={documentName}
-            projectName={projectName}
+            projectName={projectInfo?.name as string}
           />
           <div
             className="flex"

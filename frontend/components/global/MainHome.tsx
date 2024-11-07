@@ -96,15 +96,17 @@ const HomeMain: React.FC<HomeMainProps> = ({
   });
 
   const skeletonCards = [1, 2, 3, 4];
-  const recentDocuments = (documents ?? [])
-    .sort(
-      (a, b) =>
-        new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
-    )
-    .slice(0, 4);
+  const recentDocuments = [...(documents ?? [])]
+  .sort(
+    (a, b) =>
+      new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+  )
+  .slice(0, 4);
+
+
 
   // Lấy 4 conversation gần nhất
-  const recentConversations = (conversations ?? [])
+  const recentConversations = [...(conversations ?? [])]
     .sort(
       (a, b) =>
         new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
@@ -462,7 +464,7 @@ const HomeMain: React.FC<HomeMainProps> = ({
                             imageSrc = "/img/word.png";
                           } else if (doc.type === "pptx") {
                             imageSrc = "/img/pptx.png";
-                          } else if (doc.type === "link") {
+                          } else if (doc.type === "url") {
                             imageSrc = "/img/website.png";
                           }
 
@@ -493,10 +495,6 @@ const HomeMain: React.FC<HomeMainProps> = ({
                                   </h4>
                                 </div>
                                 <div className="flex justify-center">
-                                  <Avatar
-                                    className="w-4 h-4 text-tiny"
-                                    src="https://i.pravatar.cc/150?u=a042581f4e29026024d"
-                                  />
                                   <p className="text-xs opacity-80 pl-2 text-center">
                                     {formatTimeAgo(doc.created_at)}
                                   </p>

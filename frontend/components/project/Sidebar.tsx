@@ -201,8 +201,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   useEffect(() => {
-    if(projects !== undefined) {
-      if (projects?.length === 0) {
+    if(project_id !== undefined) {
+      if (projects === undefined) {
         handleGetProjects();
       }
       setSelectedProjectId(project_id as string);
@@ -624,7 +624,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     <div
                       key={index}
                       className={`relative ml-2 group flex justify-between items-center space-x-2 text-xs cursor-pointer p-2 rounded-lg 
-                      ${isSelected ? "bg-blue-200 dark:bg-blue-600" : "dark:text-gray-400 text-gray-700"} 
+                      ${isSelected ? "bg-zinc-200 dark:bg-zinc-500" : "dark:text-gray-400 text-gray-700"} 
                       dark:hover:bg-zinc-800 hover:bg-zinc-200`}
                       onClick={() => setSelectedNote(note.note_id)}
                       onContextMenu={(e) =>

@@ -26,7 +26,7 @@ const NavbarDocument: React.FC<NavbarDocumentProps> = ({
       className="bg-zinc-50 dark:bg-zinc-800 navbar-custom h-12"
       style={{ width: "calc(100%)" }}
     >
-      <NavbarBrand>
+      <NavbarBrand className="basis-full">
         <Breadcrumbs>
           <BreadcrumbItem>
             <HomeIcon className="w-4 h-4" />

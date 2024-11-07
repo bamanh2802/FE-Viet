@@ -12,6 +12,8 @@ import {
   getAllConversationByUser,
 } from "@/service/apis";
 import { setProjects } from "@/src/store/projectsSlice";
+import { setDocuments } from "@/src/store/documentSlice";
+import { setConversations } from "@/src/store/conversationSlice";
 import { Project, Document, Conversation } from "@/src/types/types";
 import SearchComponent from "@/components/project/SearchComponent";
 
@@ -20,8 +22,8 @@ const Home = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user);
   const projects = useSelector((state: RootState) => state.projects.projects);
-  const [documents, setDocuments] = useState<Document[]>();
-  const [conversations, setConversations] = useState<Conversation[]>();
+  const documents = useSelector((state: RootState) => state.documents.documents)
+  const conversations = useSelector((state: RootState) => state.conversations.conversations)
   const [isOpenSearch, setIsOpenSearch] = useState<boolean>(false);
 
   const handleToogleSearch = () => setIsOpenSearch(!isOpenSearch);
@@ -36,8 +38,7 @@ const Home = () => {
   const handleGetDocuments = async () => {
     try {
       const data = await getAllDocumentByUser();
-
-      setDocuments(data.data);
+      dispatch(setDocuments(data.data))
     } catch (e) {
       console.log(e);
     }
@@ -46,8 +47,7 @@ const Home = () => {
   const handleGetConversations = async () => {
     try {
       const data = await getAllConversationByUser();
-
-      setConversations(data.data);
+      dispatch(setConversations(data.data))
     } catch (e) {
       console.log(e);
     }

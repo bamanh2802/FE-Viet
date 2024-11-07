@@ -1,8 +1,6 @@
 import type { BlockNoteEditor, PartialBlock } from "@blocknote/core";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BlockNoteView, useCreateBlockNote } from "@blocknote/react";
-import * as Y from "yjs";
-import { WebrtcProvider } from "y-webrtc"; // Sử dụng WebRTC để đồng bộ hóa
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/react/style.css";
 
@@ -10,7 +8,7 @@ interface EditorProps {
   onChange: (content: any) => void;
   initialContent?: string;
   editable?: boolean;
-  docId: string; 
+  docId?: string; 
 }
 
 const Editor: React.FC<EditorProps> = ({
@@ -40,38 +38,11 @@ const Editor: React.FC<EditorProps> = ({
     };
   }, []);
 
-  // Sử dụng useMemo để khởi tạo Y.Doc và WebrtcProvider chỉ một lần
-  const { ydoc, provider } = useMemo(() => {
-    const ydoc = new Y.Doc();
-    const provider = new WebrtcProvider(`blocknote-${docId}`, ydoc);
-
-    return { ydoc, provider };
-  }, [docId]); // Chỉ khởi tạo lại khi docId thay đổi
-
   const editor: BlockNoteEditor | null = useCreateBlockNote({
     initialContent: initialContent
       ? (JSON.parse(initialContent) as PartialBlock[])
       : undefined,
-    collaboration: {
-      // The Yjs Provider responsible for transporting updates:
-      provider,
-      // Where to store BlockNote data in the Y.Doc:
-      fragment: ydoc.getXmlFragment("document-store"),
-      // Information (name and color) for this user:
-      user: {
-        name: "My Username",
-        color: "#ff0000",
-      },
-    },
   });
-
-  // Cleanup Yjs khi component unmount
-  useEffect(() => {
-    return () => {
-      provider.disconnect();
-      ydoc.destroy();
-    };
-  }, [provider, ydoc]);
 
   // Kiểm tra nếu editor chưa khởi tạo
   if (!editor) {
@@ -82,7 +53,7 @@ const Editor: React.FC<EditorProps> = ({
     <BlockNoteView
       editable={editable}
       editor={editor}
-      theme={isDarkmode === "true" ? "dark" : "light"} // Sử dụng giá trị isDarkmode
+      theme={isDarkmode === "true" ? "dark" : "light"}
       onChange={() => {
         onChange(editor);
       }}

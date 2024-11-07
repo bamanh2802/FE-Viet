@@ -38,6 +38,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   );
 
   useEffect(() => {
+    console.log(note, selectedNote)
     if (note) {
       setTitle(note.title);
       setEditorContent(note.content);
