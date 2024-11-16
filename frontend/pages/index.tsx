@@ -149,7 +149,7 @@ const toggleDarkMode = () => {
         </section> */}
         <section id="features" className=" bg-zinc-100 dark:bg-zinc-800 flex justify-center w-full py-12 md:py-24 lg:py-32">
           <div className='mx-5'>
-          <div className="space-y-4">
+          <div className="space-y-4 flex justify-center items-center flex-col">
             <h1 className="text-5xl font-bold">Get a brain boost.</h1>
             <p className="text-xl text-muted-foreground">
               Built right into your workspace, Viet is ready to brainstorm, summarize, help you write, and find what you&apos;re looking for.
@@ -161,7 +161,7 @@ const toggleDarkMode = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-6 mt-14">
-            <div className="space-y-2">
+            <div className="space-y-2 flex justify-center items-center flex-col">
               <div className="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center">
                 <AlertCircle className="w-6 h-6 text-yellow-600" />
               </div>
@@ -170,7 +170,7 @@ const toggleDarkMode = () => {
               Create projects with documents, images, tables, and notes.
               </p>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 flex justify-center items-center flex-col">
               <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
                 <Settings className="w-6 h-6 text-purple-600" />
               </div>
@@ -179,7 +179,7 @@ const toggleDarkMode = () => {
               Generate summaries, mind maps, and comparisons.
               </p>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 flex justify-center items-center flex-col">
               <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
                 <Sparkles className="w-6 h-6 text-blue-600" />
               </div>
