@@ -42,7 +42,6 @@ const SignInForm: React.FC<SignInFormProps> = ({ isOpen, closeForm }) => {
       if(data !== undefined) {
         localStorage.setItem("access_token", data?.data.access_token);
         localStorage.setItem("refresh_token", data?.data.refresh_token);
-        console.log(data);
         setIsLoadingSignIn(false);
         router.push("/home");
       }
@@ -164,32 +163,32 @@ const SignInForm: React.FC<SignInFormProps> = ({ isOpen, closeForm }) => {
 
   return (
     <div
-      className={`transition-all w-full h-screen absolute top-0 left-0 flex justify-center items-center box-border bg-gray-700 bg-opacity-55 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+      className={`transition-all w-full h-full absolute top-0 left-0 flex justify-center items-center box-border bg-gray-700 bg-opacity-55 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       onMouseDown={closeForm}
     >
       <div
-        className={`transition-all w-3/5 flex ${isSignIn ? "h-4/6" : "h-[75%]"}`}
-        style={{ minWidth: "1142px" }}
+        className={`transition-all max-w-5xl w-4/5 flex ${isSignIn ? "h-4/6" : "h-[75%]"}`}
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <div className="rounded-l-3xl flex-1 h-full p-10 bg-gray-200 dark:text-white dark:bg-zinc-700 flex flex-col">
-          <div className="text-2xl font-bold">Welcome!</div>
-          <div className="w-full h-full flex justify-center items-center">
-            <div className="w-2/4 h-2/4 flex items-center justify-center">
-              <span className="text-7xl font-bold">Viet.</span>
-            </div>
-          </div>
-          <div>
-            {isSignIn ? "Not a member yet? " : "Already have an account? "}
-            <button
-              className="text-blue-500 hover:underline"
-              onClick={toggleSignIn}
-            >
-              {isSignIn ? "Register now" : "Sign in"}
-            </button>
+        <div className="rounded-l-3xl flex-1 h-full p-10 bg-gray-200 dark:text-white dark:bg-zinc-700 flex-col md:block hidden">
+        <div className="text-2xl font-bold">Welcome!</div>
+        <div className="w-full h-[90%] flex justify-center items-center">
+          <div className="w-2/4 h-2/4 flex items-center justify-center">
+            <span className="text-7xl font-bold">Viet.</span>
           </div>
         </div>
-        <div className="rounded-r-3xl dark:bg-zinc-800 flex items-center justify-center flex-1 h-full p-10 bg-white overflow-y-auto">
+        <div>
+          {isSignIn ? "Not a member yet? " : "Already have an account? "}
+          <button
+            className="text-blue-500 hover:underline"
+            onClick={toggleSignIn}
+          >
+            {isSignIn ? "Register now" : "Sign in"}
+          </button>
+        </div>
+      </div>
+
+      <div className="rounded-r-3xl md:rounded-l-none dark:bg-zinc-800 flex items-center justify-center flex-1 h-full p-10 bg-white overflow-y-auto rounded-l-3xl">
           {isSignIn ? (
             <div className="flex justify-center w-full items-center h-full">
               <div className="w-full">
@@ -201,8 +200,8 @@ const SignInForm: React.FC<SignInFormProps> = ({ isOpen, closeForm }) => {
                     <Input
                     variant="underlined"
                       id="email"
-                      className="dark:text-gray-700 mb-7"
-                      label="Your email or username"
+                      className="dark:text-gray-700 mb-7 "
+                      label="Your username"
                       errorMessage={errorSignIn}
                       isInvalid={errorSignIn === "" ? false : true}
                       onChange={(e) => {
@@ -255,16 +254,24 @@ const SignInForm: React.FC<SignInFormProps> = ({ isOpen, closeForm }) => {
                   Or sign in with
                 </div>
                 <div className="flex space-x-3 ">
-                  <Button startContent={<RiFacebookLine size={18}/>} className="flex-1 text-gray-500 hover:text-white" color="default" variant="ghost">
+                  <Button startContent={<RiFacebookLine size={18}/>} className="flex-1 text-gray-500 dark:hover:text-white hover:text-black" color="default" variant="ghost">
                     
                     Facebook
                   </Button>
-                  <Button startContent={<RiGoogleLine size={18}/>} className="flex-1 text-gray-500 hover:text-white" color="default" variant="ghost">
+                  <Button startContent={<RiGoogleLine size={18}/>} className="flex-1 text-gray-500 dark:hover:text-white hover:text-black" color="default" variant="ghost">
                     Google
                   </Button>
-                  <Button startContent={<RiMicrosoftLine size={18}/>} className="flex-1 text-gray-500 hover:text-white" color="default" variant="ghost">
+                  <Button startContent={<RiMicrosoftLine size={18}/>} className="flex-1 text-gray-500 dark:hover:text-white hover:text-black" color="default" variant="ghost">
                     Microsoft
                   </Button>
+                </div>
+                <div className="w-full mt-8">
+                <button
+                  className="hover:underline w-full text-center text-sm opacity-70"
+                  onClick={toggleSignIn}
+                >
+                  {isSignIn ? "Not a member? Register." : "Sign in"}
+                </button>
                 </div>
               </div>
             </div>
@@ -394,6 +401,12 @@ const SignInForm: React.FC<SignInFormProps> = ({ isOpen, closeForm }) => {
                     Microsoft
                   </Button>
                 </div>
+                <button
+                  className="hover:underline w-full text-center text-sm opacity-70 mt-4"
+                  onClick={toggleSignIn}
+                >
+                  {isSignIn ? "Not a member? Register." : "Do you have an account? Login"}
+                </button>
             </div>
           )}
         </div>

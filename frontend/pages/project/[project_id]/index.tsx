@@ -3,6 +3,9 @@
 import { FC, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
+import Head from 'next/head';
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@/src/store/store";
 
 import Sidebar from "@/components/project/Sidebar";
 import NavbarProject from "@/components/project/NavbarProject";
@@ -29,6 +32,7 @@ const Project: FC = () => {
   const router = useRouter();
   const { project_id, noteIdParam } = router.query;
   const [isOpenSearch, setIsOpenSearch] = useState<boolean>(false);
+  const projects = useSelector((state: RootState) => state.projects.projects);
 
   const [documents, setDocuments] = useState<Document[]>([]);
   const [images, setImages] = useState<ImageType[]>([]);
@@ -146,6 +150,11 @@ const Project: FC = () => {
         .catch((err) => console.error(err));
     }
   }, [project_id]);
+  const getProjectNameById = (projectId: string | null) => {
+    const project = projects?.find((proj) => proj.project_id === projectId);
+
+    return project ? project.name : "Loading...";
+  };
 
   if (isLoading) {
     return (
@@ -155,8 +164,12 @@ const Project: FC = () => {
     );
   }
 
+
   return (
     <div className="flex box-border">
+      <Head>
+        <title>{getProjectNameById(project_id as string)}</title>
+      </Head>
       <div>
         <Sidebar
           conversations={conversations}

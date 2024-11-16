@@ -5,6 +5,9 @@ import {
   ChatBubbleBottomCenterIcon,
 } from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
+import Image from "next/image";
+import PreLoader from "@/public/img/PreLoader.gif";
+import Head from 'next/head';
 
 import {
   ResizableHandle,
@@ -36,7 +39,7 @@ const DocumentPage: React.FC = () => {
   // State management with proper type annotations
   const { toast } = useToast();
   const [documents, setDocuments] = useState<Document[]>([]);
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true)
   const [conversation, setConversations] = useState<Conversation[]>([]);
   const [projectName, setProjectName] = useState<string>("Loading...");
   const [documentName, setDocumentName] = useState<string>("Loading...");
@@ -160,10 +163,14 @@ const DocumentPage: React.FC = () => {
 
   useEffect(() => {
     if (project_id && document_id) {
-      handleGetDocument();
-      handleGetAllDocument();
-      handleGetConversations();
-      handleGetProjectById()
+      Promise.all([
+        handleGetDocument(),
+        handleGetAllDocument(),
+        handleGetConversations(),
+        handleGetProjectById()
+      ])
+        .then(() => setIsLoading(false))
+        .catch((err) => console.error(err))
     }
   }, [project_id, document_id]);
 
@@ -175,10 +182,19 @@ const DocumentPage: React.FC = () => {
   const handleSelectConversation = (conv: Conversation) => {
     setSelectedConversation(conv.conversation_id);
   };
-
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-black dark:invert-0 invert">
+        <Image alt="Loading..." height={300} src={PreLoader} width={300} />
+      </div>
+    );
+  }
 
   return (
     <ResizablePanelGroup className="w-screen h-screen" direction="horizontal">
+      <Head>
+        <title>Document</title>
+      </Head>
       <div ref={containerRef} className="flex h-full relative w-full">
         <SidebarDocument
           conversations={conversation}

@@ -7,28 +7,65 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { BookOpen, Brain, FileText, Image, Share2, Users, Moon, Sun } from 'lucide-react'
 import Link from 'next/link'
 import SignInForm from '@/components/global/SignInForm';
+import { useRouter } from 'next/router';
+import Head from 'next/head';
+
 
 export default function LandingPage() {
   const [email, setEmail] = useState('')
   const [darkMode, setDarkMode] = useState(false)
   const [isOpenSignIn, setIsOpenSign] = useState<boolean>(false)
-
+  const [isAuth, setIsAuth] = useState<boolean>(false)
   const handleToggleSignIn = () => setIsOpenSign(!isOpenSignIn)
+  const router = useRouter();
 
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
+  const [isClient, setIsClient] = useState(false);
+
+useEffect(() => {
+  setIsClient(true);
+}, []);
+const handleStart = () => {
+  router.push('/home')
+}
+
+useEffect(() => {
+  if (isClient) {
+    const savedDarkMode = localStorage.getItem('dark-mode');
+    if (savedDarkMode !== null) {
+      setDarkMode(JSON.parse(savedDarkMode));
     }
-  }, [darkMode])
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode)
+    const isAccess = localStorage.getItem('access_token')
+    if(isAccess) {
+      setIsAuth(true)
+    }
   }
+}, [isClient]);
+
+useEffect(() => {
+  if (isClient) {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }
+}, [darkMode, isClient]);
+
+const toggleDarkMode = () => {
+  setDarkMode((prevDarkMode) => {
+    const newDarkMode = !prevDarkMode;
+    if (isClient) {
+      localStorage.setItem('dark-mode', JSON.stringify(newDarkMode));
+    }
+    return newDarkMode;
+  });
+};
 
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-zinc-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+      <Head>
+        <title>Viet</title>
+      </Head>
       <header className="px-4 lg:px-6 h-14 flex items-center border-b border-gray-200 dark:border-gray-700">
         <Link className="flex items-center justify-center" href="#">
           <Brain className="h-6 w-6" />
@@ -68,7 +105,13 @@ export default function LandingPage() {
                 </p>
               </div>
               <div className="w-full max-w-sm space-y-2">
-                  <Button onClick={handleToggleSignIn}>Get Started</Button>
+                  <Button onClick={() => {
+                    if(isAuth) {
+                      handleStart()
+                    } else {
+                      handleToggleSignIn()
+                    }
+                  }}>Get Started</Button>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   Start your free trial. No credit card required.
                 </p>
@@ -76,25 +119,25 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        <section className="flex justify-center w-full py-12 md:py-24 lg:py-32 bg-zinc-100 dark:bg-zinc-800">
+        {/* <section className="flex justify-center w-full py-12 md:py-24 lg:py-32 bg-zinc-100 dark:bg-zinc-800">
           <div className="container px-4 md:px-6 flex flex-col items-center justify-center">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">Product Showcase</h2>
             <div className="max-w-7xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <Card className="overflow-hidden">
+              <Card className="overflow-hidden dark:bg-zinc-900">
                 <img src="/placeholder.svg?height=300&width=400" alt="Viet Dashboard" className="w-full h-48 object-cover" />
                 <CardHeader>
                   <CardTitle>Intuitive Dashboard</CardTitle>
                   <CardDescription>Manage your projects and knowledge base with ease</CardDescription>
                 </CardHeader>
               </Card>
-              <Card className="overflow-hidden">
+              <Card className="overflow-hidden dark:bg-zinc-900">
                 <img src="/placeholder.svg?height=300&width=400" alt="AI-Powered Insights" className="w-full h-48 object-cover" />
                 <CardHeader>
                   <CardTitle>AI-Powered Insights</CardTitle>
                   <CardDescription>Get intelligent summaries and recommendations</CardDescription>
                 </CardHeader>
               </Card>
-              <Card className="overflow-hidden">
+              <Card className="overflow-hidden dark:bg-zinc-900">
                 <img src="/placeholder.svg?height=300&width=400" alt="Collaborative Workspace" className="w-full h-48 object-cover" />
                 <CardHeader>
                   <CardTitle>Collaborative Workspace</CardTitle>
@@ -103,14 +146,15 @@ export default function LandingPage() {
               </Card>
             </div>
           </div>
-        </section>
-        <section id="features" className="flex justify-center w-full py-12 md:py-24 lg:py-32">
-          <div>
+        </section> */}
+        <section id="features" className=" bg-zinc-100 dark:bg-zinc-800 flex justify-center w-full py-12 md:py-24 lg:py-32">
+          <div className='mx-5'>
           <div className="space-y-4">
             <h1 className="text-5xl font-bold">Get a brain boost.</h1>
             <p className="text-xl text-muted-foreground">
-              Built right into your workspace, Notion AI is ready to brainstorm, summarize, help you write, and find what you're looking for.
+              Built right into your workspace, Viet is ready to brainstorm, summarize, help you write, and find what you&apos;re looking for.
             </p>
+
             <Button className="text-primary-foreground bg-blue-600 hover:bg-blue-700">
               Try Viet →
             </Button>
@@ -147,32 +191,32 @@ export default function LandingPage() {
           </div>
           </div>
         </section>
-        <section id="community" className="flex justify-center w-full py-12 md:py-24 lg:py-32 bg-zinc-100 dark:bg-zinc-800">
+        <section id="community" className="flex justify-center w-full py-12 md:py-24 lg:py-32">
           <div className="container px-4 md:px-6">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">Join Our Community</h2>
             <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              <Card>
+              <Card className='dark:bg-zinc-800'>
                 <CardHeader>
                   <Users className="h-8 w-8 mb-2" />
                   <CardTitle>Collaborative Projects</CardTitle>
                   <CardDescription>Work together with your team on shared projects.</CardDescription>
                 </CardHeader>
               </Card>
-              <Card>
+              <Card className='dark:bg-zinc-800'>
                 <CardHeader>
                   <Share2 className="h-8 w-8 mb-2" />
                   <CardTitle>Easy Sharing</CardTitle>
                   <CardDescription>Share your work with others using simple links.</CardDescription>
                 </CardHeader>
               </Card>
-              <Card>
+              <Card className='dark:bg-zinc-800'>
                 <CardHeader>
                   <BookOpen className="h-8 w-8 mb-2" />
                   <CardTitle>Knowledge Exchange</CardTitle>
                   <CardDescription>Learn from others and contribute your expertise.</CardDescription>
                 </CardHeader>
               </Card>
-              <Card>
+              <Card className='dark:bg-zinc-800'>
                 <CardHeader>
                   <Brain className="h-8 w-8 mb-2" />
                   <CardTitle>AI-Powered Insights</CardTitle>
@@ -182,11 +226,11 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        <section id="pricing" className="flex justify-center w-full py-12 md:py-24 lg:py-32">
+        <section id="pricing" className="flex justify-center w-full py-12 md:py-24 lg:py-32 bg-zinc-100 dark:bg-zinc-800">
           <div className="container px-4 md:px-6">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">Pricing Plans</h2>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl mx-auto">
-              <Card>
+              <Card className='dark:bg-zinc-900'>
                 <CardHeader>
                   <CardTitle>Basic</CardTitle>
                   <CardDescription>For individual researchers</CardDescription>
@@ -236,7 +280,7 @@ export default function LandingPage() {
                   <Button className="w-full">Get Started</Button>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className='dark:bg-zinc-900'>
                 <CardHeader>
                   <CardTitle>Pro</CardTitle>
                   <CardDescription>For professional researchers</CardDescription>
@@ -285,7 +329,7 @@ export default function LandingPage() {
                   <Button className="w-full">Get Started</Button>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className='dark:bg-zinc-900'>
                 <CardHeader>
                   <CardTitle>Enterprise</CardTitle>
                   <CardDescription>For large organizations</CardDescription>

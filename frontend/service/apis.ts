@@ -28,7 +28,6 @@ export async function SignIn(username: string, password: string) {
 
 export async function getAllProjects() {
   const response = await axiosInstance.get(`/api/projects`);
-
   return response; // Trả về data từ response
 }
 
@@ -58,19 +57,16 @@ export async function getAllConversationByUser() {
 
 export async function refreshToken() {
   const accessToken = localStorage.getItem("access_token");
-  const refreshToken = localStorage.getItem("refresh_token");
 
   const response = await axios.post(
     `${API_URL}/api/auth/refresh`,
-    {
-      refresh_token: refreshToken,
-    },
+    {}, // Body rỗng như lệnh curl
     {
       headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
+        'accept': "application/json",
+        'Authorization': `Bearer ${accessToken}`
       },
+      withCredentials: true
     },
   );
 
@@ -79,19 +75,16 @@ export async function refreshToken() {
   return response;
 }
 
-export async function Logout() {
-  const refreshToken = localStorage.getItem("refresh_token");
 
-  if (!refreshToken) {
-    return { error: "No refresh token found." };
-  }
+export async function Logout() {
+  const accessToken = localStorage.getItem("access_token");
 
   const response = await axios.post(`${API_URL}/api/auth/logout`, {
-    refresh_token: refreshToken,
   }, {
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
     },
   });
 

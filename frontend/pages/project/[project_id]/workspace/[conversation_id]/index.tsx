@@ -2,6 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router"; // Lấy project_id từ URL
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 import { HomeIcon } from "@heroicons/react/24/outline";
+import Image from "next/image";
+import PreLoader from "@/public/img/PreLoader.gif";
+import Head from 'next/head';
+
 
 import { Conversation, Project } from "@/src/types/types";
 import { getConversationInProject, getProjectById } from "@/service/projectApi";
@@ -15,6 +19,7 @@ const WorkSpace: React.FC = () => {
   const [currentConversation, setCurrentConversation] = useState<string | null>(
     null,
   );
+  const [isLoading, setIsLoading] = useState<boolean>(true)
 
   const [conversationName, setConversationName] = useState<string>("");
   const router = useRouter();
@@ -51,8 +56,12 @@ const WorkSpace: React.FC = () => {
 
   useEffect(() => {
     if (project_id !== undefined) {
-      handleGetConversation();
-      handleGetProjectById();
+      Promise.all([
+        handleGetConversation(),
+        handleGetProjectById()
+      ])
+        .then(() => setIsLoading(false))
+        .catch((err) => console.error(err))
     }
   }, [project_id]);
 
@@ -61,8 +70,19 @@ const WorkSpace: React.FC = () => {
     setConversationName(conv.conversation_name);
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-black dark:invert-0 invert">
+        <Image alt="Loading..." height={300} src={PreLoader} width={300} />
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen">
+      <Head>
+        <title>{conversationName}</title>
+      </Head>
       <SidebarWorkspace
         conversations={conversations}
         updatedConversations={handleGetConversation}

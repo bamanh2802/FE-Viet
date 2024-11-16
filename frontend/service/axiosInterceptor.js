@@ -72,12 +72,16 @@ axiosInstance.interceptors.response.use(
       } catch (err) {
         pendingRequests.forEach((req) => req.reject(err));
         pendingRequests = [];
-
         return Promise.reject(err);
       } finally {
         isRefreshing = false;
       }
     }
+    if(error.response.status === 411) {
+      localStorage.removeItem('access_token')
+      window.location.href = '/login'
+    }
+    
 
     return Promise.reject(error);
   },

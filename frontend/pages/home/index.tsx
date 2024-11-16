@@ -6,6 +6,7 @@ import SidebarHome from "@/components/global/SidebarHome";
 import NavbarHome from "@/components/global/NavbarHome";
 import HomeMain from "@/components/global/MainHome";
 import { RootState } from "@/src/store/store";
+import Head from 'next/head';
 import {
   getAllProjectsWithInfo,
   getAllDocumentByUser,
@@ -69,6 +70,9 @@ const Home = () => {
 
   return (
     <div className="flex">
+      <Head>
+        <title>Viet Home</title>
+      </Head>
       <SidebarHome
         conversations={conversations as Conversation[]}
         documents={documents as Document[]}

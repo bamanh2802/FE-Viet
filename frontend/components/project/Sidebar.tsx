@@ -206,8 +206,10 @@ const Sidebar: React.FC<SidebarProps> = ({
         handleGetProjects();
       }
       setSelectedProjectId(project_id as string);
-      if (projects?.length > 0) {
-        setIsLoadingProject(false);
+      if(projects !== undefined) {
+        if (projects?.length > 0) {
+          setIsLoadingProject(false);
+        }
       }
     }
   }, [project_id, projects]);
