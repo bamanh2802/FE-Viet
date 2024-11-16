@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useRef, useEffect } from "react";
 import { Tabs, Tab, Listbox, ListboxItem } from "@nextui-org/react";
 import {
