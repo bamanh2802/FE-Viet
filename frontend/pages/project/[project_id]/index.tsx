@@ -15,7 +15,7 @@ import {
   getConversationInProject,
   getNotesInProject,
 } from "@/service/projectApi";
-import { Document, ImageType, Conversation, Note } from "@/src/types/types";
+import { Document, ImageType, Conversation, Note, Project } from "@/src/types/types";
 import PreLoader from "@/public/img/PreLoader.gif";
 import { getNoteById, renameNote, editNote } from "@/service/noteApi";
 import SearchComponent from "@/components/project/SearchComponent";
@@ -25,7 +25,7 @@ import ShareWorkspace from "./ShareWorkspace";
 import NewDocument from "./NewDocument";
 import RichTextEditor from "./Note";
 
-const Project: FC = () => {
+const ProjectPage: FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [isOpenShare, setIsOpenShare] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true); // State cho loading
@@ -95,7 +95,6 @@ const Project: FC = () => {
     try {
       const data = await getNoteById(noteId);
 
-      console.log(data);
       setNote(data.data.note);
     } catch (e) {
       console.log(e);
@@ -203,6 +202,7 @@ const Project: FC = () => {
                 note={note as Note}
                 renameNote={handleRenameNote}
                 selectedNote={selectedNote}
+                editable={true}
               />
             </div>
           ) : (
@@ -241,11 +241,11 @@ const Project: FC = () => {
         documents={documents}
         isOpen={isOpenSearch}
         notes={notes}
-        projects={[]}
+        projects={projects as Project[]}
         onClose={closeSearch}
       />
     </div>
   );
 };
 
-export default Project;
+export default ProjectPage;

@@ -244,7 +244,7 @@ const DocumentPage: React.FC = () => {
                     {/* Analysis Tab */}
                     <Tab key="analysis" title="Analysis">
                       <div className="flex justify-center items-center h-full">
-                        <Analysis />
+                        <Analysis documentName={documentName}/>
                       </div>
                     </Tab>
                   </Tabs>

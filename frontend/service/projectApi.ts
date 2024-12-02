@@ -42,7 +42,7 @@ export async function getConversationInProject(projectId: string) {
       headers: {
         accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
+        'Authorization': `Bearer ${accessToken}`,
       },
     },
   );
@@ -56,7 +56,7 @@ export async function getDocumentById(documentId: string) {
     headers: {
       accept: "application/json",
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
+      'Authorization': `Bearer ${accessToken}`,
     },
   });
 
@@ -154,4 +154,18 @@ export async function deleteConversation(conversationId: string) {
   );
 
   return response;
+}
+
+export async function getChatHistory(conversationId: string) {
+  const accessToken = localStorage.getItem("access_token");
+  const response = await axios.get(
+    `${API_URL}/api/conversations/${conversationId}/get-chat-history`, {
+      headers: {
+        accept: "application/json",
+        "Content-Type": "application/json",
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    }
+  )
+  return response
 }

@@ -27,12 +27,6 @@ const SignInForm: React.FC<SignInFormProps> = ({}) => {
 
   const handleToggleSuccess = () => setIsOpenSuccess(!isOpenSuccess)
 
-  useEffect(() => {
-    const isAuth = localStorage.getItem('access_token')
-    if(!!isAuth) {
-      router.push('/')
-    }
-  })
 
   const toggleSignIn = () => {
     setIsSignIn(!isSignIn);
@@ -46,8 +40,6 @@ const SignInForm: React.FC<SignInFormProps> = ({}) => {
 
       if(data !== undefined) {
         localStorage.setItem("access_token", data?.data.access_token);
-        localStorage.setItem("refresh_token", data?.data.refresh_token);
-        console.log(data);
         setIsLoadingSignIn(false);
         router.push("/home");
       }

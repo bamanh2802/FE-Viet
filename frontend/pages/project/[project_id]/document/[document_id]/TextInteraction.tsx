@@ -1,3 +1,4 @@
+"use client"
 import { useState, useEffect, useRef } from "react";
 import { Listbox, ListboxItem, Spinner } from "@nextui-org/react";
 import {
@@ -5,15 +6,20 @@ import {
   QuestionMarkCircleIcon,
   ClipboardDocumentCheckIcon,
   ListBulletIcon,
+  PaperClipIcon
 } from "@heroicons/react/24/outline";
 import { Tabs, Tab } from "@nextui-org/react";
 import { useRouter } from "next/router";
 import { Textarea } from "@nextui-org/react";
-
+import API_URL from "@/service/ApiUrl";
+import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
+import "@cyntler/react-doc-viewer/dist/index.css";
+import 'pdfjs-dist/build/pdf.worker.entry';
 import { getChunkDocument, keywordSearchChunks } from "@/service/documentApi";
 import { Chunk } from "@/src/types/types";
 import { ListboxWrapper } from "@/components/ListboxWrapper";
-
+import PDFViewer from "@/components/global/PDFViewer";
+import WebsiteViewer from "@/components/global/WebsiteViewer";
 interface DropdownPosition {
   x: number;
   y: number;
@@ -35,7 +41,9 @@ const TextInteraction: React.FC = () => {
   const [originalChunks, setOriginalChunks] = useState<Chunk[]>([]); // Store the initial full chunk data
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isSearching, setIsSearching] = useState<boolean>(false);
-
+  const docs = [
+    { uri: "https://url-to-my-pdf.pdf" }, // Remote file
+  ];
   const handleGetChunkDocument = async () => {
     try {
       const data = await getChunkDocument(document_id as string);
@@ -150,8 +158,11 @@ const TextInteraction: React.FC = () => {
       <Tabs aria-label="Raw" variant="underlined">
         <Tab key="raw" title="Raw">
           <div ref={textRef} className="p-4 rounded relative leading-relaxed">
-            Đây là một đoạn văn bản từ tài liệu PDF nào đó. Bạn có thể bôi đen
-            đoạn văn bản để xem các tùy chọn.
+          <div className="border h-[100%-100px]">
+          
+          {/* <PDFViewer fileUrl="/testdoc.docx" fileType="docx" /> */}
+          <WebsiteViewer websiteUrl="https://en.wikipedia.org/wiki/Average_human_height_by_country" />
+            </div>
           </div>
         </Tab>
 
@@ -193,35 +204,36 @@ const TextInteraction: React.FC = () => {
       {showDropdown && (
         <div
           ref={dropdownRef}
-          className="absolute z-50 opacity-100 transition-opacity duration-300 ease-out rounded-md bg-zinc-800"
+          className="shadow-md absolute z-50 opacity-100 transition-opacity duration-300 ease-out rounded-md bg-zinc-800"
           style={{ top: dropdownPosition.y, left: dropdownPosition.x }}
         >
           {selection ? (
             <ListboxWrapper>
               <Listbox
+              className="p-0"
                 aria-label="Actions"
                 onAction={(key) => handleOptionClick(key as string)}
               >
-                <ListboxItem key="copy">
+                <ListboxItem textValue="copy" key="copy">
                   <div className="flex items-center">
                     <Square2StackIcon className="pr-1 w-5 h-5" /> Sao chép
                   </div>
                 </ListboxItem>
-                <ListboxItem key="explain">
+                <ListboxItem textValue="copy" key="explain">
                   <div className="flex items-center">
                     <QuestionMarkCircleIcon className="pr-1 w-5 h-5" /> Giải
                     thích
                   </div>
                 </ListboxItem>
-                <ListboxItem key="addNote">
+                <ListboxItem textValue="copy" key="addNote">
                   <div className="flex items-center">
                     <ClipboardDocumentCheckIcon className="pr-1 w-5 h-5" /> Thêm
                     vào ghi chú
                   </div>
                 </ListboxItem>
-                <ListboxItem key="summarize">
+                <ListboxItem textValue="copy" key="summarize">
                   <div className="flex items-center">
-                    <ListBulletIcon className="pr-1 w-5 h-5" /> Tóm tắt
+                    <PaperClipIcon className="pr-1 w-5 h-5" /> Quote
                   </div>
                 </ListboxItem>
               </Listbox>
@@ -232,7 +244,7 @@ const TextInteraction: React.FC = () => {
                 aria-label="Actions"
                 onAction={() => handleOptionClick("Tóm tắt")}
               >
-                <ListboxItem key="summarize">Tóm tắt</ListboxItem>
+                <ListboxItem textValue="copy" key="summarize">Tóm tắt</ListboxItem>
               </Listbox>
             </ListboxWrapper>
           )}

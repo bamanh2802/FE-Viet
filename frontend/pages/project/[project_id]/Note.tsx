@@ -13,6 +13,7 @@ interface RichTextEditorProps {
   note: Note;
   renameNote: (noteId: string, newName: string) => void;
   editNote: (noteId: string, content: string) => void;
+  editable: boolean
 }
 
 const RichTextEditor: React.FC<RichTextEditorProps> = ({
@@ -20,6 +21,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   note,
   renameNote,
   editNote,
+  editable
 }) => {
   const [editorContent, setEditorContent] = useState("");
   const editorRef = useRef<HTMLDivElement>(null);
@@ -70,28 +72,22 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     const diffInDays = Math.floor(diffInHours / 24);
     const diffInWeeks = Math.floor(diffInDays / 7);
 
-    // Nếu dưới 1 phút
     if (diffInSeconds < 60) {
       return `${diffInSeconds}s ago`;
     }
-    // Nếu dưới 1 giờ
     if (diffInMinutes < 60) {
       return `${diffInMinutes}m ago`;
     }
-    // Nếu dưới 1 ngày
     if (diffInHours < 24) {
       return `${diffInHours}h ago`;
     }
-    // Nếu dưới 1 tuần
     if (diffInDays < 7) {
       return `${diffInDays}d ago`;
     }
-    // Nếu dưới 1 tháng
     if (diffInWeeks < 4) {
       return `${diffInWeeks}w ago`;
     }
 
-    // Nếu trên 1 tháng, format là "Ngày Tháng" (VD: 1 Feb, 23 May)
     const options: Intl.DateTimeFormatOptions = {
       day: "numeric",
       month: "short",
@@ -162,10 +158,11 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         selectedNote === note?.note_id &&
         note && (
           <Editor
-            editable={true}
+            editable={editable}
             initialContent={note?.content}
             onChange={handleEditorChange}
             docId={note?.note_id}
+            
           />
         )
       )}

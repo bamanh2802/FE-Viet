@@ -229,6 +229,10 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const handleCreateNewNote = async () => {
+    toast({
+      title: "Creating...",
+      description: "Waiting for create",
+    });
     try {
       const data = await createNewNote(project_id as string);
 
@@ -392,7 +396,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
           {/* Các item con cho mục "Tài liệu" */}
           <div
-            className={`mt-2 overflow-hidden transition-max-height duration-300 ease-in-out ${expandedSections.includes("documents") ? "max-h-96" : "max-h-0"}`}
+            className={`mt-2 overflow-auto transition-max-height duration-300 ease-in-out ${expandedSections.includes("documents") ? "max-h-96" : "max-h-0"}`}
           >
             {expandedSections.includes("documents") && (
               <div className="transition-all mt-1 space-y-1 border-gray-400">
@@ -468,7 +472,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             />
           </div>
           <div
-            className={`mt-2 overflow-hidden transition-max-height duration-300 ease-in-out ${expandedSections.includes("images") ? "max-h-96" : "max-h-0"}`}
+            className={`mt-2 overflow-auto transition-max-height duration-300 ease-in-out ${expandedSections.includes("images") ? "max-h-96" : "max-h-0"}`}
           >
             {/* Các item con cho mục "Hình ảnh" */}
             {/* {expandedSections.includes('images') && (
@@ -523,7 +527,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
           </div>
           <div
-            className={`mt-2 overflow-hidden transition-max-height duration-300 ease-in-out ${expandedSections.includes("conversation") ? "max-h-96" : "max-h-0"}`}
+            className={`mt-2 overflow-auto transition-max-height duration-300 ease-in-out ${expandedSections.includes("conversation") ? "max-h-96" : "max-h-0"}`}
           >
             {expandedSections.includes("conversation") && (
               <div className="transition-all mt-1 space-y-1 border-gray-400">
@@ -615,7 +619,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
           </div>
           <div
-            className={`mt-2 overflow-hidden transition-max-height duration-300 ease-in-out ${expandedSections.includes("note") ? "max-h-96" : "max-h-0"}`}
+            className={`mt-2 overflow-auto transition-max-height duration-300 ease-in-out ${expandedSections.includes("note") ? "max-h-96" : "max-h-0"}`}
           >
             {expandedSections.includes("note") && (
               <div className="transition-all mt-1 space-y-1 border-gray-400">

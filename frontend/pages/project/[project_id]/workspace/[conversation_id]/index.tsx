@@ -3,11 +3,30 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router"; // Lấy project_id từ URL
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
-import { HomeIcon } from "@heroicons/react/24/outline";
+import { HomeIcon, UserGroupIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { UsersIcon } from "lucide-react";
 import Image from "next/image";
 import PreLoader from "@/public/img/PreLoader.gif";
 import Head from 'next/head';
-
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 import { Conversation, Project } from "@/src/types/types";
 import { getConversationInProject, getProjectById } from "@/service/projectApi";
@@ -21,13 +40,22 @@ const WorkSpace: React.FC = () => {
   const [currentConversation, setCurrentConversation] = useState<string | null>(
     null,
   );
+  const [name, setName] = useState("")
+  const [key, setKey] = useState("")
   const [isLoading, setIsLoading] = useState<boolean>(true)
-
+  const [isOpenAPI, setIsOpenAPI] = useState<boolean>(false)
   const [conversationName, setConversationName] = useState<string>("");
   const router = useRouter();
-  const { project_id, conversation_id } = router.query; // Lấy project_id từ URL
+  const { project_id, conversation_id } = router.query; 
   const [projectInfo, setProjectInfo] = useState<Project>();
-
+  const handleToggleAPI = () => {
+    setIsOpenAPI(!isOpenAPI)
+  }
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    setName("")
+    setKey("")
+  }
   const handleGetConversation = async () => {
     try {
       const data = await getConversationInProject(project_id as string);
@@ -105,7 +133,33 @@ const WorkSpace: React.FC = () => {
             <BreadcrumbItem>{conversationName}</BreadcrumbItem>
           </Breadcrumbs>
         </div>
-        <div className="absolute top-2 right-6">
+        <div className="absolute top-2 right-6 flex items-center">
+          <div className="z-10 mr-6">
+          <Select defaultValue="gemini">
+            <SelectTrigger className="w-[180px] shadow-none border-none">
+              <SelectValue placeholder="Theme" />
+            </SelectTrigger>
+            <SelectContent className="bg-zinc-200 dark:bg-zinc-900 shadow-none border-none">
+              <SelectItem value="gemini">Google Gemini</SelectItem>
+              <SelectItem value="chatgpt">Chat GPT</SelectItem>
+              <SelectItem value="claude">Claude AI</SelectItem>
+                <Button 
+                onClick={handleToggleAPI}
+                size="sm"
+                variant="outline"
+                className="border-none shadow-none flex items-center w-full bg-zinc-200 dark:bg-zinc-900">
+                <PlusIcon className="w-4 h-4 mr-2"/>
+                  Add Api Key
+                </Button>
+            </SelectContent>
+          </Select>
+          </div>
+          <Button 
+          size="sm"
+          variant="ghost"
+          className="z-10 mr-4 border-none shadow-none bg-zinc-100 dark:bg-zinc-800">
+            <UsersIcon className="w-4 h-4 mr-2"/> Share
+          </Button>
           <UserDropdown />
         </div>
         <ChatWindow
@@ -114,6 +168,39 @@ const WorkSpace: React.FC = () => {
           project_id={project_id as string}
         />
       </div>
+      <Dialog open={isOpenAPI} onOpenChange={handleToggleAPI}>
+      <DialogContent className="sm:max-w-[425px] border-none shadow-none bg-zinc-100 dark:bg-zinc-900">
+        <DialogHeader>
+          <DialogTitle>Add API Key</DialogTitle>
+          <DialogDescription>
+            Add your API key for Viet
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="name" className="text-right">
+              Name
+            </Label>
+            <Input
+              id="name"
+              className="col-span-3"
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="username" className="text-right">
+              API Key
+            </Label>
+            <Input
+              id="username"
+              className="col-span-3"
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button type="submit">Save changes</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
     </div>
   );
 };

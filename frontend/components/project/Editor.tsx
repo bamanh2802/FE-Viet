@@ -14,7 +14,7 @@ interface EditorProps {
 const Editor: React.FC<EditorProps> = ({
   onChange,
   initialContent,
-  editable = true,
+  editable,
   docId,
 }) => {
   const [isDarkmode, setIsDarkmode] = useState<string | null>(

@@ -15,6 +15,8 @@ import { Logout, getUser } from "@/service/apis";
 import { RootState } from "@/src/store/store";
 import { setUser, clearUser } from "@/src/store/userSlice";
 import { clearProjects } from "@/src/store/projectsSlice";
+import { clearDocuments } from "@/src/store/documentSlice";
+import { clearConversations } from "@/src/store/conversationSlice";
 
 import AccountSettings from "./UserProfile";
 
@@ -47,7 +49,7 @@ const UserDropdown = () => {
   const handleGetUser = async () => {
     try {
       const data = await getUser();
-
+      console.log(data)
       if (data && data.data && data.data.msg) {
         dispatch(setUser(data.data.msg));
       } else {
@@ -63,8 +65,9 @@ const UserDropdown = () => {
       await Logout();
       dispatch(clearUser())
       dispatch(clearProjects())
+      dispatch(clearDocuments())
+      dispatch(clearConversations())
       localStorage.removeItem("access_token");
-      localStorage.removeItem("refresh_token");
       router.push("/");
     } catch (e) {
       console.error("Error during logout:", e);

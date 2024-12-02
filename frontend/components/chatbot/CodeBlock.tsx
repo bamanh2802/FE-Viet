@@ -8,7 +8,7 @@ interface MarkdownRendererProps {
 }
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
-  if (!content) return null; // Kiểm tra nếu không có nội dung
+  if (!content) return null; 
 
   return (
     <ReactMarkdown
@@ -30,7 +30,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
                 }}
                 wrapLongLines={true}
               >
-                {String(children).trimEnd()} {/* Sử dụng trimEnd */}
+                {String(children).trimEnd()} 
               </SyntaxHighlighter>
             </div>
           ) : (

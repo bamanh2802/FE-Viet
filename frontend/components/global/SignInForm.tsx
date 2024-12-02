@@ -14,7 +14,7 @@ interface SignInFormProps {
   closeForm: () => void;
 }
 
-const SignInForm: React.FC<SignInFormProps> = ({ isOpen, closeForm }) => {
+const SignInForm: React.FC<SignInFormProps> = ({ isOpen, closeForm}) => {
   const router = useRouter();
   const [isSignIn, setIsSignIn] = useState<boolean>(true);
   const [userNameSignIn, setUserNameSignIn] = useState<string>("");
@@ -41,7 +41,6 @@ const SignInForm: React.FC<SignInFormProps> = ({ isOpen, closeForm }) => {
 
       if(data !== undefined) {
         localStorage.setItem("access_token", data?.data.access_token);
-        localStorage.setItem("refresh_token", data?.data.refresh_token);
         setIsLoadingSignIn(false);
         router.push("/home");
       }
@@ -163,35 +162,35 @@ const SignInForm: React.FC<SignInFormProps> = ({ isOpen, closeForm }) => {
 
   return (
     <div
-      className={`transition-all w-full h-full absolute top-0 left-0 flex justify-center items-center box-border bg-gray-700 bg-opacity-55 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+      className={`z-50 transition-all w-full h-screen fixed top-0 left-0 flex justify-center items-center box-border bg-black bg-opacity-55 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       onMouseDown={closeForm}
     >
       <div
-        className={`transition-all max-w-5xl w-4/5 flex ${isSignIn ? "h-4/6" : "h-[75%]"}`}
+        className={`transition-all max-w-5xl w-4/5 grid grid-cols-2 h-fit items-stretch`}
         onMouseDown={(e) => e.stopPropagation()}
       >
-        <div className="rounded-l-3xl flex-1 h-full p-10 bg-gray-200 dark:text-white dark:bg-zinc-700 flex-col md:block hidden">
-        <div className="text-2xl font-bold">Welcome!</div>
-        <div className="w-full h-[90%] flex justify-center items-center">
-          <div className="w-2/4 h-2/4 flex items-center justify-center">
-            <span className="text-7xl font-bold">Viet.</span>
+        <div className=" rounded-l-3xl flex-1 h-full p-10 bg-gray-200 dark:text-white dark:bg-zinc-700 flex-col md:block hidden">
+          <div className="text-2xl font-bold">Welcome!</div>
+          <div className="w-full h-[90%] flex-grow flex justify-center items-center">
+            <div className="w-2/4 h-2/4 flex items-center justify-center">
+              <span className="text-7xl font-bold">Viet.</span>
+            </div>
           </div>
-        </div>
-        <div>
-          {isSignIn ? "Not a member yet? " : "Already have an account? "}
-          <button
-            className="text-blue-500 hover:underline"
-            onClick={toggleSignIn}
-          >
-            {isSignIn ? "Register now" : "Sign in"}
-          </button>
-        </div>
+          <div>
+            {isSignIn ? "Not a member yet? " : "Already have an account? "}
+            <button
+              className="text-blue-500 hover:underline"
+              onClick={toggleSignIn}
+            >
+              {isSignIn ? "Register now" : "Sign in"}
+            </button>
+          </div>
       </div>
 
       <div className="rounded-r-3xl md:rounded-l-none dark:bg-zinc-800 flex items-center justify-center flex-1 h-full p-10 bg-white overflow-y-auto rounded-l-3xl">
           {isSignIn ? (
-            <div className="flex justify-center w-full items-center h-full">
-              <div className="w-full">
+            <div className="flex justify-center w-full items-center h-full overflow-auto">
+              <div className="w-full h-full">
                 <h2 className="text-2xl font-bold dark:text-white text-gray-800 mb-6">
                   Log in
                 </h2>
@@ -276,7 +275,7 @@ const SignInForm: React.FC<SignInFormProps> = ({ isOpen, closeForm }) => {
               </div>
             </div>
           ) : (
-            <div className="w-full mx-auto">
+            <div className="w-full h-full mx-auto">
               <h2 className="text-2xl font-bold dark:text-white text-gray-800 mb-6">
                 Register with your e-mail
               </h2>

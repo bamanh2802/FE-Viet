@@ -6,14 +6,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Worker, Viewer } from "@react-pdf-viewer/core";
+const Viewer = dynamic(() => import('@react-pdf-viewer/core').then(mod => mod.Viewer), { ssr: false });
+const Worker = dynamic(() => import('@react-pdf-viewer/core').then(mod => mod.Worker), { ssr: false });
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
 import { Document, Chunk } from "@/src/types/types";
 import { getChunkDocument } from "@/service/documentApi";
 
-interface DocumentProps {
+import dynamic from 'next/dynamic';interface DocumentProps {
   document: Document;
   isOpen: boolean;
   onClose: () => void;

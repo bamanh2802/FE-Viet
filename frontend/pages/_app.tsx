@@ -22,17 +22,21 @@ export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
     const token = localStorage.getItem('access_token');
     const isAuthenticated = !!token;
-
-    // Danh sách các route không yêu cầu đăng nhập (chỉ có '/')
-    const publicRoutes = ['/'];
-
-    // Nếu người dùng chưa đăng nhập và đang truy cập trang không công khai, chuyển hướng đến trang đăng nhập
-    if (!isAuthenticated && !publicRoutes.includes(router.pathname)) {
+  
+    // Các đường dẫn công khai không yêu cầu đăng nhập
+    const publicRoutes = ['/', '/login'];
+    const isPublicRoute = publicRoutes.includes(router.pathname);
+  
+    // Kiểm tra nếu đường dẫn khớp với /share/:shareId
+    const isShareRoute = router.pathname.startsWith('/share/');
+  
+    if (!isAuthenticated && !isPublicRoute && !isShareRoute) {
       router.push('/login');
     } else {
       setIsLoading(false);
     }
   }, [router]);
+  
 
   return (
     <Provider store={store}>

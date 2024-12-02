@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Loader2, Trash2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useRouter } from "next/router";
+import { useToast } from "@/hooks/use-toast";
+import { createNewNote } from "@/service/noteApi";
+import { v4 as uuidv4 } from 'uuid'
 
 import {
   summarizeDocument,
@@ -9,7 +12,11 @@ import {
 } from "@/service/documentApi";
 import { Button } from "@/components/ui/button";
 
-const Analysis: React.FC = () => {
+interface AnalysisProps {
+  documentName: string
+}
+
+const Analysis: React.FC<AnalysisProps> = ({documentName}) => {
   const [summarizeOutput, setSummarizeOutput] = useState<string>("");
   const [outlineOutput, setOutlineOutput] = useState<string>("");
   const [savedSummarizeOutputs, setSavedSummarizeOutputs] = useState<string[]>(
@@ -20,8 +27,9 @@ const Analysis: React.FC = () => {
   const [isLoadingCreateOutlines, setIsLoadingCreateOutlines] =
     useState<boolean>(false);
 
+  const { toast } = useToast();
   const router = useRouter();
-  const { document_id } = router.query as { document_id?: string };
+  const { project_id, document_id } = router.query as { project_id: string, document_id?: string };
 
   useEffect(() => {
     // Load saved data from localStorage when component mounts
@@ -61,7 +69,9 @@ const Analysis: React.FC = () => {
     try {
       const data = await shallowOutlineDocument(document_id as string);
 
-      setOutlineOutput(data.data);
+      const cleanedData = data.data.replace(/^<mindmap>/g, "").replace(/<\/mindmap>/g, "");
+
+      setOutlineOutput(cleanedData);
     } catch (e) {
       console.log(e);
     }
@@ -72,6 +82,58 @@ const Analysis: React.FC = () => {
     if (summarizeOutput) {
       setSavedSummarizeOutputs((prev) => [...prev, summarizeOutput]);
       setSummarizeOutput("");
+    }
+  };
+
+  const createDataForNote = (content: string) => {
+    const data = [
+      {
+        id: uuidv4(),
+        type: "paragraph",
+        props: {
+          textColor: "default",
+          backgroundColor: "default",
+          textAlignment: "left",
+        },
+        content: [
+          {
+            type: "text",
+            text: content,
+            styles: {},
+          },
+        ],
+        children: [],
+      },
+      {
+        id: uuidv4(),
+        type: "paragraph",
+        props: {
+          textColor: "default",
+          backgroundColor: "default",
+          textAlignment: "left",
+        },
+        content: [],
+        children: [],
+      },
+    ];
+    return JSON.stringify(data);
+  }
+  const handleCreateNewNote = async () => {
+    
+    toast({
+      title: "Creating...",
+      description: "Waiting for create",
+    });
+    try {
+      const data = await createNewNote(project_id as string, documentName, createDataForNote(summarizeOutput as string));
+
+      console.log(data);
+      toast({
+        title: "New note created successfully",
+        description: "Waiting for data loading",
+      });
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -133,7 +195,7 @@ const Analysis: React.FC = () => {
             {summarizeOutput}
           </ReactMarkdown>
           <div className="flex space-x-4">
-            <Button variant="default" onClick={handleSaveSummarize}>
+            <Button variant="default" onClick={handleCreateNewNote}>
               Save Summarize
             </Button>
             <Button variant="outline" onClick={handleGenerateAgainSummarize}>
@@ -144,7 +206,7 @@ const Analysis: React.FC = () => {
       )}
 
       {outlineOutput && (
-        <div className="flex flex-col mt-4 p-4 border rounded-lg space-y-2 max-h-96 overflow-auto">
+        <div className="flex w-full flex-col mt-4 p-4 border rounded-lg space-y-2 max-h-96 overflow-auto">
           <ReactMarkdown className="text-sm whitespace-pre-line h-[90%] overflow-auto">
             {outlineOutput}
           </ReactMarkdown>

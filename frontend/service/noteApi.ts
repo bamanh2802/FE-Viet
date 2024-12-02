@@ -111,3 +111,18 @@ export async function deleteNote(noteId: string) {
 
   return response;
 }
+
+export async function createNoteFromIdShared(shareId: string, projectId: string) {
+  const accessToken = localStorage.getItem("access_token");
+  const response = await axios.post(
+    `${API_URL}/api/notes/create-shared-note`, {
+
+    }, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Bearer ${accessToken}`,
+      }
+    }
+  )
+  return response
+}

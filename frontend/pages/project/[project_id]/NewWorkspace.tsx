@@ -95,6 +95,8 @@ const NewWorkspace: FC<NewWorkspaceProps> = ({
         conversationName !== ""
       ) {
         setIsDisable(false);
+      } else {
+        setIsDisable(true);
       }
     }
   }, [documents, conversationName, selectedKeys]);
