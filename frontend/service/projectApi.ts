@@ -169,3 +169,18 @@ export async function getChatHistory(conversationId: string) {
   )
   return response
 }
+
+export async function translateText(text: string, source: string, target: string) {
+  const accessToken = localStorage.getItem("access_token");
+
+  const url = `${API_URL}/translate/text?text=${encodeURIComponent(text)}&source_language=${encodeURIComponent(source)}&target_language=${encodeURIComponent(target)}`;
+
+  const response = await axios.get(url, {
+    headers: {
+      'accept': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+    },
+  });
+
+  return response
+}

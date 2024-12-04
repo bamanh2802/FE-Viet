@@ -26,6 +26,9 @@ import {
   ClipboardDocumentCheckIcon,
   FolderIcon,
   EllipsisHorizontalIcon,
+  XMarkIcon,
+  PaperClipIcon,
+  LanguageIcon
 } from "@heroicons/react/24/outline";
 
 import { useRouter } from "next/router";
@@ -61,12 +64,16 @@ interface ChatWindowProps {
   isDocument: boolean;
   conversation_id: string;
   project_id: string;
+  content: string;
+  option: string;
 }
 
 const ChatWindow: FC<ChatWindowProps> = ({
   project_id,
   isDocument,
   conversation_id,
+  content,
+  option
 }) => {
   const router = useRouter();
   const { toast } = useToast();
@@ -85,6 +92,33 @@ const ChatWindow: FC<ChatWindowProps> = ({
   const [selectedDocument, setSelectedDocument] = useState<Document>();
   const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
   const [selectedMessage, setSelectedMessage] = useState<string>("");
+  const [contentChat, setContentChat] = useState<string>('')
+  const [optionChat, setOptionChat] = useState<string>('')
+
+  useEffect(() => {
+    if(content !== undefined && option !== undefined) {
+      console.log(content, option)
+      if(option === 'quote') {  
+        setContentChat(content)
+        setOptionChat(option)
+      } else if (option === 'explain') {
+        handleExplainWord(content)
+      }
+    }
+  },[content, option])
+  const handleClearQuoted = () => {
+    setContentChat('')
+    setOptionChat('')
+  }
+  const handleQuoted = (content: string) => {
+    setContextMenu(null);
+    setOptionChat('quote')
+    setContentChat(content)
+  }
+  const handleTranslate = (content: string) => {
+    setContextMenu(null);
+
+  }
 
   const handleOpenDocument = (document: Document) => {
     setSelectedDocument(document);
@@ -229,7 +263,8 @@ const ChatWindow: FC<ChatWindowProps> = ({
         if (
           response !== "<END_OF_CONTEXT>" &&
           !response.includes("chunk_id") &&
-          response !== "<END_OF_RESPONSE>"
+          response !== "<END_OF_RESPONSE>" && 
+          response !== "{\"context\":null}"
         ) {
           dispatch(
             updateServerMessage({ conversation_id, content: event.data }),
@@ -280,11 +315,21 @@ const ChatWindow: FC<ChatWindowProps> = ({
       socket.current &&
       socket.current.readyState === WebSocket.OPEN
     ) {
-      socket.current.send(userMessage);
-      dispatch(addUserMessage({ conversation_id, content: userMessage }));
-      setInput("");
-      dispatch(addServerMessage({ conversation_id, content: "" }));
-      setLoading(true);
+      if (optionChat === 'quote') {
+        const userMessageWithQuote = `> ${contentChat}\n${userMessage}`;
+        socket.current.send(userMessageWithQuote);
+        dispatch(addUserMessage({ conversation_id, content: userMessageWithQuote }));
+        setInput("");
+        dispatch(addServerMessage({ conversation_id, content: "" }));
+        setLoading(true);
+      } else {
+        socket.current.send(userMessage);
+        dispatch(addUserMessage({ conversation_id, content: userMessage }));
+        setInput("");
+        dispatch(addServerMessage({ conversation_id, content: "" }));
+        setLoading(true);
+      }
+      handleClearQuoted()
     }
   };
 
@@ -361,6 +406,32 @@ const ChatWindow: FC<ChatWindowProps> = ({
     console.log(`Selected option: ${option} for text: ${selectedText}`);
     window.getSelection()?.removeAllRanges();
   };
+  const renderMessage = (content: string) => {
+    // Check if message starts with quote syntax
+    if (content.startsWith("> ")) {
+      const [quote, ...response] = content.split("\n");
+      
+      return (
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">↳</span>
+            <blockquote className="rounded dark:bg-zinc-800 px-3 py-1 italic text-xs bg-zinc-300 font-w">
+              {quote.replace("> ", "")}
+            </blockquote>
+          </div>
+          {response.length > 0 && (
+            <p className="pl-6 text-sm text-muted-foreground">
+              {response.join("\n")}
+            </p>
+          )}
+        </div>
+      );
+    }
+  
+    // Regular message
+    return <p className="text-sm">{content}</p>;
+  };
+
 
   return (
     <div className="flex">
@@ -402,7 +473,6 @@ const ChatWindow: FC<ChatWindowProps> = ({
                     <RiRobot2Line className="w-4 h-4" />
                   </div>
                 )}
-                {/* Message content */}
 
                 <div
                   className={`flex flex-col  ${msg.sender === "Server" ? "ml-2 w-[96%]" : ""}`}
@@ -415,7 +485,7 @@ const ChatWindow: FC<ChatWindowProps> = ({
                     // </ReactMarkdown>
                     <MarkdownRenderer content={msg.content} />
                   ) : (
-                    <div>{msg.content}</div>
+                    <div>{renderMessage(msg.content as string)}</div>
                   )}
 
                   {Array.isArray(msg.chunk_ids) &&
@@ -521,11 +591,12 @@ const ChatWindow: FC<ChatWindowProps> = ({
             {/* Context menu on right click */}
             {contextMenu && (
               <div
-                className="fixed dark:bg-zinc-800 bg-zinc-50 rounded shadow-lg"
+                className="fixed dark:bg-zinc-800 bg-zinc-200 rounded-md shadow-lg"
                 style={{ top: contextMenu.y, left: contextMenu.x }}
               >
                 <ListboxWrapper>
                   <Listbox
+                  className="p-0"
                     aria-label="Actions"
                     onAction={(key) => handleOptionClick(key as string)}
                   >
@@ -559,6 +630,28 @@ const ChatWindow: FC<ChatWindowProps> = ({
                         Thêm vào note
                       </div>
                     </ListboxItem>
+                    <ListboxItem key="quote" textValue="quote">
+                      <div
+                        className="flex items-center"
+                        onClick={() =>
+                          handleQuoted(selectedText as string)
+                        }
+                      >
+                        <PaperClipIcon className="pr-1 w-5 h-5" />
+                        Quote
+                      </div>
+                    </ListboxItem>
+                    <ListboxItem key="translate" textValue="translate">
+                      <div
+                        className="flex items-center"
+                        onClick={() =>
+                          handleTranslate(selectedText as string)
+                        }
+                      >
+                        <LanguageIcon className="pr-1 w-5 h-5" />
+                        Translate
+                      </div>
+                    </ListboxItem>
                   </Listbox>
                 </ListboxWrapper>
               </div>
@@ -567,6 +660,20 @@ const ChatWindow: FC<ChatWindowProps> = ({
 
           {/* Message input form */}
           <div className="pl-6 w-full bg-zinc-100 dark:bg-zinc-800 flex justify-center items-center flex-col mt-4 sticky bottom-0">
+                {optionChat === 'quote' && contentChat && (
+                  <div className="w-full max-w-2xl mb-2 px-4 py-2 bg-slate-100 border border-slate-300 rounded-xl shadow-md flex items-center gap-2">
+                    <div className="text-slate-600 text-sm italic flex-1">
+                      <span className="font-medium text-slate-800">Quoted:</span> {contentChat}
+                    </div>
+                    <button
+                      onClick={handleClearQuoted} 
+                      className="text-slate-400 hover:text-slate-600 transition"
+                    >
+                      <XMarkIcon className="w-4 h-4"/>
+                    </button>
+                  </div>
+                )}
+
             <form
               className="max-w-2xl pr-2 flex w-full justify-center items-center rounded-3xl"
               onSubmit={(e) => sendMessage(input, e)}

@@ -47,6 +47,8 @@ const DocumentPage: React.FC = () => {
   const [documentName, setDocumentName] = useState<string>("Loading...");
   const [isLoadingCreate, setIsLoadingCreate] = useState<boolean>(false);
   const [projectInfo, setProjectInfo] = useState<Project>()
+  const [contentChat, setContentChat] = useState<string>('')
+  const [optionChat, setOptionChat] = useState<string>('')
   const [contextMenu, setContextMenu] = useState<{
     visible: boolean;
     x: number;
@@ -192,6 +194,11 @@ const DocumentPage: React.FC = () => {
     );
   }
 
+  const handleActionDocument = (option: string, selection: string) => {
+      setContentChat(selection)
+      setOptionChat(option)
+  }
+
   return (
     <ResizablePanelGroup className="w-screen h-screen" direction="horizontal">
       <Head>
@@ -236,6 +243,8 @@ const DocumentPage: React.FC = () => {
                             conversation_id={selectedConversation}
                             isDocument={true}
                             project_id={project_id as string}
+                            content={contentChat}
+                            option={optionChat}
                           />
                         )}
                       </>
@@ -295,7 +304,7 @@ const DocumentPage: React.FC = () => {
 
               <ResizablePanel minSize={20}>
                 <div className="flex-1 h-full">
-                  <TextInteraction />
+                  <TextInteraction handleActionDocument={handleActionDocument}/>
                 </div>
               </ResizablePanel>
             </ResizablePanelGroup>

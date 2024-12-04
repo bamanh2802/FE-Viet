@@ -147,12 +147,12 @@ const NewWorkspace: FC<NewWorkspaceProps> = ({
           />
         </div>
 
-        <div className="custom-width mt-4">
+        <div className="custom-width mt-4 ">
           <ListboxWrapper>
             <Listbox
               disallowEmptySelection
               aria-label="File selection"
-              className="max-w-none"
+              className="max-w-none max-h-96 overflow-auto"
               selectionMode="multiple"
               variant="flat"
               selectedKeys={selectedKeys}

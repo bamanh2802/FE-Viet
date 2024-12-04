@@ -6,7 +6,8 @@ import {
   QuestionMarkCircleIcon,
   ClipboardDocumentCheckIcon,
   ListBulletIcon,
-  PaperClipIcon
+  PaperClipIcon,
+  LanguageIcon
 } from "@heroicons/react/24/outline";
 import { Tabs, Tab } from "@nextui-org/react";
 import { useRouter } from "next/router";
@@ -20,13 +21,19 @@ import { Chunk } from "@/src/types/types";
 import { ListboxWrapper } from "@/components/ListboxWrapper";
 import PDFViewer from "@/components/global/PDFViewer";
 import WebsiteViewer from "@/components/global/WebsiteViewer";
+import { TranslationPopup } from "@/components/global/Translate";
 interface DropdownPosition {
   x: number;
   y: number;
 }
 
-const TextInteraction: React.FC = () => {
+interface TextInteractionProps{
+  handleActionDocument: (option: string, selection: string) => void
+}
+
+const TextInteraction: React.FC<TextInteractionProps> = ({handleActionDocument}) => {
   const [selection, setSelection] = useState<string | null>(null);
+  const [showPopup, setShowPopup] = useState(false)
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const [dropdownPosition, setDropdownPosition] = useState<DropdownPosition>({
     x: 0,
@@ -41,9 +48,7 @@ const TextInteraction: React.FC = () => {
   const [originalChunks, setOriginalChunks] = useState<Chunk[]>([]); // Store the initial full chunk data
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isSearching, setIsSearching] = useState<boolean>(false);
-  const docs = [
-    { uri: "https://url-to-my-pdf.pdf" }, // Remote file
-  ];
+  const [contentTranslate, setContentTranslate] = useState<string>('')
   const handleGetChunkDocument = async () => {
     try {
       const data = await getChunkDocument(document_id as string);
@@ -109,6 +114,7 @@ const TextInteraction: React.FC = () => {
       ) {
         event.preventDefault();
         setSelection(selectedText);
+        setContentTranslate(selectedText)
         setShowDropdown(true);
         const x = event.clientX;
         const y = event.clientY;
@@ -147,7 +153,12 @@ const TextInteraction: React.FC = () => {
   }, []);
 
   const handleOptionClick = (option: string) => {
-    console.log(`Selected option: ${option} for text: ${selection}`);
+    handleActionDocument(option, selection as string)
+    if(option === 'translate') {
+      setShowPopup(true)
+      console.log(selection)
+
+    }
     setShowDropdown(false);
     setSelection(null);
     window.getSelection()?.removeAllRanges();
@@ -160,7 +171,7 @@ const TextInteraction: React.FC = () => {
           <div ref={textRef} className="p-4 rounded relative leading-relaxed">
           <div className="border h-[100%-100px]">
           
-          {/* <PDFViewer fileUrl="/testdoc.docx" fileType="docx" /> */}
+          {/* <PDFViewer fileUrl="/ts1.pdf" fileType="pdf" /> */}
           <WebsiteViewer websiteUrl="https://en.wikipedia.org/wiki/Average_human_height_by_country" />
             </div>
           </div>
@@ -204,13 +215,13 @@ const TextInteraction: React.FC = () => {
       {showDropdown && (
         <div
           ref={dropdownRef}
-          className="shadow-md absolute z-50 opacity-100 transition-opacity duration-300 ease-out rounded-md bg-zinc-800"
+          className=" dark:bg-zinc-800 bg-zinc-200 shadow-md absolute z-50 opacity-100 transition-opacity duration-300 ease-out rounded-md "
           style={{ top: dropdownPosition.y, left: dropdownPosition.x }}
         >
           {selection ? (
             <ListboxWrapper>
               <Listbox
-              className="p-0"
+              className="p-0 "
                 aria-label="Actions"
                 onAction={(key) => handleOptionClick(key as string)}
               >
@@ -231,9 +242,14 @@ const TextInteraction: React.FC = () => {
                     vào ghi chú
                   </div>
                 </ListboxItem>
-                <ListboxItem textValue="copy" key="summarize">
+                <ListboxItem textValue="copy" key="quote">
                   <div className="flex items-center">
                     <PaperClipIcon className="pr-1 w-5 h-5" /> Quote
+                  </div>
+                </ListboxItem>
+                <ListboxItem textValue="copy" key="translate">
+                  <div className="flex items-center">
+                    <LanguageIcon className="pr-1 w-5 h-5" /> Translate
                   </div>
                 </ListboxItem>
               </Listbox>
@@ -249,6 +265,14 @@ const TextInteraction: React.FC = () => {
             </ListboxWrapper>
           )}
         </div>
+      )}
+      {showPopup && (
+        <TranslationPopup 
+          text={contentTranslate as string} 
+          onClose={() => setShowPopup(false)}
+          onSaveNote={() => {}}
+          position={dropdownPosition}
+        />
       )}
     </div>
   );
