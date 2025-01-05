@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Copy, Settings2, BookMarked, X, Loader2  } from 'lucide-react'
+import { Copy, Settings2, BookMarked, X, Loader2 } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -21,13 +21,14 @@ export function TranslationPopup({ text, onClose, onSaveNote, position }: Transl
 
   useEffect(() => {
     if(text !== undefined) {
-        handleTranslate()
+        handleTranslate('en', 'vi')
     }
   },[text])
 
-  const handleTranslate = async () => {
+  const handleTranslate = async (sourceLanguage: string, targetLanguage: string) => {
+    setResult('')
     try {
-        const data = await translateText(text as string, `vi`, `en`)
+        const data = await translateText(text as string, sourceLanguage, targetLanguage)
         setResult(data.data.result)
     } catch (e) {
         console.log(e)
@@ -40,10 +41,12 @@ export function TranslationPopup({ text, onClose, onSaveNote, position }: Transl
 
   const handleSourceLanguageChange = (value: string) => {
     setSourceLanguage(value)
+    handleTranslate(value, targetLanguage)  
   }
 
   const handleTargetLanguageChange = (value: string) => {
     setTargetLanguage(value)
+    handleTranslate(sourceLanguage, value)  
   }
 
   return (
@@ -52,7 +55,7 @@ export function TranslationPopup({ text, onClose, onSaveNote, position }: Transl
         left: `${position?.x}px`,
         top: `${position?.y}px`,
     }}
-    className="fixed bg-zinc-100 dark:bg-zinc-900 rounded-lg shadow-lg p-2 min-w-[200px]">
+    className="max-w-80 fixed bg-zinc-100 dark:bg-zinc-900 rounded-lg shadow-lg p-2 min-w-[200px]">
       <div className="flex flex-col gap-2">
             {result === '' ? (
                     <div className="flex items-center justify-center">
@@ -113,4 +116,3 @@ export function TranslationPopup({ text, onClose, onSaveNote, position }: Transl
     </Card>
   );
 }
-

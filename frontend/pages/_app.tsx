@@ -6,14 +6,13 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { Provider } from "react-redux";
 import { useEffect } from "react";
-
+import {NextIntlClientProvider} from 'next-intl';
 import { store } from "@/src/store/store";
 import { Toaster } from "@/components/ui/toaster";
 import { fontSans, fontMono } from "@/config/fonts";
 import "@/styles/globals.css";
 import '@/styles/config.css'
 import "remixicon/fonts/remixicon.css";
-
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -39,6 +38,11 @@ export default function App({ Component, pageProps }: AppProps) {
   
 
   return (
+    <NextIntlClientProvider
+      locale={router.locale}
+      timeZone="Asia/Ho_Chi_Minh"
+      messages={pageProps.messages}
+    >
     <Provider store={store}>
       <NextUIProvider navigate={router.push}>
         <NextThemesProvider attribute="class" defaultTheme="dark">
@@ -47,6 +51,7 @@ export default function App({ Component, pageProps }: AppProps) {
         </NextThemesProvider>
       </NextUIProvider>
     </Provider>
+    </NextIntlClientProvider>
   );
 }
 

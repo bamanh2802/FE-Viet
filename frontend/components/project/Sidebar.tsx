@@ -17,6 +17,21 @@ import {
   ChatBubbleLeftIcon,
   WindowIcon,
 } from "@heroicons/react/24/outline";
+import {
+  ContextMenu,
+  ContextMenuCheckboxItem,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuRadioGroup,
+  ContextMenuRadioItem,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu"
 import { Listbox, ListboxItem, Button, Tooltip } from "@nextui-org/react";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -144,7 +159,6 @@ const Sidebar: React.FC<SidebarProps> = ({
         updatedConversations();
       }
 
-      console.log(data);
 
       toast({
         description: "Rename Successfully!",
@@ -268,10 +282,27 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const handleContextMenu = (e: React.MouseEvent, id: string, name: string) => {
     e.preventDefault();
-    setContextMenu({ show: true, x: e.pageX, y: e.pageY, id });
+  
+    const menuWidth = 200; 
+    const menuHeight = 200; 
+    const { innerWidth, innerHeight } = window;
+  
+    let x = e.pageX;
+    let y = e.pageY;
+  
+    if (x + menuWidth > innerWidth) {
+      x = innerWidth - menuWidth - 10; 
+    }
+  
+    if (y + menuHeight > innerHeight) {
+      y = innerHeight - menuHeight - 10; 
+    }
+  
+    setContextMenu({ show: true, x, y, id });
     setSelectedId(id);
     setSelectedName(name);
   };
+  
 
   const handleClick = (e: React.MouseEvent, id: string, name: string) => {
     setSelectedId(id);
@@ -396,7 +427,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
           {/* Các item con cho mục "Tài liệu" */}
           <div
-            className={`mt-2 overflow-auto transition-max-height duration-300 ease-in-out ${expandedSections.includes("documents") ? "max-h-96" : "max-h-0"}`}
+            className={`mt-2 overflow-auto transition-max-height duration-300 ease-in-out ${expandedSections.includes("documents") ? "max-h-fit" : "max-h-0"}`}
           >
             {expandedSections.includes("documents") && (
               <div className="transition-all mt-1 space-y-1 border-gray-400">
@@ -472,7 +503,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             />
           </div>
           <div
-            className={`mt-2 overflow-auto transition-max-height duration-300 ease-in-out ${expandedSections.includes("images") ? "max-h-96" : "max-h-0"}`}
+            className={`mt-2 overflow-auto transition-max-height duration-300 ease-in-out ${expandedSections.includes("images") ? "max-h-fit" : "max-h-0"}`}
           >
             {/* Các item con cho mục "Hình ảnh" */}
             {/* {expandedSections.includes('images') && (
@@ -527,7 +558,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
           </div>
           <div
-            className={`mt-2 overflow-auto transition-max-height duration-300 ease-in-out ${expandedSections.includes("conversation") ? "max-h-96" : "max-h-0"}`}
+            className={`mt-2 overflow-auto transition-max-height duration-300 ease-in-out ${expandedSections.includes("conversation") ? "max-h-fit" : "max-h-0"}`}
           >
             {expandedSections.includes("conversation") && (
               <div className="transition-all mt-1 space-y-1 border-gray-400">
@@ -619,7 +650,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
           </div>
           <div
-            className={`mt-2 overflow-auto transition-max-height duration-300 ease-in-out ${expandedSections.includes("note") ? "max-h-96" : "max-h-0"}`}
+            className={`mt-2 overflow-auto transition-max-height duration-300 ease-in-out ${expandedSections.includes("note") ? "max-h-fit" : "max-h-0"}`}
           >
             {expandedSections.includes("note") && (
               <div className="transition-all mt-1 space-y-1 border-gray-400">
@@ -694,9 +725,10 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Có thể thêm các mục khác tương tự */}
       </div>
+    
 
       <div
-        className={`dark:bg-zinc-800 bg-zinc-200 transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith("doc-") ? "visible opacity-100" : "invisible opacity-0"} context-menu absolute rounded-lg shadow-lg w-48`}
+        className={`dark:bg-zinc-800 bg-zinc-50 transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith("doc-") ? "visible opacity-100" : "invisible opacity-0"} context-menu absolute rounded-lg shadow-lg w-48`}
         style={{ top: contextMenu.y, left: contextMenu.x }}
       >
         <ListboxWrapper>
@@ -747,7 +779,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </ListboxWrapper>
       </div>
       <div
-        className={`dark:bg-zinc-800 bg-zinc-200 transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith("conv-") ? "visible opacity-100" : "invisible opacity-0"} context-menu absolute rounded-lg shadow-lg w-48`}
+        className={`dark:bg-zinc-800 bg-zinc-50 transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith("conv-") ? "visible opacity-100" : "invisible opacity-0"} context-menu absolute rounded-lg shadow-lg w-48`}
         style={{ top: contextMenu.y, left: contextMenu.x }}
       >
         <ListboxWrapper>
@@ -793,7 +825,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </ListboxWrapper>
       </div>
       <div
-        className={`dark:bg-zinc-800 bg-zinc-200 transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith("note-") ? "visible opacity-100" : "invisible opacity-0"} context-menu absolute rounded-lg shadow-lg w-48`}
+        className={`dark:bg-zinc-800 bg-zinc-50 transition-opacity z-50 ${contextMenu.show && contextMenu.id.startsWith("note-") ? "visible opacity-100" : "invisible opacity-0"} context-menu absolute rounded-lg shadow-lg w-48`}
         style={{ top: contextMenu.y, left: contextMenu.x }}
       >
         <ListboxWrapper>

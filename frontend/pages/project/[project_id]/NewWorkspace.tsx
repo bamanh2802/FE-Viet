@@ -1,25 +1,29 @@
-import { Listbox, ListboxItem, Button, Selection } from "@nextui-org/react";
+import React, { useState, useEffect, FC } from "react";
+import { useRouter } from "next/router";
+import { useDispatch } from "react-redux";
+import { 
+  Listbox, 
+  ListboxItem, 
+  Button, 
+  Modal, 
+  ModalContent, 
+  ModalHeader, 
+  ModalBody, 
+  ModalFooter,
+  Input
+} from "@nextui-org/react";
 import {
   PlusIcon,
   DocumentTextIcon,
   PresentationChartBarIcon,
-  GlobeAltIcon,
+  LinkIcon,
   NewspaperIcon,
 } from "@heroicons/react/24/outline";
 
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { ListboxWrapper } from "@/components/ListboxWrapper";
-
 import { Document } from "@/src/types/types";
-
-import React, { useState, useEffect, FC } from "react";
-
-import { createNewConversation } from "@/service/projectApi";
 import { getAllConversationByUser } from "@/service/apis";
 import { setConversations } from "@/src/store/conversationSlice";
-import { useDispatch } from "react-redux";
-
-import { useRouter } from "next/router";
+import { createNewConversation } from "@/service/projectApi";
 
 interface NewWorkspaceProps {
   isOpen: boolean;
@@ -39,15 +43,16 @@ const NewWorkspace: FC<NewWorkspaceProps> = ({
   documents,
 }) => {
   const router = useRouter();
+  const dispatch = useDispatch();
   const [selectedKeys, setSelectedKeys] = React.useState(new Set([""]));
   const [conversationName, setConversationName] = useState<string>("");
   const [isDisable, setIsDisable] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const dispatch = useDispatch()
 
-  const handleSelectionChange = (keys: Selection) => {
-    setSelectedKeys(keys as Set<string>);
+  const handleSelectionChange = (keys: any) => {
+    setSelectedKeys(keys);
   };
+
   const handleCreateNewConversation = async () => {
     const selectedDocsArray = Array.from(selectedKeys).filter(key => key !== '');
     setIsLoading(true);
@@ -67,20 +72,10 @@ const NewWorkspace: FC<NewWorkspaceProps> = ({
     onClose();
   };
 
-  const handleGetConversations = async () => {
-    try {
-      const data = await getAllConversationByUser();
-      dispatch(setConversations(data.data))
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   const handleRouterWorkspace = (conversationId: string) => {
     updateConversation();
     if (from === "project") {
       const url = `/project/${projectId}/workspace/${conversationId}`;
-
       window.open(url, "_blank");
     } else if (from === "conversation") {
       router.push(`/project/${projectId}/workspace/${conversationId}`);
@@ -106,89 +101,88 @@ const NewWorkspace: FC<NewWorkspaceProps> = ({
       Array.from(selectedKeys)
         .map((key) => {
           const doc = documents?.find((doc) => doc.document_id === key);
-
           return doc ? doc.document_name : "";
         })
         .join(", "),
-    [selectedKeys],
+    [selectedKeys, documents],
   );
 
-  // Function to get the icon based on document type
   const getDocumentIcon = (type: string) => {
     switch (type) {
       case "pdf":
         return <DocumentTextIcon className="w-5 h-5 inline-block mr-1" />;
       case "pptx":
-        return (
-          <PresentationChartBarIcon className="w-5 h-5 inline-block mr-1" />
-        );
-      case "web":
-        return <GlobeAltIcon className="w-5 h-5 inline-block mr-1" />;
-      case "word":
+        return <PresentationChartBarIcon className="w-5 h-5 inline-block mr-1" />;
+      case "url":
+        return <LinkIcon className="w-5 h-5 inline-block mr-1" />;
+      case "docx":
         return <NewspaperIcon className="w-5 h-5 inline-block mr-1" />;
       default:
-        return null; // Default case if type doesn't match
+        return null; 
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[827px] bg-zinc-50 dark:bg-zinc-900 border-none">
-        <DialogTitle>Select Files</DialogTitle>
+    <Modal 
+      isOpen={isOpen} 
+      onClose={onClose}
+      size="2xl"
+      scrollBehavior="inside"
+    >
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalHeader className="flex flex-col gap-1">Select Files</ModalHeader>
+            <ModalBody>
+              <div className="mt-4">
+                <span className="block text-sm font-medium">Conversation Name</span>
+                <Input
+                  className="mt-2"
+                  placeholder="Enter conversation name"
+                  value={conversationName}
+                  onChange={(e) => setConversationName(e.target.value)}
+                />
+              </div>
 
-        <div className="mt-4">
-          <span className="block text-sm font-medium">Conversation Name</span>
-          <input
-            className="w-full mt-2 p-2 border border-gray-300 rounded-md"
-            placeholder="Enter conversation name"
-            type="text"
-            value={conversationName}
-            onChange={(e) => setConversationName(e.target.value)}
-          />
-        </div>
-
-        <div className="custom-width mt-4 ">
-          <ListboxWrapper>
-            <Listbox
-              disallowEmptySelection
-              aria-label="File selection"
-              className="max-w-none max-h-96 overflow-auto"
-              selectionMode="multiple"
-              variant="flat"
-              selectedKeys={selectedKeys}
-              onSelectionChange={handleSelectionChange}
-            >
-              {documents?.map((doc) => (
-                <ListboxItem
-                  key={doc.document_id}
-                  textValue="Add"
-                  value={doc.document_id}
+              <div className="mt-4">
+                <Listbox
+                  aria-label="File selection"
+                  selectionMode="multiple"
+                  selectedKeys={selectedKeys}
+                  onSelectionChange={handleSelectionChange}
                 >
-                  {getDocumentIcon(doc.type)} {/* Add the icon here */}
-                  {doc.document_name} ({doc.type})
-                </ListboxItem>
-              ))}
-            </Listbox>
-          </ListboxWrapper>
-        </div>
+                  {documents?.map((doc) => (
+                    <ListboxItem key={doc.document_id} textValue={doc.document_name}>
+                      <div className="flex items-center">
+                        {getDocumentIcon(doc.type)}
+                        <span>{doc.document_name} ({doc.type})</span>
+                      </div>
+                    </ListboxItem>
+                  ))}
+                </Listbox>
+              </div>
 
-        <p className="text-small text-default-500 mt-2">
-          Selected files: {selectedValue}
-        </p>
-
-        <Button
-          className="mt-4"
-          color="default"
-          isDisabled={isDisable}
-          isLoading={isLoading}
-          startContent={!isLoading && <PlusIcon className="w-5 h-5" />}
-          onClick={() => handleCreateNewConversation()}
-        >
-          Create
-        </Button>
-      </DialogContent>
-    </Dialog>
+              <p className="text-small text-default-500 mt-2">
+                Selected files: {selectedValue}
+              </p>
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                color="primary"
+                isDisabled={isDisable}
+                isLoading={isLoading}
+                startContent={!isLoading && <PlusIcon className="w-5 h-5" />}
+                onClick={handleCreateNewConversation}
+              >
+                Create
+              </Button>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
   );
 };
 
 export default NewWorkspace;
+

@@ -101,6 +101,34 @@ const chatSlice = createSlice({
         conversation.isLoading = false;
       }
     },
+    addChatHistory: (
+      state,
+      action: PayloadAction<{ conversation_id: string; messages: any[] }>
+    ) => {
+      const { conversation_id, messages } = action.payload;
+
+      if (!state.conversations[conversation_id]) {
+        state.conversations[conversation_id] = {
+          messages: [],
+          isLoading: false,
+        };
+      }
+
+      const conversation = state.conversations[conversation_id];
+
+      messages.forEach((msg) => {
+        const { message_id, content, created_at, chunk_ids = [], document_ids = [] } = msg;
+        const sender = message_id.startsWith("umsg-") ? "User" : "Server";
+
+        conversation.messages.push({
+          id: message_id,
+          sender,
+          content,
+          status: "sent", 
+          chunk_ids,
+        });
+      });
+    }
   },
 });
 
@@ -109,6 +137,7 @@ export const {
   addServerMessage,
   updateServerMessage,
   finalizeServerMessage,
+  addChatHistory,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

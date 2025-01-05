@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import MarkdownRenderer from './CodeBlock';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/src/store/store';
 
 
 interface TypingMessageProps {
@@ -9,6 +11,10 @@ interface TypingMessageProps {
 const TypingMessage: React.FC<TypingMessageProps> = ({ message }) => {
   const [displayedText, setDisplayedText] = useState<string>('');
   const [index, setIndex] = useState<number>(0);
+  const conversation = useSelector(
+    (state: RootState) =>
+      state.chat.conversations
+  );
 
   useEffect(() => {
     if (index < message.length) {

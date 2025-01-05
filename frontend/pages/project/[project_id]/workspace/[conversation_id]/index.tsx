@@ -117,10 +117,11 @@ const WorkSpace: React.FC = () => {
         conversations={conversations}
         updatedConversations={handleGetConversation}
         onSelectConversation={handleSelectConversation}
+        projectId={project_id as string}
       />
       <div className="flex-1 flex flex-col relative">
-        <div className="z-[5] absolute top-0 w-full h-11 bg-zinc-100 dark:bg-zinc-800" />
-        <div className="absolute top-2 left-6 z-10">
+        <div className="z-[20] absolute top-0 w-full h-11 bg-zinc-100 dark:bg-zinc-800" />
+        <div className="absolute top-2 left-6 z-30">
           <Breadcrumbs>
             <BreadcrumbItem onClick={handleBackHome}>
               <HomeIcon className="w-4 h-4" />
@@ -133,7 +134,7 @@ const WorkSpace: React.FC = () => {
             <BreadcrumbItem>{conversationName}</BreadcrumbItem>
           </Breadcrumbs>
         </div>
-        <div className="absolute top-2 right-6 flex items-center">
+        <div className="absolute z-30 top-2 right-6 flex items-center">
           <div className="z-10 mr-6">
           <Select defaultValue="gemini">
             <SelectTrigger className="w-[180px] shadow-none border-none">
@@ -166,6 +167,8 @@ const WorkSpace: React.FC = () => {
           conversation_id={conversation_id as string}
           isDocument={false}
           project_id={project_id as string}
+          content=''
+          option=''
         />
       </div>
       <Dialog open={isOpenAPI} onOpenChange={handleToggleAPI}>

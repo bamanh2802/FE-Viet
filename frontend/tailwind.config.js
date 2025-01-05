@@ -15,6 +15,5 @@ module.exports = {
   plugins: [
     nextui(),
     require("tailwind-scrollbar-hide"),
-    require("tailwindcss-animate"),
   ],
 };

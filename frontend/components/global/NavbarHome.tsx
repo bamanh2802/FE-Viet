@@ -1,6 +1,5 @@
-// components/YourComponent.tsx
-import React, { useState } from "react"; // React imports
-import { useRouter } from "next/router"; // Next.js imports
+import React, { useState } from "react";
+import { useRouter } from "next/router";
 
 // NextUI imports
 import {
@@ -9,23 +8,22 @@ import {
   NavbarContent,
   NavbarItem,
   Input,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
 } from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 
-import { Button } from "../ui/button";
 
 // Heroicons imports
 import { PlusIcon, HomeIcon } from "@heroicons/react/24/outline";
 
 // Lucide imports
-import { Loader2 } from "lucide-react";
+import { Loader2 } from 'lucide-react';
 
 // Component imports
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 import UserDropdown from "./UserDropdown";
 
 // Service imports
@@ -33,9 +31,6 @@ import { createProject } from "@/service/apis";
 
 // Type imports
 import { User } from "@/src/types/types";
-
-// CSS imports
-
 
 interface NavbarHomeProps {
   user: User;
@@ -46,7 +41,7 @@ const NavbarHome: React.FC<NavbarHomeProps> = ({ user, updatedProject }) => {
   const router = useRouter();
   const [isNewProject, setIsNewProject] = useState<boolean>(false);
   const [isLoadingCreate, setIsLoadingCreate] = useState<boolean>(false);
-  const [projectName, setProjectName] = useState<string>();
+  const [projectName, setProjectName] = useState<string>("");
 
   const handleToggleNewProject = () => {
     setIsNewProject(!isNewProject);
@@ -57,14 +52,14 @@ const NavbarHome: React.FC<NavbarHomeProps> = ({ user, updatedProject }) => {
     setIsLoadingCreate(true);
 
     try {
-      const data = await createProject(projectName as string);
-
+      const data = await createProject(projectName);
       updatedProject();
       router.push(`/project/${data.data.project_id}`);
     } catch (error) {
       console.log(error);
     } finally {
       setIsLoadingCreate(false);
+      setIsNewProject(false);
     }
   };
 
@@ -83,61 +78,68 @@ const NavbarHome: React.FC<NavbarHomeProps> = ({ user, updatedProject }) => {
         <NavbarItem>
           <Button
             className="dark:bg-zinc-900 bg-zinc-50"
-            variant="outline"
+            variant="ghost"
             onClick={handleToggleNewProject}
           >
+            <PlusIcon className="w-5 h-5" />
             New Project
-            <PlusIcon />
           </Button>
         </NavbarItem>
         <UserDropdown />
       </NavbarContent>
 
-      <Dialog open={isNewProject} onOpenChange={handleToggleNewProject}>
-        <DialogContent className="bg-zinc-50 dark:bg-zinc-900 border-none">
-          {/* Use DialogTitle and DialogDescription */}
-          <DialogTitle>Create Project</DialogTitle>
-          <DialogDescription>
-            Create your new project in one-click.
-          </DialogDescription>
-
-          <form id="create-project-form" onSubmit={handleCreateProject}>
-            <div className="grid w-full items-center gap-4 mt-4">
-              <div className="flex flex-col space-y-1.5">
-                <label htmlFor="name">Name</label>
-                <Input
-                  required
-                  className="rounded-md border-1 border-gray-400"
-                  id="name"
-                  placeholder="Name of your project"
-                  onChange={(e) => setProjectName(e.target.value)}
-                />
+      <Modal 
+        isOpen={isNewProject} 
+        onClose={handleToggleNewProject}
+        classNames={{
+          base: "dark:bg-zinc-900 bg-zinc-50",
+          header: "border-b border-gray-200 dark:border-gray-700",
+          body: "py-6",
+          footer: "border-t border-gray-200 dark:border-gray-700"
+        }}
+      >
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1">
+            Create Project
+          </ModalHeader>
+          <ModalBody>
+            <p className="text-gray-500 dark:text-gray-400">
+              Create your new project in one-click.
+            </p>
+            <form id="create-project-form" onSubmit={handleCreateProject}>
+              <div className="grid w-full items-center gap-4 mt-4">
+                <div className="flex flex-col space-y-1.5">
+                  <Input
+                    label="Name"
+                    required
+                    placeholder="Name of your project"
+                    value={projectName}
+                    onChange={(e) => setProjectName(e.target.value)}
+                  />
+                </div>
               </div>
-            </div>
-          </form>
-
-          {/* Footer for the Dialog with buttons */}
-          <div className="flex justify-between mt-6">
+            </form>
+          </ModalBody>
+          <ModalFooter>
             <Button
-              className="dark:bg-zinc-900 bg-zinc-50 text-gray-800 dark:text-gray-100"
+              color="danger"
+              variant="light"
               onClick={handleToggleNewProject}
             >
               Cancel
             </Button>
             <Button
-              className="dark:bg-zinc-900 bg-zinc-50 text-gray-800 dark:text-gray-100"
               disabled={isLoadingCreate}
               form="create-project-form"
               type="submit"
+              isLoading={isLoadingCreate}
             >
-              {isLoadingCreate && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
+
               Create
             </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Navbar>
   );
 };

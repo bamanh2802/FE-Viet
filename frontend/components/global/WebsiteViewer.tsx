@@ -1,58 +1,90 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const WebsiteViewer: React.FC<{ websiteUrl: string }> = ({ websiteUrl }) => {
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; visible: boolean }>({
-    x: 0,
-    y: 0,
-    visible: false,
-  });
+  const [content, setContent] = useState<string>('');
+  const [error, setError] = useState<string>('');
 
-  const overlayRef = useRef<HTMLDivElement>(null);
-
-  const handleContextMenu = (e: React.MouseEvent) => {
-    e.preventDefault();
-
-    const selection = window.getSelection();
-    if (selection && !selection.isCollapsed) {
-      setContextMenu({
-        x: e.clientX,
-        y: e.clientY,
-        visible: true,
-      });
-    } else {
-      setContextMenu({ ...contextMenu, visible: false });
+  // Hàm trích xuất URL gốc
+  const extractOriginalUrl = (complexUrl: string) => {
+    try {
+      // Tìm và trích xuất URL gốc
+      const match = complexUrl.match(/https?:\/\/[^?]+/);
+      return match ? match[0] : websiteUrl;
+    } catch (err) {
+      return websiteUrl;
     }
   };
 
-  const handleCloseContextMenu = () => setContextMenu({ ...contextMenu, visible: false });
+  useEffect(() => {
+    const fetchWebContent = async () => {
+      try {
+        // Trích xuất URL gốc
+        const originalUrl = extractOriginalUrl(websiteUrl);
+        
+        // Thử nhiều phương án proxy
+        const proxyUrls = [
+          `https://cors-anywhere.herokuapp.com/${originalUrl}`,
+          `https://api.allorigins.win/get?url=${encodeURIComponent(originalUrl)}`,
+        ];
 
- 
+        let success = false;
+        for (const proxyUrl of proxyUrls) {
+          try {
+            const response = await axios.get(proxyUrl, {
+              headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+              }
+            });
+
+            // Kiểm tra và set nội dung
+            const content = response.data.contents || response.data;
+            if (content) {
+              setContent(content);
+              success = true;
+              break;
+            }
+          } catch (proxyError) {
+            console.log(`Proxy ${proxyUrl} failed`);
+          }
+        }
+
+        if (!success) {
+          setError('Không thể tải nội dung từ URL này');
+        }
+      } catch (err) {
+        setError('Lỗi không xác định');
+        console.error(err);
+      }
+    };
+
+    fetchWebContent();
+  }, [websiteUrl]);
 
   return (
-    <div
-      style={{
-        position: 'relative',
-        width: '100%',
-        height: 'calc(100vh - 160px)',
-        overflow: 'hidden',
-        border: '1px solid #e0e0e0',
-        borderRadius: '8px',
-      }}
-      onContextMenu={handleContextMenu}
-    >
-      {/* Website iframe */}
-      <iframe
-        src={websiteUrl}
-        title="Website Viewer"
-        style={{
-          width: '100%',
-          height: '100%',
-          border: 'none',
-        }}
-      ></iframe>
+    <div style={{
+      width: '100%',
+      height: 'calc(100vh - 160px)',
+      overflow: 'auto',
+      border: '1px solid #e0e0e0',
+      borderRadius: '8px',
+      padding: '10px'
+    }}>
+      {error && (
+        <div style={{ color: 'red', textAlign: 'center' }}>
+          {error}
+        </div>
+      )}
 
-      {/* Overlay for context menu */}
-     
+      {content && (
+        <div 
+          dangerouslySetInnerHTML={{ __html: content }}
+          style={{
+            maxWidth: '100%',
+            overflow: 'auto'
+          }}
+        />
+      )}
     </div>
   );
 };

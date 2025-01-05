@@ -38,6 +38,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@nextui-org/react"
 
 // Service imports
 import { deleteProjectById, renameProjectById } from "@/service/apis"; 
@@ -429,10 +430,17 @@ const HomeMain: React.FC<HomeMainProps> = ({
                   )}
                 </div>
                 <div className="mt-6">
-                  <h3 className="flex items-center text-lg  font-medium mb-3">
-                    <ClockIcon className="opacity-75 mr-2 w-5 h-5" />
-                    Recent Documents
-                  </h3>
+                  {
+                    (documents?.length !== 0 || documents === undefined) ? (
+                    <h3 className="flex items-center text-lg  font-medium mb-3">
+                      <ClockIcon className="opacity-75 mr-2 w-5 h-5" />
+                      Recent Documents
+                    </h3>
+                    ) : (
+                      <>
+                      </>
+                    )
+                  }
                   <div className="flex flex-wrap gap-6">
                     {documents === undefined ? (
                       <>
@@ -509,10 +517,17 @@ const HomeMain: React.FC<HomeMainProps> = ({
                 </div>
 
                 <div className="mt-6">
-                  <h3 className="flex items-center text-lg  font-medium mb-3">
-                    <ClockIcon className="opacity-75 mr-2 w-5 h-5" />
-                    Recent Conversations
-                  </h3>
+                  {
+                    (conversations?.length !== 0 || conversations === undefined)? (
+                      <h3 className="flex items-center text-lg  font-medium mb-3">
+                        <ClockIcon className="opacity-75 mr-2 w-5 h-5" />
+                        Recent Conversations
+                      </h3>
+                    ) : (
+                      <>
+                      </>
+                    )
+                  }
                   <div className="flex flex-wrap gap-3">
                     {conversations === undefined ? (
                       <>
@@ -708,72 +723,96 @@ const HomeMain: React.FC<HomeMainProps> = ({
         </ListboxWrapper>
       </div>
 
-      <Dialog open={isOpenRename} onOpenChange={handleToggleRename}>
-        <DialogContent className="dark:bg-zinc-900 bg-zinc-50 border-none">
-          <DialogTitle>Edit Project</DialogTitle>
-          <CardHeader>
-            <CardDescription>Edit the details of your project.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault(); // Ngăn reload trang
-                handleSaveChanges(); // Gọi hàm lưu dữ liệu
-              }}
-            >
-              <div className="grid w-full items-center gap-4">
-                <div className="flex flex-col space-y-1.5">
-                  <label htmlFor="projectName">Name</label>
-                  <Input
-                    required
-                    className="rounded-md border-1 border-gray-400"
-                    id="projectName"
-                    placeholder="Name of your project"
-                    value={selectedProject?.name || ""}
-                    onChange={(e) =>
-                      setSelectedProject((prev) =>
-                        prev ? { ...prev, name: e.target.value } : null,
-                      )
-                    }
-                  />
-                </div>
-              </div>
-            </form>
-          </CardContent>
-          <CardFooter className="flex justify-between">
-            <Button variant="bordered" onClick={() => handleToggleRename()}>
-              Cancel
-            </Button>
-            <Button isLoading={isLoadingRename} onClick={handleSaveChanges}>
-              Save
-            </Button>
-          </CardFooter>
-        </DialogContent>
-      </Dialog>
+      <Modal 
+        isOpen={isOpenRename} 
+        onOpenChange={handleToggleRename}
+        classNames={{
+          base: "dark:bg-zinc-900 bg-zinc-50",
+          header: "border-b border-gray-200 dark:border-gray-700",
+          body: "py-6",
+          footer: "border-t border-gray-200 dark:border-gray-700"
+        }}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                <h2 className="text-lg font-semibold">Edit Project</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Edit the details of your project.</p>
+              </ModalHeader>
+              <ModalBody>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSaveChanges();
+                  }}
+                >
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-1.5">
+                      <label htmlFor="projectName" className="text-sm font-medium">Name</label>
+                      <Input
+                        required
+                        id="projectName"
+                        placeholder="Name of your project"
+                        value={selectedProject?.name || ""}
+                        onChange={(e) =>
+                          setSelectedProject((prev) =>
+                            prev ? { ...prev, name: e.target.value } : null
+                          )
+                        }
+                      />
+                    </div>
+                  </div>
+                </form>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="default" variant="bordered" onPress={onClose}>
+                  Cancel
+                </Button>
+                <Button color="primary" isLoading={isLoadingRename} onPress={handleSaveChanges}>
+                  Save
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
 
-      <AlertDialog open={isOpenDelete} onOpenChange={handleToggleDelete}>
-        <AlertDialogContent className="dark:bg-zinc-900 bg-zinc-50 border-none">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center">
-              <ExclamationCircleIcon className="w-6 h-6 mr-2" />
-              Do you really want to delete {selectedProject?.name}
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. Project cannot be restored.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <Button onClick={() => handleToggleDelete()}>Cancel</Button>
-            <Button
-              color="danger"
-              isLoading={isLoadingDelete}
-              onClick={() => handleDeleteProject()}
-            >
-              Delete
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <Modal 
+      backdrop="blur"
+      isOpen={isOpenDelete} 
+        onOpenChange={handleToggleDelete}
+        classNames={{
+          base: "dark:bg-zinc-900 bg-zinc-50",
+          header: "border-b border-gray-200 dark:border-gray-700",
+          body: "py-6",
+          footer: "border-t border-gray-200 dark:border-gray-700"
+        }}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex items-center gap-2">
+                <ExclamationCircleIcon className="w-6 h-6 text-danger" />
+                <h2 className="text-lg font-semibold">Do you really want to delete {selectedProject?.name}?</h2>
+              </ModalHeader>
+              <ModalBody>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  This action cannot be undone. Project cannot be restored.
+                </p>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="default" variant="bordered" onPress={onClose}>
+                  Cancel
+                </Button>
+                <Button color="danger" isLoading={isLoadingDelete} onPress={handleDeleteProject}>
+                  Delete
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   );
 };

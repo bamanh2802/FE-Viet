@@ -161,3 +161,57 @@ export async function keywordSearchChunks(documentId: string, query: string) {
 
   return response;
 }
+
+export async function getDocumentUrl (documentId: string) {
+  const accessToken = localStorage.getItem("access_token");
+
+  const response = await axios.get(
+    `${API_URL}/api/get-download-url/${documentId}`,
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        'accept': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+
+  return response;
+}
+
+export async function getDocumentById (documentId: string) {
+  const accessToken = localStorage.getItem("access_token");
+  const response = await axios.get(
+    `${API_URL}/api/documents/${documentId}`,
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        'accept': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+
+  return response;
+}
+
+export async function uploadUrlDocument(url: string, projectId: string) {
+  const accessToken = localStorage.getItem("access_token");
+
+  const response = await axios.post(
+    `${API_URL}/api/projects/new-document-from-url`,
+    {
+      url: url,
+      project_id: projectId,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json", 
+        Accept: "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  return response;
+}

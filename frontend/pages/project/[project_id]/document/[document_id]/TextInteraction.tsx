@@ -16,12 +16,14 @@ import API_URL from "@/service/ApiUrl";
 import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
 import "@cyntler/react-doc-viewer/dist/index.css";
 import 'pdfjs-dist/build/pdf.worker.entry';
-import { getChunkDocument, keywordSearchChunks } from "@/service/documentApi";
+import { getChunkDocument, keywordSearchChunks, getDocumentById } from "@/service/documentApi";
 import { Chunk } from "@/src/types/types";
 import { ListboxWrapper } from "@/components/ListboxWrapper";
 import PDFViewer from "@/components/global/PDFViewer";
 import WebsiteViewer from "@/components/global/WebsiteViewer";
 import { TranslationPopup } from "@/components/global/Translate";
+import { getDocumentUrl } from "@/service/documentApi";
+import { DocumentSkeleton } from "./DocumentSkeleton";
 interface DropdownPosition {
   x: number;
   y: number;
@@ -49,6 +51,8 @@ const TextInteraction: React.FC<TextInteractionProps> = ({handleActionDocument})
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isSearching, setIsSearching] = useState<boolean>(false);
   const [contentTranslate, setContentTranslate] = useState<string>('')
+  const [type, setType] = useState<string>('')
+  const [url, setUrl] = useState<string>('')
   const handleGetChunkDocument = async () => {
     try {
       const data = await getChunkDocument(document_id as string);
@@ -62,14 +66,30 @@ const TextInteraction: React.FC<TextInteractionProps> = ({handleActionDocument})
       console.log(e);
     }
   };
-
+  const handleGetUrlDocument = async () => {
+    try {
+      const data = await getDocumentUrl(document_id as string)
+      setUrl(data.data)
+    } catch (e){
+      console.log(e)
+    }
+  }
+  const handleGetDocumentById = async () => {
+    try {
+      const data = await getDocumentById(document_id as string) 
+      setType(data.data.type)
+    } catch (e) {
+      console.log(e)
+    }
+  }
   useEffect(() => {
     if (document_id !== undefined) {
       handleGetChunkDocument();
+      handleGetUrlDocument()
+      handleGetDocumentById()
     }
   }, [document_id]);
 
-  // Debounced search effect
   useEffect(() => {
     const delayDebounceFn = setTimeout(async () => {
       if (searchTerm) {
@@ -78,9 +98,9 @@ const TextInteraction: React.FC<TextInteractionProps> = ({handleActionDocument})
           const result = await keywordSearchChunks(
             document_id as string,
             searchTerm,
-          ); // Replace with your actual API call
+          );
 
-          setChunks(result.data); // Assuming API response has `data`
+          setChunks(result.data); 
         } catch (error) {
           console.error("Error fetching chunks:", error);
         } finally {
@@ -92,7 +112,6 @@ const TextInteraction: React.FC<TextInteractionProps> = ({handleActionDocument})
       }
     }, 1000); // 1-second delay
 
-    // Cleanup the timeout if the user types again before 1 second
     return () => clearTimeout(delayDebounceFn);
   }, [searchTerm, originalChunks]);
 
@@ -156,7 +175,6 @@ const TextInteraction: React.FC<TextInteractionProps> = ({handleActionDocument})
     handleActionDocument(option, selection as string)
     if(option === 'translate') {
       setShowPopup(true)
-      console.log(selection)
 
     }
     setShowDropdown(false);
@@ -170,9 +188,32 @@ const TextInteraction: React.FC<TextInteractionProps> = ({handleActionDocument})
         <Tab key="raw" title="Raw">
           <div ref={textRef} className="p-4 rounded relative leading-relaxed">
           <div className="border h-[100%-100px]">
+          {
+            type === 'pdf' && url !== '' &&  (
+              <PDFViewer fileUrl={url} fileType="pdf" /> 
+
+            )
+          }
+          {
+            type === 'doc' || type === 'docx' && url !== '' && (
+              <PDFViewer fileUrl={url} fileType="docx" /> 
+
+            )
+          }
+          {
+            type === 'url' && url !== '' &&  (
+          <WebsiteViewer websiteUrl={url}/> 
+
+            )
+          } 
+          {
+            (type === '' || url === '') && (
+              <DocumentSkeleton />
+            )
+          }
           
-          {/* <PDFViewer fileUrl="/ts1.pdf" fileType="pdf" /> */}
-          <WebsiteViewer websiteUrl="https://en.wikipedia.org/wiki/Average_human_height_by_country" />
+
+          {/* <PDFViewer fileUrl="https://viet.mos.ap-southeast-2.sufybkt.com/viet/proj-e75a98e2-9118-4480-9da4-5ea884f374e3%5Capplsci-14-05873.pdf?response-content-disposition=attachment%3B%20filename%3D%22proj-e75a98e2-9118-4480-9da4-5ea884f374e3%5Capplsci-14-05873.pdf%22&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=7LlOgEmWdDT_nDaLkN_sUfDL9M7UHVhbd_JSYjQ1%2F20241210%2Fap-southeast-1%2Fs3%2Faws4_request&X-Amz-Date=20241210T143628Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=f72ad3bc78faac47da6161de8170dbec6f4a694939b8d56d062400c222b6d11a" fileType="pdf" />  */}
             </div>
           </div>
         </Tab>
@@ -227,19 +268,17 @@ const TextInteraction: React.FC<TextInteractionProps> = ({handleActionDocument})
               >
                 <ListboxItem textValue="copy" key="copy">
                   <div className="flex items-center">
-                    <Square2StackIcon className="pr-1 w-5 h-5" /> Sao chép
+                    <Square2StackIcon className="pr-1 w-5 h-5" /> Copy
                   </div>
                 </ListboxItem>
                 <ListboxItem textValue="copy" key="explain">
                   <div className="flex items-center">
-                    <QuestionMarkCircleIcon className="pr-1 w-5 h-5" /> Giải
-                    thích
+                    <QuestionMarkCircleIcon className="pr-1 w-5 h-5" /> Explain
                   </div>
                 </ListboxItem>
                 <ListboxItem textValue="copy" key="addNote">
                   <div className="flex items-center">
-                    <ClipboardDocumentCheckIcon className="pr-1 w-5 h-5" /> Thêm
-                    vào ghi chú
+                    <ClipboardDocumentCheckIcon className="pr-1 w-5 h-5" /> Add to Note
                   </div>
                 </ListboxItem>
                 <ListboxItem textValue="copy" key="quote">

@@ -44,9 +44,8 @@ const Editor: React.FC<EditorProps> = ({
       : undefined,
   });
 
-  // Kiểm tra nếu editor chưa khởi tạo
   if (!editor) {
-    return <div>Loading editor...</div>; // Hiển thị thông báo hoặc loader
+    return <div>Loading editor...</div>; 
   }
 
   return (

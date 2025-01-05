@@ -77,7 +77,27 @@ export interface Note {
   note_id: string;
   title: string;
   content: string;
+  formatted_text: string;
   created_at: string;
   updated_at: string;
   project_id: string;
+}
+
+export interface MessageHistory {
+  message_id: string,
+  content: string,
+  create_at: string,
+  conversation_id: string
+}
+
+export interface NoteSearch {
+  note_content: string,
+  note_id: string,
+  note_title: string
+}
+
+export interface DocumentSearch {
+  content: string,
+  document_id: string,
+  document_name: string
 }

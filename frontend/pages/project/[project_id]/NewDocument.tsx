@@ -1,16 +1,10 @@
 import { FC, useState } from "react";
-import { Upload, Link, FileText, Loader2, CheckCircle } from "lucide-react";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { FileText, Link, Upload, X, Loader2, CheckCircle, Globe, Link2 } from 'lucide-react'
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Progress, Tabs, Tab, Card, CardBody } from "@nextui-org/react";
 import { Document } from "@/src/types/types";
-import { Progress } from "@/components/ui/progress";
-import { uploadDocument } from "@/service/documentApi";
+import { uploadDocument, uploadUrlDocument } from "@/service/documentApi";
+import checkmarkLoader from "@/public/svg/checkmarkLoader.json"
+import dynamic from "next/dynamic";
 
 interface NewDocumentProps {
   isOpen: boolean;
@@ -34,6 +28,8 @@ const NewDocument: FC<NewDocumentProps> = ({
   const [isSuccess, setIsSuccess] = useState(false);
   const maxFiles = 5; // Set the max limit for file uploads
   const [isMaxFile, setIsMaxFile] = useState<boolean>(false);
+  const [url, setUrl] = useState('')
+  const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
   // Calculate the progress based on the number of files selected
   const progress = ((limit + selectedFiles.length) / maxFiles) * 100;
@@ -55,7 +51,16 @@ const NewDocument: FC<NewDocumentProps> = ({
     }
   };
 
-  // Handle file drop into the drop zone
+  const handleUrlUpload = async (url: string) => {
+    try {
+      const data = await uploadUrlDocument(url, projectId as string)
+    } catch (e) {
+      console.log(e)
+    }
+    setIsLoading(false)
+    setUrl('')
+  }
+
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.stopPropagation();
@@ -88,7 +93,6 @@ const NewDocument: FC<NewDocumentProps> = ({
     setIsDragging(false);
   };
 
-  // Remove a specific file from the list
   const handleRemoveFile = (index: number) => {
     const updatedFiles = [...selectedFiles];
 
@@ -99,7 +103,6 @@ const NewDocument: FC<NewDocumentProps> = ({
     }
   };
 
-  // Handle file upload
   const handleFileUpload = async () => {
     if (!selectedFiles.length) {
       return;
@@ -113,11 +116,10 @@ const NewDocument: FC<NewDocumentProps> = ({
 
       console.log(data);
       setLimit(limit + selectedFiles.length);
-      setSelectedFiles([]); // Clear the selected files after upload
+      setSelectedFiles([]);
       setIsLoading(false);
       setIsSuccess(true);
       updateDocument();
-      // Reset success state after 2 seconds
       setTimeout(() => {
         setIsSuccess(false);
       }, 2000);
@@ -127,138 +129,161 @@ const NewDocument: FC<NewDocumentProps> = ({
     }
   };
 
+  const handleUrlSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+    handleUrlUpload(url)
+  }
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-4/5 max-w-7xl dark:bg-zinc-900 bg-zinc-50">
-        <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">
-            Thêm nguồn
-          </DialogTitle>
-          <span className="block text-sm font-medium text-zinc-400 mb-2">
-            Các nguồn cho phép VIET trả lời dựa trên những thông tin quan trọng
-            nhất đối với bạn.
-          </span>
-        </DialogHeader>
-
-        <div className="mt-4">
-          <div
-            className={`border-2 border-dashed rounded-lg p-8 text-center ${isDragging ? "border-blue-500" : "border-zinc-700"} relative overflow-hidden`}
-            onDragLeave={handleDragLeave}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-          >
-            {isLoading ? (
-              <div className="absolute inset-0 flex items-center justify-center bg-zinc-900 bg-opacity-50 transition-opacity duration-300">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-              </div>
-            ) : isSuccess ? (
-              <div className="absolute inset-0 flex items-center justify-center bg-zinc-900 bg-opacity-50 transition-opacity duration-300">
-                <CheckCircle className="h-16 w-16 text-green-500 animate-scale-up" />
-              </div>
-            ) : (
-              <>
-                <Upload className="mx-auto h-12 w-12 text-zinc-400" />
-                <p className="mt-2 text-sm text-zinc-400">Tải nguồn lên</p>
-                <p className="mt-1 text-xs text-zinc-500">
-                  Kéo và thả hoặc chọn tệp để tải lên
-                </p>
-                <input
-                  multiple
-                  className="hidden"
-                  id="file-upload"
-                  type="file"
-                  onChange={handleFileChange}
-                />
-                <label htmlFor="file-upload">
-                  <Button
-                    className="mt-4"
-                    variant="outline"
-                    onClick={() =>
-                      document.getElementById("file-upload")?.click()
-                    }
-                  >
-                    Chọn tệp
-                  </Button>
-                </label>
-              </>
-            )}
-          </div>
-
-          <div className="mt-4">
-            {selectedFiles.length > 0 && (
-              <div className="space-y-2">
-                {selectedFiles.map((file, index) => (
+    <Modal 
+      isOpen={isOpen} 
+      onClose={onClose}
+      size="2xl"
+      scrollBehavior="inside"
+    >
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalHeader className="flex flex-col gap-1">
+              <h2 className="text-2xl font-bold">Thêm nguồn</h2>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                Các nguồn cho phép VIET trả lời dựa trên những thông tin quan trọng nhất đối với bạn.
+              </p>
+            </ModalHeader>
+            <ModalBody>
+              <Tabs aria-label="Options">
+                <Tab key="file" title="Tải tệp lên">
                   <div
-                    key={index}
-                    className="flex justify-between text-zinc-400 text-sm"
+                    className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                      isDragging ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" : "border-zinc-300 dark:border-zinc-700"
+                    } relative overflow-hidden`}
+                    onDragLeave={handleDragLeave}
+                    onDragOver={handleDragOver}
+                    onDrop={handleDrop}
                   >
-                    <span>{file.name}</span>
-                    <Button
-                      className="text-red-500"
-                      variant="link"
-                      onClick={() => handleRemoveFile(index)}
-                    >
-                      Remove
-                    </Button>
+                    {isLoading ? (
+                      <div className="absolute inset-0 flex items-center justify-center bg-zinc-900/50 backdrop-blur-sm transition-opacity duration-300">
+                        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+                      </div>
+                    ) : isSuccess ? (
+                      <div className="absolute inset-0 flex items-center justify-center bg-zinc-900/50 backdrop-blur-sm transition-opacity duration-300">
+                        <Lottie
+                          animationData={checkmarkLoader}
+                          loop={0}
+                          className="w-12 h-12"
+                        />
+                      </div>
+                    ) : (
+                      <>
+                        <Upload className="mx-auto h-12 w-12 text-zinc-400" />
+                        <p className="mt-2 text-sm font-medium text-zinc-600 dark:text-zinc-300">Tải nguồn lên</p>
+                        <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                          Kéo và thả hoặc chọn tệp để tải lên
+                        </p>
+                        <input
+                          multiple
+                          className="hidden"
+                          id="file-upload"
+                          type="file"
+                          onChange={handleFileChange}
+                          accept=".pdf,.txt,.doc,.docx"
+                        />
+                        <label htmlFor="file-upload">
+                          <Button 
+                            onClick={() => document.getElementById("file-upload")?.click()}
+                            className="mt-4"
+                          >
+                            Chọn tệp
+                          </Button>
+                        </label>
+                      </>
+                    )}
                   </div>
-                ))}
+
+                  {selectedFiles.length > 0 && (
+                    <div className="mt-4 space-y-2">
+                      {selectedFiles.map((file, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between p-2 bg-zinc-100 dark:bg-zinc-800 rounded"
+                        >
+                          <span className="text-sm text-zinc-600 dark:text-zinc-300">{file.name}</span>
+                          <Button
+                            size="sm"
+                            isIconOnly
+                            variant="light"
+                            onClick={() => handleRemoveFile(index)}
+                          >
+                            <X className="h-4 w-4 text-zinc-500" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <Button
+                    className="w-full mt-4"
+                    isDisabled={!selectedFiles.length || isMaxFile || isLoading}
+                    onClick={handleFileUpload}
+                  >
+                    {isLoading ? "Đang tải lên..." : "Tải lên tệp"}
+                  </Button>
+                </Tab>
+                <Tab key="url" title="Thêm URL">
+                  <form onSubmit={handleUrlSubmit}>
+                    <div className="flex items-center space-x-2">
+                      <Input
+                        type="url"
+                        placeholder="Nhập URL của tài liệu"
+                        value={url}
+                        onChange={(e) => setUrl(e.target.value)}
+                        className="flex-grow"
+                      />
+                      <Button type="submit" isDisabled={!url || isLoading}>
+                        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Globe className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                  </form>
+                </Tab>
+              </Tabs>
+
+              <div className="mt-6 space-y-4">
+                <h3 className="text-sm font-medium text-zinc-600 dark:text-zinc-300">Định dạng tài liệu được hỗ trợ</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  {[
+                    { icon: FileText, label: "PDF" },
+                    { icon: Link2, label: "URL" },
+                    { icon: FileText, label: "DOCS" },
+                  ].map((item, index) => (
+                    <Card key={index}>
+                      <CardBody className="flex flex-col items-center justify-center p-4">
+                        <item.icon className="h-8 w-8 text-zinc-500 dark:text-zinc-400 mb-2" />
+                        <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300">{item.label}</span>
+                      </CardBody>
+                    </Card>
+                  ))}
+                </div>
               </div>
-            )}
-          </div>
-          {isMaxFile && <div className="text-red-500">Max file is 5</div>}
 
-          <div className="mt-4">
-            <Button
-              className="w-full mt-4"
-              disabled={
-                !selectedFiles.length ||
-                limit + selectedFiles.length > maxFiles ||
-                isLoading
-              }
-              onClick={handleFileUpload}
-            >
-              {isLoading ? "Uploading..." : "Upload File"}
-            </Button>
-          </div>
-          <span className="block text-sm font-medium text-zinc-400 mb-2 mt-6">
-            Documents allow
-          </span>
-          <div className="grid grid-cols-3 gap-4">
-            <Button
-              className="flex dark:bg-zinc-800 bg-zinc-200 flex-col items-center justify-center h-24"
-              variant="outline"
-            >
-              <FileText className="h-6 w-6 mb-2" />
-              <span className="text-xs">PDF</span>
-            </Button>
-            <Button
-              className="flex dark:bg-zinc-800 bg-zinc-200 flex-col items-center justify-center h-24"
-              variant="outline"
-            >
-              <Link className="h-6 w-6 mb-2" />
-              <span className="text-xs">TXT</span>
-            </Button>
-            <Button
-              className="flex dark:bg-zinc-800 bg-zinc-200 flex-col items-center justify-center h-24"
-              variant="outline"
-            >
-              <FileText className="h-6 w-6 mb-2" />
-              <span className="text-xs">DOCS</span>
-            </Button>
-          </div>
-
-          <div className="mt-6">
-            <label
-              className={`${isMaxFile ? "text-red-500" : "text-zinc-400"} block text-sm font-medium  mb-2`}
-            >
-              Limit Document {limit + selectedFiles.length}/{maxFiles}
-            </label>
-            <Progress className="w-full" value={progress} />
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+              <div className="mt-6">
+                <div className="flex justify-between items-center mb-2">
+                  <label className="text-sm font-medium text-zinc-600 dark:text-zinc-300">
+                    Giới hạn tài liệu
+                  </label>
+                  <span className={`text-sm font-medium ${isMaxFile ? "text-red-500" : "text-zinc-500 dark:text-zinc-400"}`}>
+                    {limit + selectedFiles.length}/{maxFiles}
+                  </span>
+                </div>
+                <Progress value={progress} className="h-2 mb-5" />
+              </div>
+            </ModalBody>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
   );
 };
 
 export default NewDocument;
+

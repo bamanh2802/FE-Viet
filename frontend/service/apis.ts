@@ -6,21 +6,16 @@ import axiosInstance from "./axiosInterceptor";
 export async function SignIn(username: string, password: string) {
   const response = await axios.post(
     `${API_URL}/api/auth/login`,
-    new URLSearchParams({
-      grant_type: "password",
+    {
       username: username,
       password: password,
-      scope: "",
-      client_id: "string",
-      client_secret: "string",
-    }),
+    },
     {
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/json",
         accept: "application/json",
       },
-      // withCredentials: true
-    },
+    }
   );
 
   return response;
@@ -206,16 +201,99 @@ export async function createUser(
       email: email,
       first_name: firstName,
       last_name: lastName,
-      // Không cần truyền dob nếu nó là optional
     },
     {
       headers: {
         accept: "application/json",
         "Content-Type": "application/json",
-        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}), // Thêm Authorization header nếu có
+        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}), 
       },
     },
   );
 
   return response.data;
+}
+
+export async function getChatHistory (conversationId: string) {
+  const accessToken = localStorage.getItem("access_token");
+  const response = await axios.get(
+    `${API_URL}/api/conversations/${conversationId}/messages`, {
+      headers: {
+        accept: "application/json",
+        "Content-Type": "application/json",
+        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}), 
+      }
+    }
+  )
+  return response
+}
+
+export async function searchKeywordDocument(documentIds: string[], keyword: string) {
+  const accessToken = localStorage.getItem("access_token");
+
+  const params = new URLSearchParams();
+  
+  documentIds.forEach(docId => {
+    params.append('document_ids', docId);
+  });
+
+  params.append('kw', keyword);
+
+  const response = await axios.get(`${API_URL}/search/documents?${params.toString()}`, {
+    headers: {
+      accept: "application/json",
+      "Content-Type": "application/json",
+      ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+    },
+  });
+
+  return response;
+}
+
+
+export async function searchKeywordNote(projectIds: string[], keyword: string) {
+  const accessToken = localStorage.getItem("access_token");
+
+  const params = new URLSearchParams();
+  
+  projectIds.forEach((id) => params.append('project_ids', id));
+  
+  params.append('kw', keyword);
+
+  const response = await axios.get(
+    `${API_URL}/search/notes?${params.toString()}`, 
+    {
+      headers: {
+        accept: "application/json",
+        "Content-Type": "application/json",
+        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+      }
+    }
+  );
+
+  return response;
+}
+
+
+export async function searchKeywordConversation(conversationIds: string[], keyword: string) {
+  const accessToken = localStorage.getItem("access_token");
+
+  const params = new URLSearchParams();
+  
+  conversationIds.forEach((id) => params.append('conversation_ids', id));
+  
+  params.append('kw', keyword);
+
+  const response = await axios.get(
+    `${API_URL}/search/conversations?${params.toString()}`, 
+    {
+      headers: {
+        accept: "application/json",
+        "Content-Type": "application/json",
+        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+      }
+    }
+  );
+
+  return response;
 }

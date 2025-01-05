@@ -12,6 +12,8 @@ import {
   ChevronDownIcon,
   MagnifyingGlassIcon,
   DocumentTextIcon,
+  FolderIcon,
+  LinkIcon
 } from "@heroicons/react/24/outline";
 
 import { Project, Document, Conversation } from "@/src/types/types";
@@ -119,10 +121,10 @@ const SidebarHome: React.FC<SidebarHomeProps> = ({
           >
             {projects === undefined ? (
               <div className="gap-2">
-                <Skeleton className="h-3 w-full rounded-lg mt-1 bg-zinc-300 dark:bg-zinc-700" />
-                <Skeleton className="h-3 w-full rounded-lg mt-1 bg-zinc-300 dark:bg-zinc-700" />
-                <Skeleton className="h-3 w-full rounded-lg mt-1 bg-zinc-300 dark:bg-zinc-700" />
-                <Skeleton className="h-3 w-full rounded-lg mt-1 bg-zinc-300 dark:bg-zinc-700" />
+                <Skeleton className="h-3 w-full rounded-lg mt-1 " />
+                <Skeleton className="h-3 w-full rounded-lg mt-1 " />
+                <Skeleton className="h-3 w-full rounded-lg mt-1 " />
+                <Skeleton className="h-3 w-full rounded-lg mt-1 " />
               </div>
             ) : (
               <>
@@ -133,7 +135,7 @@ const SidebarHome: React.FC<SidebarHomeProps> = ({
                     onClick={() => handleRouterToProject(project)}
                   >
                     <div className="flex text-start justify-start items-center  w-[90%]">
-                      <UserGroupIcon className="h-4 w-4 dark:text-gray-400 text-gray-700" />
+                      <FolderIcon className="h-4 w-4 dark:text-gray-400 text-gray-700" />
                       <span className="pl-1 truncate  w-[90%]">
                         {project.name}
                       </span>
@@ -170,10 +172,10 @@ const SidebarHome: React.FC<SidebarHomeProps> = ({
           >
             {documents === undefined ? (
               <div className="gap-2">
-                <Skeleton className="h-3 w-full rounded-lg mt-1 bg-zinc-300 dark:bg-zinc-700" />
-                <Skeleton className="h-3 w-full rounded-lg mt-1 bg-zinc-300 dark:bg-zinc-700" />
-                <Skeleton className="h-3 w-full rounded-lg mt-1 bg-zinc-300 dark:bg-zinc-700" />
-                <Skeleton className="h-3 w-full rounded-lg mt-1 bg-zinc-300 dark:bg-zinc-700" />
+                <Skeleton className="h-3 w-full rounded-lg mt-1 " />
+                <Skeleton className="h-3 w-full rounded-lg mt-1 " />
+                <Skeleton className="h-3 w-full rounded-lg mt-1 " />
+                <Skeleton className="h-3 w-full rounded-lg mt-1 " />
               </div>
             ) : (
               <>
@@ -184,7 +186,13 @@ const SidebarHome: React.FC<SidebarHomeProps> = ({
                     onClick={() => handleRouterToDocument(doc)}
                   >
                     <div className="flex text-start justify-start items-center  w-[90%]">
-                      <DocumentTextIcon className="h-4 w-4 dark:text-gray-400 text-gray-700" />
+                      {
+                        doc.type === 'url' ? (
+                          <LinkIcon className="h-4 w-4 dark:text-gray-400 text-gray-700" />
+                        ) : (
+                          <DocumentTextIcon className="h-4 w-4 dark:text-gray-400 text-gray-700" />
+                        )
+                      }
                       <span className="pl-1 truncate  w-[90%]">
                         {doc.document_name}
                       </span>
@@ -221,10 +229,10 @@ const SidebarHome: React.FC<SidebarHomeProps> = ({
           >
             {conversations === undefined ? (
               <div className="gap-2">
-                <Skeleton className="h-3 w-full rounded-lg mt-1 bg-zinc-300 dark:bg-zinc-700" />
-                <Skeleton className="h-3 w-full rounded-lg mt-1 bg-zinc-300 dark:bg-zinc-700" />
-                <Skeleton className="h-3 w-full rounded-lg mt-1 bg-zinc-300 dark:bg-zinc-700" />
-                <Skeleton className="h-3 w-full rounded-lg mt-1 bg-zinc-300 dark:bg-zinc-700" />
+                <Skeleton className="h-3 w-full rounded-lg mt-1 " />
+                <Skeleton className="h-3 w-full rounded-lg mt-1 " />
+                <Skeleton className="h-3 w-full rounded-lg mt-1 " />
+                <Skeleton className="h-3 w-full rounded-lg mt-1 " />
               </div>
             ) : (
               <>

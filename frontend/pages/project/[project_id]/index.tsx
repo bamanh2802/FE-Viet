@@ -55,7 +55,6 @@ const ProjectPage: FC = () => {
 
 
   useEffect(() => {
-    console.log(noteIdParam)
     if(noteIdParam !== undefined && noteIdParam !== selectedNote) {
       setSelectedNote(noteIdParam as string)
       handleGetNoteById(noteIdParam as string)
@@ -63,7 +62,6 @@ const ProjectPage: FC = () => {
   }, [noteIdParam])
   const handleSetSelectedNote = (noteId: string) => {
     setSelectedNote(noteId);
-    console.log(noteId);
     router.push(`/project/${project_id}?noteIdParam=${noteId}`, undefined, { shallow: true });
     if (noteId !== "") {
       handleGetNoteById(noteId);
@@ -81,9 +79,9 @@ const ProjectPage: FC = () => {
       console.log(e);
     }
   };
-  const handleEditNote = async (noteId: string, content: string) => {
+  const handleEditNote = async (noteId: string, content: string, formatted_text: string) => {
     try {
-      const data = await editNote(noteId, content);
+      const data = await editNote(noteId, content, formatted_text);
       console.log(data);
     } catch (e) {
       console.log(e);
@@ -94,7 +92,7 @@ const ProjectPage: FC = () => {
     console.log(noteId)
     try {
       const data = await getNoteById(noteId);
-
+      console.log(data)
       setNote(data.data.note);
     } catch (e) {
       console.log(e);
@@ -203,6 +201,7 @@ const ProjectPage: FC = () => {
                 renameNote={handleRenameNote}
                 selectedNote={selectedNote}
                 editable={true}
+                type="project"
               />
             </div>
           ) : (
@@ -227,7 +226,7 @@ const ProjectPage: FC = () => {
           updateConversation={handleGetConversations}
           onClose={closeDialog}
         />
-        <ShareWorkspace isOpen={isOpenShare} onClose={closeShare} />
+        <ShareWorkspace isOpen={isOpenShare} onClose={closeShare} id="user" type="project"/>
         <NewDocument
           documents={documents}
           isOpen={isOpenNewDocument}

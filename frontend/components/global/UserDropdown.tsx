@@ -49,7 +49,6 @@ const UserDropdown = () => {
   const handleGetUser = async () => {
     try {
       const data = await getUser();
-      console.log(data)
       if (data && data.data && data.data.msg) {
         dispatch(setUser(data.data.msg));
       } else {

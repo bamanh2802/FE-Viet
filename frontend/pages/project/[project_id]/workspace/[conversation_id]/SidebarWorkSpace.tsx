@@ -12,6 +12,7 @@ import {
 import dayjs from "dayjs"; // Thư viện để xử lý ngày tháng
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 import { Listbox, ListboxItem, Button } from "@nextui-org/react";
+import MiniNote from "@/components/document/MiniNote";
 
 import { Conversation } from "@/src/types/types";
 import { ListboxWrapper } from "@/components/ListboxWrapper";
@@ -38,12 +39,14 @@ interface SidebarWorkspaceProps {
   onSelectConversation: (conv: Conversation) => void;
   conversations: Conversation[];
   updatedConversations: () => void;
+  projectId: string
 }
 
 const SidebarWorkspace: FC<SidebarWorkspaceProps> = ({
   onSelectConversation,
   conversations,
   updatedConversations,
+  projectId
 }) => {
   const router = useRouter();
   const { toast } = useToast();
@@ -188,14 +191,14 @@ const SidebarWorkspace: FC<SidebarWorkspaceProps> = ({
 
   const renderConversations = () =>
     sortedConversations?.length > 0 ? (
-      <div className="ml-1 mt-1 space-y-1">
+      <div className="mt-1 space-y-1">
         {sortedConversations.map((conv) => {
           const isSelected = conversation_id === conv.conversation_id;
 
           return (
             <div
               key={conv.conversation_id}
-              className={`relative transition-all ml-2 group flex justify-between items-center space-x-2 text-sm cursor-pointer p-2 rounded-lg ${
+              className={`relative transition-all group flex justify-between items-center space-x-2 text-sm cursor-pointer p-2 rounded-lg ${
                 isSelected
                   ? "bg-zinc-300 dark:bg-zinc-700 text-white" // Highlight selected conversation
                   : "text-gray-700 dark:text-gray-400 hover:bg-zinc-200 dark:hover:bg-zinc-800"
@@ -279,9 +282,9 @@ const SidebarWorkspace: FC<SidebarWorkspaceProps> = ({
 
       <div className="flex-1 overflow-y-auto">
         <div>
-          <div
-            className="flex items-center justify-between p-3 rounded-lg cursor-pointer my-2 hover:bg-gray-700"
-            onClick={handleBackHome}
+        <div
+            className="flex dark:text-gray-400 text-gray-700 transition-all p-3 rounded-lg cursor-pointer my-2 hover:bg-zinc-200 dark:hover:bg-zinc-800"
+            onClick={() => handleBackHome()}
           >
             <div className="flex items-center space-x-3">
               <HomeIcon className="h-4 w-4 text-gray-300" />
@@ -290,15 +293,18 @@ const SidebarWorkspace: FC<SidebarWorkspaceProps> = ({
           </div>
         </div>
 
+      <MiniNote projectId={projectId}/>
+
+
         <Button
-          className="w-full"
+          className="w-full mt-3"
           size="sm"
           startContent={<MagnifyingGlassIcon className="w-4 h-4" />}
-          variant="flat"
+          variant="bordered"
         >
           Search something...
         </Button>
-        <h3 className="flex items-center justify-between text-sm font-semibold dark:text-gray-400 text-gray-700 transition-all rounded-lg px-2 p-1 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-800">
+        <h3 className="mt-5 flex items-center justify-between text-sm font-semibold dark:text-gray-400 text-gray-700 transition-all rounded-lg px-2 p-1 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-800">
           <span>Conversations</span>
         </h3>
         {renderConversations()}

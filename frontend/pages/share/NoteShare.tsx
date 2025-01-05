@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react"
 import { Note } from "@/src/types/types"
 import RichTextEditor from "../project/[project_id]/Note"
-import { getNoteById } from "@/service/noteApi"
+import { getSharedNoteInfo } from "@/service/noteApi"
 import NavbarShare from "./NavbarShare"
 import { Button } from "@/components/ui/button"
 import { PencilSquareIcon } from "@heroicons/react/24/outline"
@@ -28,8 +28,9 @@ const NoteShare: React.FC<NoteShareProps> = ({noteId}) => {
 
     const handleGetNote = async () => {
         try {
-            const data = await getNoteById(noteId)
-            setNote(data.data.note);
+            const data = await getSharedNoteInfo(noteId)
+            setNote(data.data);
+            console.log(data)
         } catch (e) {
             console.log(e)
         }
@@ -60,6 +61,7 @@ const NoteShare: React.FC<NoteShareProps> = ({noteId}) => {
                     renameNote={() => {}}
                     selectedNote={noteId}
                     editable={false}
+                    type="share"
                 />
                 <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
                     <Button

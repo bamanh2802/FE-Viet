@@ -1,6 +1,10 @@
+'use client';
+
 import React, { useEffect, useState, useRef } from 'react';
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
 import mammoth from 'mammoth';
+import { MagnifyingGlassMinusIcon, MagnifyingGlassPlusIcon } from '@heroicons/react/24/outline';
+import { Button } from '@nextui-org/react';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.js`;
 
@@ -15,6 +19,8 @@ const FileViewer: React.FC<FileViewerProps> = ({ fileUrl, fileType }) => {
   const [scale, setScale] = useState(1);
 
   useEffect(() => {
+    setContent(null);
+
     const renderPDF = async () => {
       const loadingTask = pdfjsLib.getDocument(fileUrl);
       const pdf = await loadingTask.promise;
@@ -22,7 +28,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ fileUrl, fileType }) => {
 
       for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
         const page = await pdf.getPage(pageNum);
-        const viewport = page.getViewport({ scale });
+        const viewport = page.getViewport({ scale: 1 });
         const textContent = await page.getTextContent();
 
         const pageDiv = document.createElement('div');
@@ -39,13 +45,13 @@ const FileViewer: React.FC<FileViewerProps> = ({ fileUrl, fileType }) => {
 
             const transform = item.transform;
             const fontSize = transform[0];
-            const left = transform[4] * scale;
-            const top = (viewport.height - transform[5]) * scale;
+            const left = transform[4];
+            const top = viewport.height - transform[5];
 
             textDiv.style.position = 'absolute';
             textDiv.style.left = `${left}px`;
             textDiv.style.top = `${top}px`;
-            textDiv.style.fontSize = `${fontSize * scale}px`;
+            textDiv.style.fontSize = `${fontSize}px`;
             textDiv.style.color = 'black';
             textDiv.style.whiteSpace = 'pre';
             textDiv.style.lineHeight = '1.2';
@@ -66,7 +72,14 @@ const FileViewer: React.FC<FileViewerProps> = ({ fileUrl, fileType }) => {
           >
             {React.createElement('div', {
               dangerouslySetInnerHTML: { __html: pageDiv.outerHTML },
-              style: { userSelect: 'text', position: 'relative', maxWidth: '100%' },
+              style: {
+                userSelect: 'text',
+                position: 'relative',
+                maxWidth: '100%',
+                transform: `scale(${scale})`,
+                transformOrigin: 'top left',
+                transition: 'transform 0.3s ease', // Thêm hiệu ứng chuyển mượt
+              },
             })}
           </div>
         );
@@ -89,6 +102,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ fileUrl, fileType }) => {
               color: '#333',
               padding: '10px',
               lineHeight: '1.6',
+              transition: 'font-size 0.3s ease', // Thêm hiệu ứng mượt khi đổi kích thước chữ
             }}
           >
             {result.value}
@@ -107,19 +121,13 @@ const FileViewer: React.FC<FileViewerProps> = ({ fileUrl, fileType }) => {
     }
   }, [fileUrl, fileType, scale]);
 
-  useEffect(() => {
-    const resizeObserver = new ResizeObserver((entries) => {
-      const containerWidth = entries[0].contentRect.width;
-      const newScale = containerWidth / 800; // 800 là chiều rộng PDF mặc định
-      setScale(newScale);
-    });
+  const zoomIn = () => {
+    setScale((prevScale) => Math.min(prevScale + 0.1, 3));
+  };
 
-    if (viewerRef.current) {
-      resizeObserver.observe(viewerRef.current);
-    }
-
-    return () => resizeObserver.disconnect();
-  }, []);
+  const zoomOut = () => {
+    setScale((prevScale) => Math.max(prevScale - 0.1, 0.5));
+  };
 
   return (
     <div
@@ -136,6 +144,15 @@ const FileViewer: React.FC<FileViewerProps> = ({ fileUrl, fileType }) => {
         position: 'relative',
       }}
     >
+      <div style={{ position: 'sticky', top: '10px', right: '10px', zIndex: 10 }}>
+        <Button variant='light' isIconOnly onClick={zoomIn} style={{ margin: '0 5px', padding: '5px 10px', cursor: 'pointer' }}>
+          <MagnifyingGlassPlusIcon className='w-4 h-4' />
+        </Button>
+        <Button variant='light' isIconOnly onClick={zoomOut} style={{ margin: '0 5px', padding: '5px 10px', cursor: 'pointer' }}>
+          <MagnifyingGlassMinusIcon className='w-4 h-4' />
+
+        </Button>
+      </div>
       <div className="file-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {content}
       </div>

@@ -1,11 +1,9 @@
-import { Listbox, ListboxItem, Button, Selection } from "@nextui-org/react";
+import { Listbox, ListboxItem, Button, Selection, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Input } from "@nextui-org/react";
 import {
   PlusIcon,
   UserIcon,
-  UserGroupIcon
 } from "@heroicons/react/24/outline";
 
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ListboxWrapper } from "@/components/ListboxWrapper";
 import { Project } from "@/src/types/types";
 import { getAllProjectsWithInfo } from "@/service/apis";
@@ -47,14 +45,11 @@ const AddProject: FC<AddProjectProps> = ({
   const handleAddProject = async () => {
     const selectedDocsArray = Array.from(selectedKeys).filter(key => key !== '');
     console.log(selectedDocsArray)
-    // Implement your add project logic here
   };
 
-  // Search functionality
   const handleSearch = (value: string) => {
     setSearchValue(value);
     
-    // Filter projects based on search input
     const filtered = projects.filter(project => 
       project.name.toLowerCase().includes(value.toLowerCase())
     );
@@ -72,7 +67,6 @@ const AddProject: FC<AddProjectProps> = ({
         setIsDisable(false);
       } else {
         setIsDisable(true);
-
       }
     }
   }, [filteredProjects, selectedKeys]);
@@ -82,60 +76,78 @@ const AddProject: FC<AddProjectProps> = ({
   }, [])
  
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[827px] transition-all bg-zinc-50 dark:bg-zinc-900 border-none">
-        <DialogTitle>Project List</DialogTitle>
-
-        <div className="mt-4">
-          <input
-            className="w-full mt-2 p-2 py-1 border border-gray-300 rounded-md"
-            placeholder="Search Project"
-            type="text"
-            value={searchValue}
-            onChange={(e) => handleSearch(e.target.value)}
-          />
-        </div>
-
-        <div className="custom-width mt-4">
-          <ListboxWrapper>
-            <Listbox
-              disallowEmptySelection
-              aria-label="File selection"
-              className="max-w-none"
-              selectionMode="single"
-              variant="flat"
-              selectedKeys={selectedKeys}
-              onSelectionChange={handleSelectionChange}
-            >
-              {filteredProjects?.map((project) => (
-                <ListboxItem
-                  key={project.project_id}
-                  textValue="Add"
-                  value={project.project_id}
-                >
-                <div className="flex items-center">
-                <UserIcon className="w-4 h-4 mr-1"/>
-                  {project.name} 
-                </div>
-                </ListboxItem>
-              ))}
-            </Listbox>
-          </ListboxWrapper>
-        </div>
-
-        <Button
-          className="mt-4"
-          color="default"
-          isDisabled={isDisable}
-          isLoading={isLoading}
-          startContent={!isLoading && <PlusIcon className="w-5 h-5" />}
-          onClick={() => handleAddProject()}
-        >
-          Add
-        </Button>
-      </DialogContent>
-    </Dialog>
+    <Modal 
+      isOpen={isOpen} 
+      onClose={onClose}
+      size="2xl"
+      classNames={{
+        base: "bg-zinc-50 dark:bg-zinc-900",
+        header: "border-b-[1px] border-[#27272a]",
+        footer: "border-t-[1px] border-[#27272a]",
+      }}
+    >
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalHeader className="flex flex-col gap-1">Project List</ModalHeader>
+            <ModalBody>
+              <Input
+                placeholder="Search Project"
+                value={searchValue}
+                onChange={(e) => handleSearch(e.target.value)}
+                className="mt-2"
+              />
+              <div className="custom-width mt-4">
+                <ListboxWrapper>
+                  <Listbox
+                    disallowEmptySelection
+                    aria-label="File selection"
+                    className="max-w-none"
+                    selectionMode="single"
+                    variant="flat"
+                    selectedKeys={selectedKeys}
+                    onSelectionChange={handleSelectionChange}
+                  >
+                    {filteredProjects?.map((project) => (
+                      <ListboxItem
+                        key={project.project_id}
+                        textValue="Add"
+                        value={project.project_id}
+                      >
+                      <div className="flex items-center">
+                      <UserIcon className="w-4 h-4 mr-1"/>
+                        {project.name} 
+                      </div>
+                      </ListboxItem>
+                    ))}
+                  </Listbox>
+                </ListboxWrapper>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                color="default"
+                variant="light"
+                onPress={onClose}
+              >
+                Close
+              </Button>
+              <Button
+                color="primary"
+                isDisabled={isDisable}
+                isLoading={isLoading}
+                startContent={!isLoading && <PlusIcon className="w-5 h-5" />}
+                onPress={handleAddProject}
+              >
+                Add
+              </Button>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
   );
 };
 
 export default AddProject;
+

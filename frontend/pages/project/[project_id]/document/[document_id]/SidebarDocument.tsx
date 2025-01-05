@@ -6,8 +6,10 @@ import {
   TrashIcon,
   PencilSquareIcon,
   ExclamationCircleIcon,
+  ArrowTopRightOnSquareIcon
 } from "@heroicons/react/24/outline";
 
+import MiniNote from "@/components/document/MiniNote";
 import { Conversation } from "@/src/types/types";
 import { ListboxWrapper } from "@/components/ListboxWrapper";
 import { renameConversation, deleteConversation } from "@/service/projectApi";
@@ -30,6 +32,7 @@ interface SidebarDocumentProps {
   createNewConversation: () => void;
   updatedConversations: () => void;
   isLoadingCreate: boolean;
+  projectId: string
 }
 
 const SidebarDocument: React.FC<SidebarDocumentProps> = ({
@@ -40,6 +43,7 @@ const SidebarDocument: React.FC<SidebarDocumentProps> = ({
   onSelectConversation,
   updatedConversations,
   isLoadingCreate,
+  projectId
 }) => {
   const [contextMenu, setContextMenu] = useState<{
     x: number;
@@ -211,7 +215,7 @@ const SidebarDocument: React.FC<SidebarDocumentProps> = ({
         })}
       </div>
     ) : (
-      <div className="ml-4 mt-1 text-gray-500">
+      <div className="ml-4 mt-1 text-gray-500 italic text-sm">
         Không có cuộc trò chuyện nào.
       </div>
     );
@@ -223,36 +227,12 @@ const SidebarDocument: React.FC<SidebarDocumentProps> = ({
       </div>
 
       <div className="my-4">
-        <input
-          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-gray-200"
-          placeholder="Search..."
-          type="text"
-        />
+       
+      <MiniNote projectId={projectId}/>
+
       </div>
 
-      {/* <div className="mt-6">
-        <h2 className="text-sm font-semibold text-gray-500">Analysis</h2>
-        <Listbox aria-label="SidebarDocument" className="mt-2 space-y-2">
-          <ListboxItem
-            key="summarize"
-            className="text-sm text-gray-300 cursor-pointer hover:text-black"
-          >
-            Summarize
-          </ListboxItem>
-          <ListboxItem
-            key="create-outline"
-            className="text-sm text-gray-300 cursor-pointer hover:text-black"
-          >
-            Create Outlines
-          </ListboxItem>
-          <ListboxItem
-            key="translate"
-            className="text-sm text-gray-300 cursor-pointer hover:text-black"
-          >
-            Translate
-          </ListboxItem>
-        </Listbox>
-      </div> */}
+     
 
       <h2 className="text-sm font-semibold text-gray-500">Conversations</h2>
 

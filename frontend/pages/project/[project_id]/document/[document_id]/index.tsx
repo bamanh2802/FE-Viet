@@ -213,11 +213,13 @@ const DocumentPage: React.FC = () => {
           selectedConversation={selectedConversation}
           updatedConversations={handleGetConversations}
           onSelectConversation={handleSelectConversation}
+          projectId={project_id as string}
         />
         <div className="flex flex-col w-full">
           <NavbarDocument
             documentName={documentName}
             projectName={projectInfo?.name as string}
+            projectId={project_id as string}
           />
           <div
             className="flex"

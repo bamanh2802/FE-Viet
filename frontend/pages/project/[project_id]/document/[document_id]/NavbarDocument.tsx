@@ -8,18 +8,30 @@ import {
   BreadcrumbItem,
 } from "@nextui-org/react";
 import { HomeIcon } from "@heroicons/react/24/outline";
+import { useRouter } from "next/router";
 
 import UserDropdown from "@/components/global/UserDropdown";
 
 interface NavbarDocumentProps {
   projectName: string;
   documentName: string;
+  projectId: string
 }
 
 const NavbarDocument: React.FC<NavbarDocumentProps> = ({
   projectName,
   documentName,
+  projectId
 }) => {
+  const router = useRouter()
+
+  const handleBackHome = () => {
+    router.push('/home')
+  }
+  const handleBackProject = () => {
+    router.push(`/project/${projectId}`)
+  }
+
   return (
     <Navbar
       isBordered
@@ -28,10 +40,10 @@ const NavbarDocument: React.FC<NavbarDocumentProps> = ({
     >
       <NavbarBrand className="basis-full">
         <Breadcrumbs>
-          <BreadcrumbItem>
+          <BreadcrumbItem onClick={handleBackHome}>
             <HomeIcon className="w-4 h-4" />
           </BreadcrumbItem>
-          <BreadcrumbItem>{projectName}</BreadcrumbItem>
+          <BreadcrumbItem onClick={handleBackProject}>{projectName}</BreadcrumbItem>
           <BreadcrumbItem>{documentName}</BreadcrumbItem>
         </Breadcrumbs>
       </NavbarBrand>

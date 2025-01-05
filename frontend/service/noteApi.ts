@@ -8,6 +8,7 @@ export async function createNewNote(
   title: string = "Untitled Note",
   content: string = "",
   chunkIds: string[] = [],
+  formatted_text: string = ""
 ) {
   const accessToken = localStorage.getItem("access_token");
 
@@ -16,7 +17,9 @@ export async function createNewNote(
     title: title,
     content: content,
     chunk_ids: chunkIds.join(","),
+    formatted_text: formatted_text
   });
+  console.log(data)
 
   const response = await axios.post(`${API_URL}/api/projects/new-note`, data, {
     headers: {
@@ -77,7 +80,7 @@ export async function renameNote(noteId: string, newName: string) {
   return response;
 }
 
-export async function editNote(noteId: string, content: string) {
+export async function editNote(noteId: string, content: string, formatted_text: string) {
   const accessToken = localStorage.getItem("access_token");
 
   const response = await axios.put(
@@ -85,6 +88,7 @@ export async function editNote(noteId: string, content: string) {
     new URLSearchParams({
       note_id: noteId,
       content: content,
+      formatted_text: formatted_text
     }),
     {
       headers: {
@@ -124,5 +128,39 @@ export async function createNoteFromIdShared(shareId: string, projectId: string)
       }
     }
   )
+  return response
+}
+
+export async function getSharedNoteId(noteId: string, userId: string) {
+  const accessToken = localStorage.getItem("access_token");
+
+  const response = await axios.get(
+    `${API_URL}/api/notes/${noteId}/get-shared-id`,
+    {
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      params: {
+        user_id: userId,
+      },
+    }
+  );
+
+  return response;
+}
+
+export async function getSharedNoteInfo (noteId: string) {
+  const accessToken = localStorage.getItem("access_token");
+
+  const response = await axios.get(
+    `${API_URL}/api/notes/${noteId}/get-shared-info`, {
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  )
+
   return response
 }
